@@ -29,6 +29,7 @@ namespace IrcBot.cs
         private static string CHANNEL = "#csbot";
         private static string KEY = "key";
         private static string CHANNEL2 = "#foobar";
+        private static bool configured = false;
         // StreamWriter is declared here so that PingSender can access it
         public static StreamWriter writer;
         public static StreamReader reader;
@@ -55,6 +56,8 @@ namespace IrcBot.cs
                 reader = new StreamReader(stream);
                 writer = new StreamWriter(stream);
                 // Start PingSender thread
+                if(Configured)
+                {
                 ping = new PingSender.cs.PingSender();
                 ping.Start();
                 writer.WriteLine(USER);
@@ -172,6 +175,7 @@ namespace IrcBot.cs
                             }
                         }
                     }
+                }
                 }
                 CloseProgram:
                 // Close all streams
