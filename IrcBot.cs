@@ -27,7 +27,7 @@ namespace IrcBot.cs
         private static string NICK = "csbot";
         // Channel to join
         private static string CHANNEL = "#csbot";
-        private static string KEY = "key";
+        private static string KEY = "";
         private static string CHANNEL2 = "#freenode";
         // StreamWriter is declared here so that PingSender can access it
         public static StreamWriter writer;
