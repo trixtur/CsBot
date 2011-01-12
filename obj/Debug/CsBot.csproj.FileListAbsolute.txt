@@ -1,0 +1,5 @@
+D:\Documents and Settings\benjaminp\My Documents\Visual Studio 2005\Projects\CsBot\CsBot\obj\Debug\CsBot.exe
+D:\Documents and Settings\benjaminp\My Documents\Visual Studio 2005\Projects\CsBot\CsBot\obj\Debug\CsBot.pdb
+D:\Documents and Settings\benjaminp\My Documents\Visual Studio 2005\Projects\CsBot\CsBot\bin\Debug\CsBot.exe
+D:\Documents and Settings\benjaminp\My Documents\Visual Studio 2005\Projects\CsBot\CsBot\bin\Debug\CsBot.pdb
+D:\Documents and Settings\benjaminp\My Documents\Visual Studio 2005\Projects\CsBot\CsBot\obj\Debug\ResolveAssemblyReference.cache
