@@ -56,7 +56,7 @@ namespace IrcBot.cs
                 reader = new StreamReader(stream);
                 writer = new StreamWriter(stream);
                 // Start PingSender thread
-                if(Configured)
+                if(configured)
                 {
                 ping = new PingSender.cs.PingSender();
                 ping.Start();
