@@ -1,3 +1,6 @@
 This is an IRC bot written in C# with several IRC/text based games built in.
 It also has several commands that allow it to be controlled by the channel
 users.
+
+
+This project will not build as-is, you must configure it by editing the Member Variables inside of the IrcBot class in IrcBot.cs before the project will build correctly.
