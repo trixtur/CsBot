@@ -5,4 +5,5 @@ users.
 
 This project will not build as-is, you must configure it by editing the Member Variables inside of the IrcBot class in IrcBot.cs before the project will build correctly.
 
+
 Once configured set the "configured" variable to true so that the bot will work properly.
