@@ -1082,11 +1082,11 @@ namespace CsBot
             HandleMessage(":~rps", m_fromChannel, m_addresser);
         }
 
-        public void LastMessage(string user, string inputLine)
+        public void LastMessage(string user, string inputLine, string f_channel)
         {
             if (m_users.hasUser(user))
             {
-                string message = inputLine.Substring(inputLine.LastIndexOf(CHANNEL + " :") + CHANNEL.Length + 2);
+                string message = inputLine.Substring(inputLine.LastIndexOf(f_channel + " :") + f_channel.Length + 2);
                 m_users.addUserLastMessage(user, message);
             }
         }
