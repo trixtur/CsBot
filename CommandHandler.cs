@@ -9,13 +9,13 @@ namespace CsBot
 {
     class CommandHandler
     {
-        private static string NICK = "Be|\\|der";
+        private static string NICK = System.Configuration.ConfigurationSettings.AppSettings["Nick"];
         private static int DICE = 6;
         public static StreamWriter writer;
         public static StreamReader reader;
         private static string m_addresser = "";
         private static users m_users;
-        private static string CHANNEL = "#payne";
+        private static string CHANNEL = System.Configuration.ConfigurationSettings.AppSettings["Channel1"];
         private static string m_fromChannel = CHANNEL;
         private static bool FarkleInSession = false;
         private static Dictionary<int, string> FarkleMembers = new Dictionary<int, string>();
