@@ -16,20 +16,21 @@ namespace IrcBot.cs
     class IrcBot
     {
         // Irc server to connect
-        public static string SERVER = "127.0.0.1";
-        //public static string SERVER = "chat.freenode.net";
-        public static string PASSWORD = "";
+        public static string SERVER = System.Configuration.ConfigurationSettings.AppSettings["Server"];
+        public static string PASSWORD = System.Configuration.ConfigurationSettings.AppSettings["Password"];
         // Irc server's port (6667 is default port)
-        private static int PORT = 6667;
-        // User information defined in RFC 2812 (Internet Relay Chat: Client Protocol) is sent to irc server
-        private static string USER = "USER csbot 127.0.0.1 localhost :csbot";
+        private static int PORT = 0;
+        private static bool state = int.TryParse(System.Configuration.ConfigurationSettings.AppSettings["Port"], out PORT);
         // Bot's nickname
-        private static string NICK = "csbot";
+        private static string NICK = System.Configuration.ConfigurationSettings.AppSettings["Nick"];
         // Channel to join
-        private static string CHANNEL = "#csbot";
-        private static string KEY = "key";
-        private static string CHANNEL2 = "#foobar";
+        private static string CHANNEL = System.Configuration.ConfigurationSettings.AppSettings["Channel1"];
+        private static string KEY = System.Configuration.ConfigurationSettings.AppSettings["Key"];
+        private static string CHANNEL2 = System.Configuration.ConfigurationSettings.AppSettings["Channel2"];
         private static bool configured = false;
+        private static bool state2 = bool.TryParse(System.Configuration.ConfigurationSettings.AppSettings["Configured"], out configured);
+        // User information defined in RFC 2812 (Internet Relay Chat: Client Protocol) is sent to irc server
+        private static string USER = "USER "+NICK+" "+SERVER+" localhost :"+NICK;
         // StreamWriter is declared here so that PingSender can access it
         public static StreamWriter writer;
         public static StreamReader reader;
@@ -44,7 +45,20 @@ namespace IrcBot.cs
             string nickname;
             string fromChannel = CHANNEL;
             string addresser = "";
-            
+            if (!state)
+            {
+                Console.WriteLine("Error: Port must be written as a number. Example: 6667");
+                Console.WriteLine("Press a key to exit...");
+                Console.ReadKey();
+                return;
+            }
+            if (!state2)
+            {
+                Console.WriteLine("Error: Configured Boolean value should be \"true\" or \"false\"");
+                Console.WriteLine("Press a key to exit...");
+                Console.ReadKey();
+                return;
+            }
             try
             {
                 m_irc = new TcpClient();
@@ -180,7 +194,8 @@ namespace IrcBot.cs
                 else
                 {
                     Console.WriteLine("Error: You have not configured the program. See README for details.");
-                    Console.Read();
+                    Console.WriteLine("Press a key to exit...");
+                    Console.ReadKey();
                 }
                 CloseProgram:
                 // Close all streams
