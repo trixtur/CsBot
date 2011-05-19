@@ -2,8 +2,6 @@ This is an IRC bot written in C# with several IRC/text based games built in.
 It also has several commands that allow it to be controlled by the channel
 users.
 
-I have pre-compiled the code for you in the bin/Release directory. However, this binary will not run without pre-configuration. To do so edit the CsBot.exe.config file.
-
 You will need to come up with a name for your bot, and please keep it within your own private channels. Having the bot join other channels is against the rules and may result in your being banned from the IRC server. The Password key/value pair is for registering your bot's nick. Please do so...
 
 Note: Inside of CsBot.exe.config remember to set configured to "true"
