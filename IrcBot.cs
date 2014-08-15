@@ -29,6 +29,7 @@ namespace IrcBot.cs
         private static string CHANNEL = "#pyrous";
         private static string KEY = ""; //Example: jeff
         private static string CHANNEL2 = "#CsBot";
+        private static string COMMAND_START = "~";
         // StreamWriter is declared here so that PingSender can access it
         public static StreamWriter writer;
         public static StreamReader reader;
@@ -83,7 +84,7 @@ namespace IrcBot.cs
                         if (joined1 && !inputLine.EndsWith(fromChannel))
                         {
                             //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
-                            if (!inputLine.EndsWith(CHANNEL) && (parsedLine == null || !parsedLine.StartsWith(":~")))
+                            if (!inputLine.EndsWith(CHANNEL) && (parsedLine == null || !parsedLine.StartsWith(":" + COMMAND_START)))
                             {
                                 parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + CHANNEL.Length + 1).Trim();
                             }
@@ -91,7 +92,7 @@ namespace IrcBot.cs
                         if (joined2 && !inputLine.EndsWith(fromChannel))
                         {
                             //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
-                            if (!inputLine.EndsWith(CHANNEL2) && (parsedLine == null || !parsedLine.StartsWith(":~")))
+                            if (!inputLine.EndsWith(CHANNEL2) && (parsedLine == null || !parsedLine.StartsWith(":" + COMMAND_START)))
                             {
                                 parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + CHANNEL2.Length + 1).Trim();
                             }
@@ -112,13 +113,13 @@ namespace IrcBot.cs
                                     joined1 = true;
                                 else if (fromChannel == CHANNEL2)
                                     joined2 = true;
-                                ch.HandleMessage(":~say Hello All!", fromChannel, addresser);
+                                ch.HandleMessage(":" + COMMAND_START + "say Hello All!", fromChannel, addresser);
                                 continue;
                             }
                             // Welcome the nickname to channel by sending a notice
                             writer.WriteLine("NOTICE " + nickname + ": Hi " + nickname +
                             " and welcome to " + fromChannel + " channel!");
-                            ch.HandleMessage(":~say " + nickname + ": Hi and welcome to " + fromChannel + " channel!", fromChannel, addresser);
+                            ch.HandleMessage(":" + COMMAND_START + "say " + nickname + ": Hi and welcome to " + fromChannel + " channel!", fromChannel, addresser);
                             ch.AddUser(nickname);
                             writer.Flush();
                             // Sleep to prevent excess flood
@@ -129,12 +130,12 @@ namespace IrcBot.cs
                             identified = true;
                             Console.WriteLine(inputLine);
                         }
-                        else if (inputLine.Contains("~quit"))
+                        else if (inputLine.Contains(COMMAND_START + "quit"))
                         {
                             ping.Stop();
                             goto CloseProgram;
                         }
-                        else if (inputLine.Contains("~") && parsedLine != null && parsedLine.StartsWith(":~"))
+                        else if (inputLine.Contains(COMMAND_START) && parsedLine != null && parsedLine.StartsWith(":" + COMMAND_START))
                         {
                             addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
                             fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
@@ -159,16 +160,17 @@ namespace IrcBot.cs
                         }
                         else if (inputLine.Contains("PONG") && (joined1 || joined2) && !identified)
                         {
-                            ch.HandleMessage(":~say identify " + PASSWORD, "NickServ", addresser);
+                            ch.HandleMessage(":" + COMMAND_START + "say identify " + PASSWORD, "NickServ", addresser);
                         }
                         else if (inputLine.Contains(NICK) && inputLine.Contains("PRIVMSG") && (inputLine.Contains("rock") || inputLine.Contains("paper") || inputLine.Contains("scissors")))
                         {
+                            Console.WriteLine(inputLine);
                             addresser = inputLine.Substring(inputLine.IndexOf(":") + 1, inputLine.IndexOf("!") - inputLine.IndexOf(":") - 1);
                             string choice = inputLine.Substring(inputLine.LastIndexOf(":") + 1);
                             ch.DirectRoShamBo(choice);
 
                         }
-                        else if (inputLine.Contains(NICK) && inputLine.Contains("PRIVMSG") && inputLine.Contains(":~"))
+                        else if (inputLine.Contains(NICK) && inputLine.Contains("PRIVMSG") && inputLine.Contains(":" + COMMAND_START))
                         {
                             addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
                             string command = inputLine.Substring(inputLine.LastIndexOf(":"));

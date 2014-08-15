@@ -43,6 +43,22 @@ namespace CsBot
             return false;
         }
 
+        public bool isOpponentPlayingRPS(string addresser, out string playing_user) {
+            Dictionary<string, user>.KeyCollection.Enumerator e = m_users.Keys.GetEnumerator();
+            e.MoveNext();
+            for (int i = 0; i < m_users.Count; i++)
+            {
+                if (m_users[e.Current].RPSFlag && e.Current != addresser)
+                {
+                    playing_user = e.Current;
+                    return true;
+                }
+                e.MoveNext();
+            }
+            playing_user = string.Empty;
+            return false;
+        }
+
         public bool isPlayingRPS(string current_user)
         {
             return m_users[current_user].RPSFlag;

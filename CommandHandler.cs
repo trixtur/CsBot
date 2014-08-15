@@ -15,7 +15,9 @@ namespace CsBot
         public static StreamReader reader;
         private static string m_addresser = "";
         private static users m_users;
+        private const string COMMAND_START = "~";
         private static string CHANNEL = "#pyrous";
+        private static string CHANNEL2 = "#CsBot";
         private static string m_fromChannel = CHANNEL;
         private static bool FarkleInSession = false;
         private static Dictionary<int, string> FarkleMembers = new Dictionary<int, string>();
@@ -57,6 +59,7 @@ namespace CsBot
                 s = s.Replace(" me ", " " + m_addresser + " ");
             if (s.Contains(" " + NICK + " "))
                 s = s.Replace(" " + NICK + " ", " me ");
+            Console.WriteLine("PRIVMSG " + c + " :" + s);
             writer.WriteLine("PRIVMSG " + c + " :" + s);
             writer.Flush();
         }
@@ -75,6 +78,7 @@ namespace CsBot
                 s = s.Replace(" me ", " " + m_addresser + " ");
             if (s.Contains(" " + NICK + " "))
                 s = s.Replace(" " + NICK + " ", " me ");
+            Console.WriteLine("PRIVMSG " + m_fromChannel + " :" + s);
             writer.WriteLine("PRIVMSG " + m_fromChannel + " :" + s);
             writer.Flush();
         }
@@ -94,7 +98,7 @@ namespace CsBot
 
         public void HandleMessage(string command, string fromChannel, string addresser)
         {
-            Console.WriteLine("Handlind message: " + command + " : " + fromChannel + " : " + addresser);
+            Console.WriteLine("Handling message: " + command + " : " + fromChannel + " : " + addresser);
             m_fromChannel = fromChannel;
             m_addresser = addresser;
             int endCommand = command.IndexOf(" ") - 1;
@@ -103,29 +107,29 @@ namespace CsBot
             string fixedCommand = command.Substring(1, endCommand);
             if (command.Length == endCommand + 1)
             {
-                if (fixedCommand.StartsWith("~s"))
+                if (fixedCommand.StartsWith(COMMAND_START + "s"))
                 {
                     fixedCommand = fixedCommand.Substring(2);
-                    command = "~s "+fixedCommand;
-                    fixedCommand = "~s";
+                    command = COMMAND_START + "s "+fixedCommand;
+                    fixedCommand = COMMAND_START + "s";
                     endCommand = 2;
                 }
             }
-            if (fixedCommand.StartsWith("~1"))
+            if (fixedCommand.StartsWith(COMMAND_START + "1"))
             {
-                fixedCommand = "~say";
-                command = command.Replace("~1", "~say in " + CHANNEL);
+                fixedCommand = COMMAND_START + "say";
+                command = command.Replace(COMMAND_START + "1", COMMAND_START + "say in " + CHANNEL);
                 endCommand = fixedCommand.Length;
             }
-            if (fixedCommand.StartsWith("~2"))
+            if (fixedCommand.StartsWith(COMMAND_START + "2"))
             {
-                fixedCommand = "~emote";
-                command = command.Replace("~2", "~emote in " + CHANNEL);
+                fixedCommand = COMMAND_START + "emote";
+                command = command.Replace(COMMAND_START + "2", COMMAND_START + "emote in " + CHANNEL);
                 endCommand = fixedCommand.Length;
             }
             switch (fixedCommand)
             {
-                case "~insult":
+                case COMMAND_START + "insult":
                     if (command.Length == endCommand + 1)
                     {
                         Say(m_addresser + ": Who do you want " + NICK + " to insult?");
@@ -146,7 +150,7 @@ namespace CsBot
                         }
                     }
                     break;
-                case "~praise":
+                case COMMAND_START + "praise":
                     if (command.Length == endCommand + 1)
                     {
                         Say(m_addresser + ": Who do you want " + NICK + " to praise?");
@@ -165,7 +169,7 @@ namespace CsBot
                         }
                     }
                     break;
-                case "~apb":
+                case COMMAND_START + "apb":
                     if (command.Length == endCommand + 1)
                     {
                         Say(m_addresser + ": Who do you want " + NICK + " to find?");
@@ -184,7 +188,7 @@ namespace CsBot
                         }
                     }
                     break;
-                case "~caffeine":
+                case COMMAND_START + "caffeine":
                     if (command.Length == endCommand + 1)
                     {
                         Say("/me walks over to " + m_addresser + " and gives them a shot of caffeine straight into the blood stream.");
@@ -206,7 +210,7 @@ namespace CsBot
                         }
                     }
                     break;
-                case "~say":
+                case COMMAND_START + "say":
                     if (command.Length == endCommand + 1)
                     {
                         Say(m_addresser + ": What did you want " + NICK + " to say?");
@@ -229,7 +233,7 @@ namespace CsBot
                         }
                     }
                     break;
-                case "~emote":
+                case COMMAND_START + "emote":
                     if (command.Length == endCommand + 1)
                     {
                         Say(m_addresser + ": What did you want " + NICK + " to emote?");
@@ -252,7 +256,7 @@ namespace CsBot
                         }
                     }
                     break;
-                case "~roll":
+                case COMMAND_START + "roll":
                     int d1, d2, total;
                     Random r = new Random();
                     d1 = r.Next(1, DICE);
@@ -261,7 +265,7 @@ namespace CsBot
                     total = d1 + d2;
                     Say(m_addresser + " rolled a " + d1.ToString() + " and a " + d2.ToString() + " for a total of " + total.ToString());
                     break;
-                case "~rps":
+                case COMMAND_START + "rps":
                     if (command.Length == endCommand + 1 && m_users.RPSValue(m_addresser) == -2)
                     {
                         Say("/me whispers something to " + m_addresser + ".");
@@ -269,10 +273,11 @@ namespace CsBot
                     }
                     else if (m_users.RPSValue(m_addresser) == -2)
                     {
-                        Say("Please just use ~rps as a single command. Thanks!");
+                        Say("Please just use " + COMMAND_START + "rps as a single command. Thanks!");
                     }
                     string opponent;
-                    bool isPlaying = m_users.isPlayingRPS(out opponent);
+                    bool isPlaying = m_users.isOpponentPlayingRPS(m_addresser, out opponent); //TODO: This needs to look for a player otherthan myself. Not the first person in the list.
+                    Console.WriteLine("isPlaying: " + isPlaying + " opponent: " + opponent);
                     if (isPlaying && (!opponent.Equals(m_addresser)) && m_users.RPSValue(m_addresser) != -2 && m_users.RPSValue(opponent) != -2)
                     {
                         int opponent_throw = m_users.RPSValue(opponent);
@@ -294,23 +299,23 @@ namespace CsBot
                         else if (opponent_throw == (int)RoShamBo.Rock && my_throw == (int)RoShamBo.Paper)
                             Say(m_addresser + " has beaten " + opponent + " at a game of Rock, Paper, Scissors.");
                     }
-                    else if (!opponent.Equals(m_addresser) && !m_users.isPlayingRPS(m_addresser))
+                    else if (opponent.Equals(string.Empty) && !m_users.isPlayingRPS(m_addresser))
                     {
                         Say(m_addresser + " is looking for an opponent in Rock, Paper, Scissors.");
                     }
                     break;
-                case "~farklehelp":
+                case COMMAND_START + "farklehelp":
                     Say("To play farkle you have the following commands:", m_addresser);
-                    Say("~farkle Rolls at the start of game play", m_addresser);
+                    Say(COMMAND_START + "farkle Rolls at the start of game play", m_addresser);
                     Say("and is used when all rolled dice are scoring.", m_addresser);
-                    Say("~farkle n #  Re-rolls # of dice, and keeps the highest of the rest.", m_addresser);
-                    Say("~farkle y Keeps all dice and ends your turn.", m_addresser);
-                    Say("~farklescore <player> Returns your score or players if provided.", m_addresser);
-                    Say("~joinfarkle Join a new game of farkle.", m_addresser);
-                    Say("~farklehelp This help information.", m_addresser);
-                    Say("~farkelforfeit To stop in the middle of a game.", m_addresser);
+                    Say(COMMAND_START + "farkle n #  Re-rolls # of dice, and keeps the highest of the rest.", m_addresser);
+                    Say(COMMAND_START + "farkle y Keeps all dice and ends your turn.", m_addresser);
+                    Say(COMMAND_START + "farklescore <player> Returns your score or players if provided.", m_addresser);
+                    Say(COMMAND_START + "joinfarkle Join a new game of farkle.", m_addresser);
+                    Say(COMMAND_START + "farklehelp This help information.", m_addresser);
+                    Say(COMMAND_START + "farkelforfeit To stop in the middle of a game.", m_addresser);
                     break;
-                case "~farkleforfeit":
+                case COMMAND_START + "farkleforfeit":
                     if(m_users.isPlayingFarkle(m_addresser))
                     {
                         m_users.SetFarkleFlag(m_addresser, false);
@@ -343,7 +348,7 @@ namespace CsBot
                         }
                     }
                     break;
-                case "~farklescore":
+                case COMMAND_START + "farklescore":
                     if (command.Length == endCommand + 1)
                         Say(m_addresser + " your score is " + m_users.FarkleValue(m_addresser) + ".");
                     else
@@ -358,7 +363,7 @@ namespace CsBot
                         }
                     }
                     break;
-                case "~farkle":
+                case COMMAND_START + "farkle":
                     if (m_users.FarkleValue(m_addresser) >= 5000 || FarkleMembers.Count == 1)
                     {
                         Say(m_addresser + " won with " + m_users.FarkleValue(m_addresser) + " points!!!");
@@ -390,13 +395,13 @@ namespace CsBot
                         }
                         if (FarkleMembers.Count < 2)
                         {
-                            Say("You need atleast 2 people to play. Use ~joinfarkle to join the game.");
+                            Say("You need atleast 2 people to play. Use " + COMMAND_START + "joinfarkle to join the game.");
                             break;
                         }
                         if (DiceToThrow == 6 && m_users.GetFarkleToken(m_addresser) && dice.Count != 0)
                         {
                             Say(m_addresser + " you have already rolled once, instead answer the question.", m_addresser);
-                            Say(m_addresser + " use ~farkle n # to rethrow dice.", m_addresser);
+                            Say(m_addresser + " use " + COMMAND_START + "farkle n # to rethrow dice.", m_addresser);
                             break;
                         }
                         if (DiceToThrow == 0 && m_users.GetFarkleToken(m_addresser))
@@ -462,7 +467,7 @@ namespace CsBot
                         m_users.SetFarkleToken(FarkleMembers[FarkleUser], true);
                         return;
                     }
-                    else if(command.Substring(endCommand + 2).Trim().ToLower().Contains("n") && command.Trim().ToLower().Contains("~farkle n "))
+                    else if(command.Substring(endCommand + 2).Trim().ToLower().Contains("n") && command.Trim().ToLower().Contains(COMMAND_START + "farkle n "))
                     {
                         if (m_users.isPlayingFarkle(m_addresser) == false || !m_users.GetFarkleToken(m_addresser))
                         {
@@ -480,11 +485,11 @@ namespace CsBot
                         int tempPartDice = 0;
                         bool possible = true;
                         int whileItterations = 1;
-                        command = command.Replace(":~farkle n ", "");
+                        command = command.Replace(":" + COMMAND_START + "farkle n ", "");
                         if (FarkleDiceAllScoring())
                         {
                             //FarkleTotal += TempFarkleTotal;
-                            Say(m_addresser + " all dice scoring, so added " + FarkleTotal + " to your score ~farkle to continue.");
+                            Say(m_addresser + " all dice scoring, so added " + FarkleTotal + " to your score " + COMMAND_START + "farkle to continue.");
                             DiceToThrow = 0;
                             break;
                         }
@@ -590,7 +595,7 @@ namespace CsBot
                     {
                         if (!m_users.GetFarkleToken(m_addresser) || TempFarkleTotal != 0 || FarkleTotal != 0)
                         {
-                            Say(m_addresser + " either you do not have the token or you need to type ~farkle y/~farkle n #.", m_addresser);
+                            Say(m_addresser + " either you do not have the token or you need to type " + COMMAND_START + "farkle y/" + COMMAND_START + "farkle n #.", m_addresser);
                             break;
                         }
                         m_users.FarkleValue(m_addresser, FarkleTotal);
@@ -624,7 +629,7 @@ namespace CsBot
                     if(!FarkleInSession)
                         FarkleInSession = true;
                     break;
-                case "~joinfarkle":
+                case COMMAND_START + "joinfarkle":
                     if (!FarkleInSession)
                     {
                         m_users.ClearFarkleScores();
@@ -635,7 +640,7 @@ namespace CsBot
                         }
                         if (!m_users.isPlayingFarkle())
                         {
-                            Say(m_addresser + " has started a game of farkle, to join type ~joinfarkle");
+                            Say(m_addresser + " has started a game of farkle, to join type " + COMMAND_START + "joinfarkle");
                             m_users.SetFarkleToken(m_addresser, true);
                         }
                     }
@@ -648,7 +653,7 @@ namespace CsBot
                     FarkleMembers.Add(++NumOfFarkleMembers, m_addresser);
                     m_users.SetFarkleFlag(m_addresser, true);
                     break;
-                case "~s":
+                case COMMAND_START + "s":
                     if (command.Length == endCommand + 1)
                     {
                         Say(m_addresser + ": What did you want " + NICK + " to replace?");
@@ -662,7 +667,7 @@ namespace CsBot
                         Say(m_addresser + " meant: " + lastSaid);
                     }
                     break;
-                case "~getfeeds":
+                case COMMAND_START + "getfeeds":
                     StreamReader reader;
                     WebRequest rss;
                     if (command.Length == endCommand + 1)
@@ -675,7 +680,6 @@ namespace CsBot
                     }
                     Stream ansstream;
                     WebResponse ans;
-                    byte[] ansbytes = new byte[30];
                     string stringans;
                     int timer = 0;
                     string output = null;
@@ -1033,7 +1037,11 @@ namespace CsBot
                     Say("Valid options are either rock, paper, or scissors.", m_addresser);
                     break;
             }
-            HandleMessage(":~rps", m_fromChannel, m_addresser);
+            if (m_fromChannel != CHANNEL && m_fromChannel != CHANNEL2) {
+                m_fromChannel = CHANNEL;
+            }
+
+            HandleMessage(":" + COMMAND_START + "rps", m_fromChannel, m_addresser);
         }
 
         public void LastMessage(string user, string inputLine)
