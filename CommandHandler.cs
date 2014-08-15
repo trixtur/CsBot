@@ -9,13 +9,13 @@ namespace CsBot
 {
     class CommandHandler
     {
-        private static string NICK = System.Configuration.ConfigurationSettings.AppSettings["Nick"];
+        private static string NICK = "Be|\\|der";
         private static int DICE = 6;
         public static StreamWriter writer;
         public static StreamReader reader;
         private static string m_addresser = "";
         private static users m_users;
-        private static string CHANNEL = System.Configuration.ConfigurationSettings.AppSettings["Channel1"];
+        private static string CHANNEL = "#pyrous";
         private static string m_fromChannel = CHANNEL;
         private static bool FarkleInSession = false;
         private static Dictionary<int, string> FarkleMembers = new Dictionary<int, string>();
@@ -25,7 +25,6 @@ namespace CsBot
         private static int FarkleTotal;
         private static int TempFarkleTotal;
         private static int FarkleUser = 1;
-        private static bool greetings = false;
         private enum RoShamBo { Rock, Paper, Scissors };
 
 
@@ -93,21 +92,9 @@ namespace CsBot
             return null;
         }
 
-        public void Greet(ref StreamWriter writer, string nickname, string fromChannel)
-        {
-            if (greetings)
-            {
-                // Welcome the nickname to channel by sending a notice
-                writer.WriteLine("NOTICE " + nickname + ": Hi " + nickname +
-                " and welcome to " + fromChannel + " channel!");
-                HandleMessage(":~say " + nickname + ": Hi and welcome to " + fromChannel + " channel!", fromChannel, nickname);
-                writer.Flush();
-            }
-            AddUser(nickname);
-        }
-
         public void HandleMessage(string command, string fromChannel, string addresser)
         {
+            Console.WriteLine("Handlind message: " + command + " : " + fromChannel + " : " + addresser);
             m_fromChannel = fromChannel;
             m_addresser = addresser;
             int endCommand = command.IndexOf(" ") - 1;
@@ -127,13 +114,13 @@ namespace CsBot
             if (fixedCommand.StartsWith("~1"))
             {
                 fixedCommand = "~say";
-                command = command.Replace("~1", "~say in #payne");
+                command = command.Replace("~1", "~say in " + CHANNEL);
                 endCommand = fixedCommand.Length;
             }
             if (fixedCommand.StartsWith("~2"))
             {
                 fixedCommand = "~emote";
-                command = command.Replace("~2", "~emote in #payne");
+                command = command.Replace("~2", "~emote in " + CHANNEL);
                 endCommand = fixedCommand.Length;
             }
             switch (fixedCommand)
@@ -240,25 +227,6 @@ namespace CsBot
                         {
                             Say(toSay, m_fromChannel);
                         }
-                    }
-                    break;
-                case "~greet":
-                    if (command.Length == endCommand + 1)
-                    {
-                        Say(m_addresser + ": Did you want greetings on or off?");
-                    }
-                    else
-                    {
-                        if (command.Substring(endCommand + 2).Trim().ToLower() == "on")
-                        {
-                            greetings = true;
-                        }
-                        else if (command.Substring(endCommand + 2).Trim().ToLower() == "off")
-                        {
-                            greetings = false;
-                        }
-                        else
-                            Say(m_addresser + ": Greetings can either be on or off.");
                     }
                     break;
                 case "~emote":
@@ -391,7 +359,6 @@ namespace CsBot
                     }
                     break;
                 case "~farkle":
-                    int test;
                     if (m_users.FarkleValue(m_addresser) >= 5000 || FarkleMembers.Count == 1)
                     {
                         Say(m_addresser + " won with " + m_users.FarkleValue(m_addresser) + " points!!!");
@@ -423,12 +390,13 @@ namespace CsBot
                         }
                         if (FarkleMembers.Count < 2)
                         {
-                            Say("You need at least 2 people to play. Use ~joinfarkle to join the game.");
+                            Say("You need atleast 2 people to play. Use ~joinfarkle to join the game.");
                             break;
                         }
                         if (DiceToThrow == 6 && m_users.GetFarkleToken(m_addresser) && dice.Count != 0)
                         {
                             Say(m_addresser + " you have already rolled once, instead answer the question.", m_addresser);
+                            Say(m_addresser + " use ~farkle n # to rethrow dice.", m_addresser);
                             break;
                         }
                         if (DiceToThrow == 0 && m_users.GetFarkleToken(m_addresser))
@@ -436,11 +404,6 @@ namespace CsBot
                             Say(m_addresser + " congratulations on all dice getting a scoring number.");
                             dice.Clear();
                             DiceToThrow = 6;
-                        }
-                        if(!FarkleDiceAllScoring() && dice.Count > 0)
-                        {
-                            Say(m_addresser + " use ~farkle n # to rethrow dice.", m_addresser);
-                            break;
                         }
                         FarkleRoll();
                         
@@ -527,9 +490,7 @@ namespace CsBot
                         }
                         foreach (int die in dice.Keys)
                         {
-                            int.TryParse(command, out test);
-                            if (test == 0) int.TryParse(command.Split(' ')[0], out test);
-                            if (FarkleValueCheck(die, DiceToThrow - test) > 0)
+                            if (FarkleValueCheck(die, DiceToThrow - int.Parse(command)) > 0)
                             {
                                 possible = true;
                                 break;
@@ -546,9 +507,7 @@ namespace CsBot
                         }
                         while (diceToRemove > 0 && whileItterations < 10)
                         {
-                            int.TryParse(command, out test);
-                            if (test == 0) int.TryParse(command.Split(' ')[0], out test);
-                            diceToRemove = DiceToThrow - test;
+                            diceToRemove = DiceToThrow - int.Parse(command);
                             foreach (int die in dice.Keys)
                             {
                                 if (highestScoring < FarkleValueCheck(die, diceToRemove))
@@ -562,7 +521,7 @@ namespace CsBot
                                 if (diceToRemove <= 0)
                                 {
                                     Say(m_addresser + " you cannot remove that many dice.", m_addresser);
-                                    goto BadAnswer;
+                                    return;
                                 }
                                 else if (dice[tempPartDice] == diceToRemove)
                                 {
@@ -622,10 +581,8 @@ namespace CsBot
                         {
                             DiceToThrow += dice[die];
                         }
-                        int.TryParse(command, out test);
-                        if (test == 0) int.TryParse(command.Split(' ')[0], out test);
-                        if (DiceToThrow <= test)
-                            DiceToThrow = test;
+                        if (DiceToThrow <= int.Parse(command))
+                            DiceToThrow = int.Parse(command);
                         dice.Clear();
                         FarkleRoll();
                     }
@@ -787,8 +744,6 @@ namespace CsBot
                 default:
                     Console.WriteLine("\n" + fixedCommand);
                     break;
-                BadAnswer:
-                    return;
             }
         }
 
@@ -819,7 +774,6 @@ namespace CsBot
             for (int i = 0; i < DiceToThrow; i++)
             {
                 int tempValue;
-                dieRandom = new Random();
                 temp = (dieRandom.Next(1, 100)%6) + 1;
                 if (dice.ContainsKey(temp))
                 {
@@ -1082,11 +1036,11 @@ namespace CsBot
             HandleMessage(":~rps", m_fromChannel, m_addresser);
         }
 
-        public void LastMessage(string user, string inputLine, string f_channel)
+        public void LastMessage(string user, string inputLine)
         {
             if (m_users.hasUser(user))
             {
-                string message = inputLine.Substring(inputLine.LastIndexOf(f_channel + " :") + f_channel.Length + 2);
+                string message = inputLine.Substring(inputLine.LastIndexOf(CHANNEL + " :") + CHANNEL.Length + 2);
                 m_users.addUserLastMessage(user, message);
             }
         }

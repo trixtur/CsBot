@@ -16,27 +16,24 @@ namespace IrcBot.cs
     class IrcBot
     {
         // Irc server to connect
-        public static string SERVER = System.Configuration.ConfigurationSettings.AppSettings["Server"];
-        public static string PASSWORD = System.Configuration.ConfigurationSettings.AppSettings["Password"];
+        //public static string SERVER = "10.87.183.29";
+        public static string SERVER = "kr0w.com"; //"chat.freenode.net";
+        public static string PASSWORD = "m1b0t";
         // Irc server's port (6667 is default port)
-        private static int PORT = 0;
-        private static bool state = int.TryParse(System.Configuration.ConfigurationSettings.AppSettings["Port"], out PORT);
-        // Bot's nickname
-        private static string NICK = System.Configuration.ConfigurationSettings.AppSettings["Nick"];
-        // Channel to join
-        private static string CHANNEL = System.Configuration.ConfigurationSettings.AppSettings["Channel1"];
-        private static string KEY = System.Configuration.ConfigurationSettings.AppSettings["Key"];
-        private static string CHANNEL2 = System.Configuration.ConfigurationSettings.AppSettings["Channel2"];
-        private static bool configured = false;
-        private static bool state2 = bool.TryParse(System.Configuration.ConfigurationSettings.AppSettings["Configured"], out configured);
+        private static int PORT = 6667;
         // User information defined in RFC 2812 (Internet Relay Chat: Client Protocol) is sent to irc server
-        private static string USER = "USER "+NICK+" "+SERVER+" localhost :"+NICK;
+        private static string USER = "USER be|\\|der 198.91.54.142 kr0w :Be|\\|der";
+        // Bot's nickname
+        private static string NICK = "Be|\\|der";
+        // Channel to join
+        private static string CHANNEL = "#pyrous";
+        private static string KEY = ""; //Example: jeff
+        private static string CHANNEL2 = "#CsBot";
         // StreamWriter is declared here so that PingSender can access it
         public static StreamWriter writer;
         public static StreamReader reader;
         private static CommandHandler ch;
         private static TcpClient m_irc;
-        private static PingSender.cs.PingSender ping;
 
         static void Main(string[] args)
         {
@@ -45,20 +42,6 @@ namespace IrcBot.cs
             string nickname;
             string fromChannel = CHANNEL;
             string addresser = "";
-            if (!state)
-            {
-                Console.WriteLine("Error: Port must be written as a number. Example: 6667");
-                Console.WriteLine("Press a key to exit...");
-                Console.ReadKey();
-                return;
-            }
-            if (!state2)
-            {
-                Console.WriteLine("Error: Configured Boolean value should be \"true\" or \"false\"");
-                Console.WriteLine("Press a key to exit...");
-                Console.ReadKey();
-                return;
-            }
             try
             {
                 m_irc = new TcpClient();
@@ -69,133 +52,137 @@ namespace IrcBot.cs
                 stream = m_irc.GetStream();
                 reader = new StreamReader(stream);
                 writer = new StreamWriter(stream);
+                Console.WriteLine(USER);
                 // Start PingSender thread
-                if (configured)
+                PingSender.cs.PingSender ping = new PingSender.cs.PingSender();
+                ping.Start();
+                writer.WriteLine(USER);
+                writer.Flush();
+                writer.WriteLine("NICK " + NICK);
+                writer.Flush();
+                Console.WriteLine("NICK " + NICK);
+                ch = new CommandHandler(writer, reader);
+                //writer.WriteLine("JOIN " + CHANNEL + " " + KEY);
+                //writer.WriteLine("JOIN " + CHANNEL);
+                //writer.Flush();
+                //writer.WriteLine("JOIN " + CHANNEL2);
+                //writer.Flush();
+                while (true)
                 {
-                    ping = new PingSender.cs.PingSender();
-                    ping.Start();
-                    writer.WriteLine(USER);
-                    writer.Flush();
-                    writer.WriteLine("NICK " + NICK);
-                    writer.Flush();
-                    //writer.WriteLine("JOIN " + CHANNEL + " " + KEY);
-                    writer.WriteLine("JOIN " + CHANNEL);
-                    writer.Flush();
-                    writer.WriteLine("JOIN " + CHANNEL2);
-                    writer.Flush();
-                    ch = new CommandHandler(writer, reader);
-                    while (true)
+                    while ((inputLine = reader.ReadLine()) != null)
                     {
-                        while ((inputLine = reader.ReadLine()) != null)
+                        if( inputLine.Contains(CHANNEL) || inputLine.Contains(CHANNEL2))
+                        //if (inputLine.Contains(CHANNEL))
+                            fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
+                        string parsedLine = null;
+                        if (inputLine.Contains(NICK + " = " + CHANNEL) || inputLine.Contains(NICK + " = " + CHANNEL2))
+                        //if (inputLine.Contains(NICK + " = " + CHANNEL))
                         {
-                            if (inputLine.Contains(CHANNEL) || inputLine.Contains(CHANNEL2))
-                                fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
-                            string parsedLine = null;
-                            if (inputLine.Contains(NICK + " = " + CHANNEL) || inputLine.Contains(NICK + " = " + CHANNEL2))
+                            CsBot.CommandHandler.ParseUsers(inputLine);
+                        }
+                        if (joined1 && !inputLine.EndsWith(fromChannel))
+                        {
+                            //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
+                            if (!inputLine.EndsWith(CHANNEL) && (parsedLine == null || !parsedLine.StartsWith(":~")))
                             {
-                                CsBot.CommandHandler.ParseUsers(inputLine);
+                                parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + CHANNEL.Length + 1).Trim();
                             }
-                            if (joined1 && !inputLine.EndsWith(fromChannel))
+                        }
+                        if (joined2 && !inputLine.EndsWith(fromChannel))
+                        {
+                            //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
+                            if (!inputLine.EndsWith(CHANNEL2) && (parsedLine == null || !parsedLine.StartsWith(":~")))
                             {
-                                if (!inputLine.EndsWith(CHANNEL2) && (parsedLine == null || !parsedLine.StartsWith(":~")))
-                                {
-                                    parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + CHANNEL.Length + 1);
-                                }
+                                parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + CHANNEL2.Length + 1).Trim();
                             }
-                            if (joined2 && !inputLine.EndsWith(fromChannel))
-                            {
-                                if (!inputLine.EndsWith(CHANNEL2) && (parsedLine == null || !parsedLine.StartsWith(":~")))
-                                {
-                                    parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + CHANNEL2.Length + 1);
-                                }
-                            }
-                            if (!joined1 || !joined2)
-                            {
-                                Console.WriteLine(inputLine);
-                            }
-                            if (inputLine.EndsWith("JOIN :" + fromChannel))
-                            {
-                                // Parse nickname of person who joined the channel
-                                nickname = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                                if (nickname == NICK)
-                                {
-                                    if (fromChannel == CHANNEL)
-                                        joined1 = true;
-                                    else if (fromChannel == CHANNEL2)
-                                        joined2 = true;
-                                    ch.HandleMessage(":~say Hello All!", fromChannel, addresser);
-                                    continue;
-                                }
-                                ch.Greet(ref writer, nickname, fromChannel);
-                                // Sleep to prevent excess flood
-                                Thread.Sleep(2000);
-                            }
-                            else if (inputLine.StartsWith(":NickServ") && inputLine.Contains("You are now identified"))
-                            {
-                                identified = true;
-                                Console.WriteLine(inputLine);
-                            }
-                            else if (inputLine.Contains("~quit"))
-                            {
-                                ping.Stop();
-                                goto CloseProgram;
-                            }
-                            else if (inputLine.Contains("~") && parsedLine != null && parsedLine.StartsWith(":~"))
-                            {
-                                addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                                fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
-                                ch.HandleMessage(parsedLine, fromChannel, addresser);
-                            }
-                            else if (inputLine.StartsWith("PING :"))
-                            {
-                                writer.WriteLine("PONG :" + inputLine.Substring(inputLine.IndexOf(":") + 1));
-                                writer.Flush();
-                            }
-                            else if (inputLine.Contains("PONG") && (!joined1 || !joined2))
-                            {
-                                if (KEY != "")
-                                    writer.WriteLine("JOIN " + CHANNEL + " " + KEY);
-                                else
-                                {
-                                    writer.WriteLine("JOIN " + CHANNEL);
-                                }
-                                writer.Flush();
-                                writer.WriteLine("JOIN " + CHANNEL2);
-                                writer.Flush();
-                            }
-                            else if (inputLine.Contains("PONG") && (joined1 || joined2) && !identified)
-                            {
-                                ch.HandleMessage(":~say identify " + PASSWORD, "NickServ", addresser);
-                            }
-                            else if (inputLine.Contains(NICK) && inputLine.Contains("PRIVMSG") && (inputLine.Contains("rock") || inputLine.Contains("paper") || inputLine.Contains("scissors")))
-                            {
-                                addresser = inputLine.Substring(inputLine.IndexOf(":") + 1, inputLine.IndexOf("!") - inputLine.IndexOf(":") - 1);
-                                string choice = inputLine.Substring(inputLine.LastIndexOf(":") + 1);
-                                ch.DirectRoShamBo(choice);
+                        }
 
-                            }
-                            else if (inputLine.Contains(NICK) && inputLine.Contains("PRIVMSG") && inputLine.Contains(":~"))
+                        if (!joined1 || !joined2)
+                        {
+                            Console.WriteLine(inputLine);
+                        }
+
+                        if (inputLine.EndsWith("JOIN " + fromChannel))
+                        {
+                            // Parse nickname of person who joined the channel
+                            nickname = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+                            if (nickname == NICK)
                             {
-                                addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                                string command = inputLine.Substring(inputLine.LastIndexOf(NICK + " :") + NICK.Length + 1);
-                                ch.HandleMessage(command, addresser, addresser);
+                                if (fromChannel == CHANNEL)
+                                    joined1 = true;
+                                else if (fromChannel == CHANNEL2)
+                                    joined2 = true;
+                                ch.HandleMessage(":~say Hello All!", fromChannel, addresser);
+                                continue;
                             }
+                            // Welcome the nickname to channel by sending a notice
+                            writer.WriteLine("NOTICE " + nickname + ": Hi " + nickname +
+                            " and welcome to " + fromChannel + " channel!");
+                            ch.HandleMessage(":~say " + nickname + ": Hi and welcome to " + fromChannel + " channel!", fromChannel, addresser);
+                            ch.AddUser(nickname);
+                            writer.Flush();
+                            // Sleep to prevent excess flood
+                            Thread.Sleep(2000);
+                        }
+                        else if (inputLine.StartsWith(":NickServ") && inputLine.Contains("You are now identified"))
+                        {
+                            identified = true;
+                            Console.WriteLine(inputLine);
+                        }
+                        else if (inputLine.Contains("~quit"))
+                        {
+                            ping.Stop();
+                            goto CloseProgram;
+                        }
+                        else if (inputLine.Contains("~") && parsedLine != null && parsedLine.StartsWith(":~"))
+                        {
+                            addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+                            fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
+                            ch.HandleMessage(parsedLine, fromChannel, addresser);
+                        }
+                        else if (inputLine.StartsWith("PING :"))
+                        {
+                            writer.WriteLine("PONG :" + inputLine.Substring(inputLine.IndexOf(":") + 1));
+                            writer.Flush();
+                        }
+                        else if (inputLine.Contains("PONG") && (!joined1 || !joined2))
+                        {
+                            if (KEY != "")
+                                writer.WriteLine("JOIN " + CHANNEL + " " + KEY);
                             else
                             {
-                                if (inputLine.Contains("PRIVMSG") && inputLine.Contains("!"))
-                                {
-                                    string userName = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                                    ch.LastMessage(userName, inputLine);
-                                }
+                                writer.WriteLine("JOIN " + CHANNEL);
+                            }
+                            writer.Flush();
+                            writer.WriteLine("JOIN " + CHANNEL2);
+                            writer.Flush();
+                        }
+                        else if (inputLine.Contains("PONG") && (joined1 || joined2) && !identified)
+                        {
+                            ch.HandleMessage(":~say identify " + PASSWORD, "NickServ", addresser);
+                        }
+                        else if (inputLine.Contains(NICK) && inputLine.Contains("PRIVMSG") && (inputLine.Contains("rock") || inputLine.Contains("paper") || inputLine.Contains("scissors")))
+                        {
+                            addresser = inputLine.Substring(inputLine.IndexOf(":") + 1, inputLine.IndexOf("!") - inputLine.IndexOf(":") - 1);
+                            string choice = inputLine.Substring(inputLine.LastIndexOf(":") + 1);
+                            ch.DirectRoShamBo(choice);
+
+                        }
+                        else if (inputLine.Contains(NICK) && inputLine.Contains("PRIVMSG") && inputLine.Contains(":~"))
+                        {
+                            addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+                            string command = inputLine.Substring(inputLine.LastIndexOf(":"));
+                            ch.HandleMessage(command, addresser, addresser);
+                        }
+                        else
+                        {
+                            if (inputLine.Contains("PRIVMSG") && inputLine.Contains("!"))
+                            {
+                                string userName = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+                                ch.LastMessage(userName, inputLine);
                             }
                         }
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Error: You have not configured the program. See README for details.");
-                    Console.WriteLine("Press a key to exit...");
-                    Console.ReadKey();
                 }
                 CloseProgram:
                 // Close all streams
@@ -210,9 +197,8 @@ namespace IrcBot.cs
                 writer.Close();
                 reader.Close();
                 m_irc.Close();
-                ping.Stop();
                 // Show the exception, sleep for a while and try to establish a new connection to irc server
-                Console.WriteLine(e.ToString());
+                Console.WriteLine("Exception info: " + e.ToString());
                 Thread.Sleep(5000);
                 string[] argv = { };
                 Main(argv);
