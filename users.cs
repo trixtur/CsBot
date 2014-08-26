@@ -89,7 +89,7 @@ namespace CsBot
             return ans;
         }
 
-        public bool SomeoneHasFlag()
+        public bool SomeoneHasToken()
         {
             bool ans = false;
             foreach (string m in m_users.Keys)
@@ -125,10 +125,11 @@ namespace CsBot
 
         public void SetFarkleToken(string player, bool value)
         {
-            if (m_users.ContainsKey(player))
+            if (m_users.ContainsKey(player)) {
                 m_users[player].HasFarkleToken = value;
-            else
+            } else {
                 return;
+            }
         }
 
         public bool GetFarkleToken(string player)

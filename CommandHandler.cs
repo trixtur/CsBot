@@ -375,7 +375,7 @@ namespace CsBot
                         DeclareWinner();
                         break;
                     }
-                    if (!m_users.SomeoneHasFlag() && m_users.isPlayingFarkle())
+                    if (!m_users.SomeoneHasToken() && m_users.isPlayingFarkle())
                         m_users.SetFarkleToken(FarkleMembers[FarkleUser], true);
                     if (command.Length == endCommand + 1)
                     {
@@ -433,22 +433,21 @@ namespace CsBot
                         DiceToThrow = 6;
                         FarkleUser++;
                         string name = "";
-                        while (!m_users.hasUser(name))
-                        {
-                            while (FarkleUser < FarkleMembers.Count + 5)
-                            {
-                                FarkleMembers.TryGetValue(FarkleUser, out name);
-                                if (name == null)
-                                    name = "";
-                                if (m_users.hasUser(name))
-                                    break;
-                                FarkleUser++;
+                        bool found = false;
+                        foreach (string user in FarkleUser.Values) { //Get the next user in the list
+                            if (found) {
+                                name = user;
+                                break;
+                            } else if (user.Equals(m_addresser) {
+                                    found = true;
                             }
-                            if(!m_users.hasUser(name))
-                                FarkleUser = 1;
                         }
-                        Say(FarkleMembers[FarkleUser] + ", it is now your turn.");
-                        m_users.SetFarkleToken(FarkleMembers[FarkleUser], true);
+                        if (name = "") { //If we were at the end of the list.
+                            name = FarkleUser.Values.First();
+                        }
+
+                        Say(name + ", it is now your turn.");
+                        m_users.SetFarkleToken(name, true);
                         return;
                     }
                     else if(command.Substring(endCommand + 2).Trim().ToLower().Contains("n") && command.Trim().ToLower().Contains(COMMAND_START + "farkle n "))
@@ -598,17 +597,21 @@ namespace CsBot
                         TempFarkleTotal = 0;
                         DiceToThrow = 6;
                         FarkleUser++;
-                        if (FarkleMembers.ContainsKey(FarkleUser))
-                        {
-                            m_users.SetFarkleFlag(FarkleMembers[FarkleUser], true);
-                            Say(FarkleMembers[FarkleUser] + ", it is now your turn.");
+                        string name = "";
+                        bool found = false;
+                        foreach (string user in FarkleUser.Values) { //Get the next user in the list
+                            if (found) {
+                                name = user;
+                                break;
+                            } else if (user.Equals(m_addresser) {
+                                    found = true;
+                            }
                         }
-                        else
-                        {
-                            FarkleUser = 1;
-                            m_users.SetFarkleFlag(FarkleMembers[FarkleUser], true);
-                            Say(FarkleMembers[FarkleUser] + ", it is now your turn.");
+                        if (name = "") { //If we were at the end of the list.
+                            name = FarkleUser.Values.First();
                         }
+                        m_users.SetFarkleToken(name, true);
+                        Say(name + ", it is now your turn.");
                     }
 
                     if(!FarkleInSession)
