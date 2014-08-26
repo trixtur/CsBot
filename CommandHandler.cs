@@ -434,16 +434,22 @@ namespace CsBot
                         FarkleUser++;
                         string name = "";
                         bool found = false;
-                        foreach (string user in FarkleUser.Values) { //Get the next user in the list
-                            if (found) {
+                        foreach (string user in FarkleMembers.Values)
+                        { //Get the next user in the list
+                            if (found) 
+                            {
                                 name = user;
                                 break;
-                            } else if (user.Equals(m_addresser) {
+                            } else if (user.Equals(m_addresser))
+                            {
                                     found = true;
                             }
                         }
-                        if (name = "") { //If we were at the end of the list.
-                            name = FarkleUser.Values.First();
+                        if (name == "") { //If we were at the end of the list.
+                            foreach(string user in FarkleMembers.Values) {
+                                name = user;
+                                break;
+                            }
                         }
 
                         Say(name + ", it is now your turn.");
@@ -599,16 +605,22 @@ namespace CsBot
                         FarkleUser++;
                         string name = "";
                         bool found = false;
-                        foreach (string user in FarkleUser.Values) { //Get the next user in the list
-                            if (found) {
+                        foreach (string user in FarkleMembers.Values)
+                        { //Get the next user in the list
+                            if (found) 
+                            {
                                 name = user;
                                 break;
-                            } else if (user.Equals(m_addresser) {
+                            } else if (user.Equals(m_addresser))
+                            {
                                     found = true;
                             }
                         }
-                        if (name = "") { //If we were at the end of the list.
-                            name = FarkleUser.Values.First();
+                        if (name == "") { //If we were at the end of the list.
+                            foreach(string user in FarkleMembers.Values) {
+                                name = user;
+                                break;
+                            }
                         }
                         m_users.SetFarkleToken(name, true);
                         Say(name + ", it is now your turn.");
