@@ -364,18 +364,15 @@ namespace CsBot
                     }
                     break;
                 case COMMAND_START + "farkle":
+                    if (FarkleMembers.Count == 0)
+                    {
+                        Say(m_addresser + " no game in session.", m_addresser);
+                        break;
+                    }
+
                     if (m_users.FarkleValue(m_addresser) >= 5000 || FarkleMembers.Count == 1)
                     {
-                        Say(m_addresser + " won with " + m_users.FarkleValue(m_addresser) + " points!!!");
-                        foreach (int member in FarkleMembers.Keys)
-                        {
-                            m_users.SetFarkleFlag(FarkleMembers[member], false);
-                            m_users.SetFarkleToken(FarkleMembers[member], false);
-                        }
-                        NumOfFarkleMembers = 0;
-                        dice.Clear();
-                        FarkleMembers.Clear();
-                        FarkleInSession = false;
+                        DeclareWinner();
                         break;
                     }
                     if (!m_users.SomeoneHasFlag() && m_users.isPlayingFarkle())
@@ -398,7 +395,7 @@ namespace CsBot
                             Say("You need atleast 2 people to play. Use " + COMMAND_START + "joinfarkle to join the game.");
                             break;
                         }
-                        if (DiceToThrow == 6 && m_users.GetFarkleToken(m_addresser) && dice.Count != 0)
+                        if (DiceToThrow > 0 && m_users.GetFarkleToken(m_addresser) && dice.Count != 0)
                         {
                             Say(m_addresser + " you have already rolled once, instead answer the question.", m_addresser);
                             Say(m_addresser + " use " + COMMAND_START + "farkle n # to rethrow dice.", m_addresser);
@@ -413,27 +410,14 @@ namespace CsBot
                         FarkleRoll();
                         
                     }
-                    else if(command.Substring(endCommand + 2).Trim().ToLower() == "y" || command.Substring(endCommand + 2).Trim().ToLower() == "pass")
+                    else if(command.Substring(endCommand + 2).Trim().ToLower() == "y")
                     {
                         if (!FarkleInSession)
                         {
                             Say(m_addresser + " no game in session.", m_addresser);
                             break;
                         }
-                        if (m_users.FarkleValue(m_addresser) >= 5000 || FarkleMembers.Count == 1)
-                        {
-                            Say(m_addresser + " won with " + m_users.FarkleValue(m_addresser) + " points!!!");
-                            foreach (int member in FarkleMembers.Keys)
-                            {
-                                m_users.SetFarkleFlag(FarkleMembers[member], false);
-                                m_users.SetFarkleToken(FarkleMembers[member], false);
-                            }
-                            NumOfFarkleMembers = 0;
-                            dice.Clear();
-                            FarkleMembers.Clear();
-                            FarkleInSession = false;
 
-                        }
                         if (!m_users.GetFarkleToken(FarkleMembers[FarkleUser]) || dice.Count == 0)
                         {
                             Say(m_addresser + " you cannot keep something you do not have.", m_addresser);
@@ -469,6 +453,12 @@ namespace CsBot
                     }
                     else if(command.Substring(endCommand + 2).Trim().ToLower().Contains("n") && command.Trim().ToLower().Contains(COMMAND_START + "farkle n "))
                     {
+                        if (!FarkleInSession)
+                        {
+                            Say(m_addresser + " no game in session.", m_addresser);
+                            break;
+                        }
+
                         if (m_users.isPlayingFarkle(m_addresser) == false || !m_users.GetFarkleToken(m_addresser))
                         {
                             Say(m_addresser + " please don't try and throw dice on someone elses turn, wait until the end.", m_addresser);
@@ -495,7 +485,8 @@ namespace CsBot
                         }
                         foreach (int die in dice.Keys)
                         {
-                            if (FarkleValueCheck(die, DiceToThrow - int.Parse(command)) > 0)
+                            int number;
+                            if (int.TryParse(command, out number) && FarkleValueCheck(die, DiceToThrow - number) > 0)
                             {
                                 possible = true;
                                 break;
@@ -598,7 +589,14 @@ namespace CsBot
                             Say(m_addresser + " either you do not have the token or you need to type " + COMMAND_START + "farkle y/" + COMMAND_START + "farkle n #.", m_addresser);
                             break;
                         }
+                        FarkleTotal += TempFarkleTotal;
                         m_users.FarkleValue(m_addresser, FarkleTotal);
+                        m_users.SetFarkleToken(m_addresser, false);
+                        dice.Clear();
+                        Say(m_addresser + " you kept " + FarkleTotal + " for a total of " + m_users.FarkleValue(m_addresser) + ".");
+                        FarkleTotal = 0;
+                        TempFarkleTotal = 0;
+                        DiceToThrow = 6;
                         FarkleUser++;
                         if (FarkleMembers.ContainsKey(FarkleUser))
                         {
@@ -612,20 +610,7 @@ namespace CsBot
                             Say(FarkleMembers[FarkleUser] + ", it is now your turn.");
                         }
                     }
-                    if (m_users.FarkleValue(m_addresser) >= 5000 || FarkleMembers.Count == 1)
-                    {
-                        Say(m_addresser + " won with " + m_users.FarkleValue(m_addresser) + " points!!!");
-                        foreach (int member in FarkleMembers.Keys)
-                        {
-                            m_users.SetFarkleFlag(FarkleMembers[member], false);
-                            m_users.SetFarkleToken(FarkleMembers[member], false);
-                        }
-                        NumOfFarkleMembers = 0;
-                        dice.Clear();
-                        FarkleMembers.Clear();
-                        FarkleInSession = false;
 
-                    }
                     if(!FarkleInSession)
                         FarkleInSession = true;
                     break;
@@ -1051,6 +1036,34 @@ namespace CsBot
                 string message = inputLine.Substring(inputLine.LastIndexOf(CHANNEL + " :") + CHANNEL.Length + 2);
                 m_users.addUserLastMessage(user, message);
             }
+        }
+
+        private void DeclareWinner() {
+            bool tie = false;
+            string winner = m_addresser;
+            foreach(string user in FarkleMembers.Values) {
+                if(m_users.FarkleValue(user) >= 5000 && m_users.FarkleValue(user) > m_users.FarkleValue(winner)) {
+                    winner = user;
+                } else if (m_users.FarkleValue(user) >= 5000 && m_users.FarkleValue(user) == m_users.FarkleValue(winner) && !user.Equals(winner)) {
+                    winner = user;
+                    tie = true;
+                }
+            }
+            if (tie) {
+                Say("This match ended in a tie between " + m_addresser + " and " + winner + " at " 
+                        + m_users.FarkleValue(winner) + " points!!!");
+            } else {
+                Say(winner + " won with " + m_users.FarkleValue(winner) + " points!!!");
+            }
+            foreach (int member in FarkleMembers.Keys)
+            {
+                m_users.SetFarkleFlag(FarkleMembers[member], false);
+                m_users.SetFarkleToken(FarkleMembers[member], false);
+            }
+            NumOfFarkleMembers = 0;
+            dice.Clear();
+            FarkleMembers.Clear();
+            FarkleInSession = false;
         }
     }
 }

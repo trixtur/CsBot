@@ -172,5 +172,11 @@ namespace CsBot
         {
             return m_users[uname].Message;
         }
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            Dictionary<string, user>.KeyCollection.Enumerator e = m_users.Keys.GetEnumerator();
+            return e;
+        }
     }
 }
