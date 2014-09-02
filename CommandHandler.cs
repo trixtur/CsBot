@@ -258,9 +258,9 @@ namespace CsBot
                 case COMMAND_START + "roll":
                     int d1, d2, total;
                     Random r = new Random();
-                    d1 = r.Next(1, DICE);
+                    d1 = r.Next(1, DICE + 1);
                     Thread.Sleep(d1 * 100);
-                    d2 = r.Next(1, DICE);
+                    d2 = r.Next(1, DICE + 1);
                     total = d1 + d2;
                     Say(m_addresser + " rolled a " + d1.ToString() + " and a " + d2.ToString() + " for a total of " + total.ToString());
                     break;
