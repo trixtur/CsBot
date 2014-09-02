@@ -26,7 +26,6 @@ namespace CsBot
         private static Dictionary<int, int> dice = new Dictionary<int,int>();
         private static int FarkleTotal;
         private static int TempFarkleTotal;
-        private static int FarkleUser = 1;
         private enum RoShamBo { Rock, Paper, Scissors };
 
 
@@ -318,9 +317,35 @@ namespace CsBot
                 case COMMAND_START + "farkleforfeit":
                     if(m_users.isPlayingFarkle(m_addresser))
                     {
+                        bool hasToken = m_users.GetFarkleToken(m_addresser);
+                        Say(m_addresser + " forfeit.");
+
+                        bool found = false;
+                        string name = "";
+                        if (hasToken) {
+                            foreach (string user in FarkleMembers.Values)
+                            { //Get the next user in the list
+                                if (found) 
+                                {
+                                    name = user;
+                                    break;
+                                } else if (user.Equals(m_addresser))
+                                {
+                                    found = true;
+                                }
+                            }
+                            if (name == "") { //If we were at the end of the list.
+                                foreach(string user in FarkleMembers.Values) {
+                                    name = user;
+                                    break;
+                                }
+                            }
+                            m_users.SetFarkleToken(name, true);
+                            Say(name + ", it is now your turn.");
+                        }
+
                         m_users.SetFarkleFlag(m_addresser, false);
                         m_users.SetFarkleToken(m_addresser, false);
-                        Say(m_addresser + " forfeit.");
                         foreach (int member in FarkleMembers.Keys)
                         {
                             if (FarkleMembers[member] == m_addresser)
@@ -328,23 +353,6 @@ namespace CsBot
                                 FarkleMembers.Remove(member);
                                 break;
                             }
-                        }
-                        string name = m_addresser;
-                        {
-                            while (FarkleUser < FarkleMembers.Count + 5)
-                            {
-                                FarkleMembers.TryGetValue(FarkleUser, out name);
-                                if (name == null)
-                                    name = "";
-                                if (m_users.hasUser(name))
-                                {
-                                    Say(name + " it is now your turn.");
-                                    break;
-                                }
-                                FarkleUser++;
-                            }
-                            if (!m_users.hasUser(name))
-                                FarkleUser = 1;
                         }
                     }
                     break;
@@ -375,8 +383,22 @@ namespace CsBot
                         DeclareWinner();
                         break;
                     }
-                    if (!m_users.SomeoneHasToken() && m_users.isPlayingFarkle())
-                        m_users.SetFarkleToken(FarkleMembers[FarkleUser], true);
+
+                    /*if (!m_users.SomeoneHasToken() && m_users.isPlayingFarkle()) This shouldn't be needed
+                        m_users.SetFarkleToken(FarkleMembers[FarkleUser], true);*/
+
+                    if (!m_users.GetFarkleToken(m_addresser)) {
+                        Say(m_addresser + " that is someone else's dice.", m_addresser);
+                        break;
+                    }
+
+                    if (FarkleMembers.Count < 2)
+                    {
+                        Say("You need atleast 2 people to play. Use " + COMMAND_START + "joinfarkle to join the game.");
+                        break;
+                    }
+                    // Done with preliminary checks
+
                     if (command.Length == endCommand + 1)
                     {
                         if (FarkleDiceAllScoring() && m_users.GetFarkleToken(m_addresser) && TempFarkleTotal > 0)
@@ -384,16 +406,6 @@ namespace CsBot
                             FarkleTotal += TempFarkleTotal;
                             TempFarkleTotal = 0;
                             DiceToThrow = 0;
-                        }
-                        else if (!m_users.GetFarkleToken(m_addresser))
-                        {
-                            Say(m_addresser + " that is someone else's dice.", m_addresser);
-                            break;
-                        }
-                        if (FarkleMembers.Count < 2)
-                        {
-                            Say("You need atleast 2 people to play. Use " + COMMAND_START + "joinfarkle to join the game.");
-                            break;
                         }
                         if (DiceToThrow > 0 && m_users.GetFarkleToken(m_addresser) && dice.Count != 0)
                         {
@@ -418,7 +430,7 @@ namespace CsBot
                             break;
                         }
 
-                        if (!m_users.GetFarkleToken(FarkleMembers[FarkleUser]) || dice.Count == 0)
+                        if (!m_users.GetFarkleToken(m_addresser) || dice.Count == 0)
                         {
                             Say(m_addresser + " you cannot keep something you do not have.", m_addresser);
                             break;
@@ -431,7 +443,6 @@ namespace CsBot
                         FarkleTotal = 0;
                         TempFarkleTotal = 0;
                         DiceToThrow = 6;
-                        FarkleUser++;
                         string name = "";
                         bool found = false;
                         foreach (string user in FarkleMembers.Values)
@@ -564,11 +575,27 @@ namespace CsBot
                                 }
                                 else
                                 {
-                                    diceToRemove -= dice[tempPartDice];
+                                    if (dice[tempPartDice] > 3 && dice[tempPartDice] < 6)
+                                    {
+                                        diceToRemove -= 3;
+                                        for (int i = 0; i < 3; i++)
+                                            infoOutput += tempPartDice + ", ";
+                                        FarkleTotal += FarkleValueCheck(tempPartDice, dice[tempPartDice]);
+                                        dice[tempPartDice] -= 3;
+                                    }
+                                    else
+                                    {
+                                        diceToRemove -= dice[tempPartDice];
+                                        for (int i = 0; i < dice[tempPartDice]; i++)
+                                            infoOutput += tempPartDice + ", ";
+                                        FarkleTotal += FarkleValueCheck(tempPartDice, dice[tempPartDice]);
+                                        dice.Remove(tempPartDice);
+                                    }
+                                    /*diceToRemove -= dice[tempPartDice]; Old way that gave weird output, but ultimately worked
                                     for (int i = 0; i < dice[tempPartDice]; i++)
                                         infoOutput += tempPartDice + ", ";
                                     FarkleTotal += FarkleValueCheck(tempPartDice, dice[tempPartDice]);
-                                    dice.Remove(tempPartDice);
+                                    dice.Remove(tempPartDice);*/
                                 }
                             }
                             highestScoring = 0;
@@ -591,7 +618,7 @@ namespace CsBot
                     {
                         if (!m_users.GetFarkleToken(m_addresser) || TempFarkleTotal != 0 || FarkleTotal != 0)
                         {
-                            Say(m_addresser + " either you do not have the token or you need to type " + COMMAND_START + "farkle y/" + COMMAND_START + "farkle n #.", m_addresser);
+                            Say(m_addresser + " use " + COMMAND_START + "farkle y/" + COMMAND_START + "farkle n #.", m_addresser);
                             break;
                         }
                         FarkleTotal += TempFarkleTotal;
@@ -602,7 +629,6 @@ namespace CsBot
                         FarkleTotal = 0;
                         TempFarkleTotal = 0;
                         DiceToThrow = 6;
-                        FarkleUser++;
                         string name = "";
                         bool found = false;
                         foreach (string user in FarkleMembers.Values)
@@ -757,6 +783,8 @@ namespace CsBot
             {
                 if (FarkleValueCheck(die, dice[die]) == 0)
                     return false;
+                else if (die != 1 && die != 5 && dice[die] % 3 != 0)
+                    return false;
                 else if (dice.Count == 3 && !dice.ContainsValue(1) && !dice.ContainsValue(3))
                     return true;
                 else if (dice.Count == 6)
@@ -822,15 +850,27 @@ namespace CsBot
                     DiceToThrow = DICE;
                     Say(m_addresser + " you rolled " + infoOutput + " for a total of " + (FarkleTotal + TempFarkleTotal) + ".");
                     Say("You bust.");
-                    FarkleUser++;
-                    if (!FarkleMembers.ContainsKey(FarkleUser))
-                    {
-                        FarkleUser++;
-                        if(!FarkleMembers.ContainsKey(FarkleUser))
-                            FarkleUser = 1;
+                    bool found = false;
+                    string name = "";
+                    foreach (string user in FarkleMembers.Values)
+                    { //Get the next user in the list
+                        if (found) 
+                        {
+                            name = user;
+                            break;
+                        } else if (user.Equals(m_addresser))
+                        {
+                            found = true;
+                        }
                     }
-                    m_users.SetFarkleFlag(FarkleMembers[FarkleUser], true);
-                    Say(FarkleMembers[FarkleUser] + ", it is now your turn.");
+                    if (name == "") { //If we were at the end of the list.
+                        foreach(string user in FarkleMembers.Values) {
+                            name = user;
+                            break;
+                        }
+                    }
+                    m_users.SetFarkleToken(name, true);
+                    Say(name + ", it is now your turn.");
                     return;
                 }
                 else
