@@ -38,6 +38,9 @@ namespace CsBot
         [DataMember(Name="quotes", IsRequired=false)]
         public string[] quotes;
 
+        [DataMember(Name="praises", IsRequired=false)]
+        public string[] praises;
+
     }
 
     [DataContract]

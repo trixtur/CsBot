@@ -156,10 +156,27 @@ namespace CsBot
                             else
                             {
                                 Console.WriteLine(m_addresser + " insulted " + toInsult + ".");
-                                //Say(m_addresser + ": Ok");
-                                //Say(toInsult + ": You Suck!");
-                                Say("/me thinks " + toInsult + " is screwier than his Aunt Rita, and she's a screw.");
+                                if (settings.insults != null && settings.insults.Length > 0)
+                                {
+                                    Random random = new Random();
+                                    Say("/me " + String.Format(settings.insults[random.Next(0,10000)%settings.insults.Length], toInsult));
+                                } 
+                                else 
+                                {
+                                    Say("/me thinks " + toInsult + " is screwier than his Aunt Rita, and she's a screw.");
+                                }
                             }
+                        }
+                        break;
+                    case "quote":
+                        if (settings.quotes != null && settings.quotes.Length > 0)
+                        {
+                                Random random = new Random();
+                                Say(settings.quotes[random.Next(0,10000)%settings.quotes.Length]);
+                        }
+                        else
+                        {
+                            Say("Hey, the blues. The tragic sound of other people's suffering. Thant's kind of a pick-me-up.");
                         }
                         break;
                     case "praise":
@@ -177,7 +194,15 @@ namespace CsBot
                             else
                             {
                                 Console.WriteLine(m_addresser + " praised " + toPraise + ".");
-                                Say("/me thinks " + toPraise + " is very smart.");
+                                if (settings.praises != null && settings.praises.Length > 0)
+                                {
+                                    Random random = new Random();
+                                    Say("/me " + String.Format(settings.praises[random.Next(0,10000)%settings.praises.Length], toPraise));
+                                }
+                                else
+                                {
+                                    Say("/me thinks " + toPraise + " is very smart.");
+                                }
                             }
                         }
                         break;

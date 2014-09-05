@@ -21,7 +21,36 @@
     ],
     "command_start": "~",
     "insults": [
+            "{0}, You know what's funny? Your weiner!",
+        "{0}, Bite my shiny metal ass!",
+        "Shut up {0} I know it!",
+        "I think {0} is screwier than my aunt Rita... And she's a screw!",
+        "You degenerate hussy! I'm disappointed in you too, {0}." ,
+        "Hey look {0}! It's that idiotic windbag you slept with!"
     ],
     "quotes": [
+        "I don't tell you how to tell me what to do, so don't tell me how to do what you tell me to do.",
+        "Hey, the blues. The tragic sound of other people's suffering. Thant's kind of a pick-me-up.",
+        "Afterlife? If I'd thought I had to go through a whole another life, Id kill myself right now.",
+        "Have you ever thought about turning off the TV, sitting down with your children, and hitting them?",
+        "Morgan made me talk to the professor. There we were in the park when suddenly some old lady says I stole her purse. I chucked the professor at her, but she kept comming. So, I had to hit her with this purse I found.",
+        "Who knew a cooler could aslo make a handy wang coffin?",
+        "I keep running people over. I'm not famous enough to get away with it.",
+        "Yo, Captian Cataract!",
+        "Byte my 8-bit metal ass! That's byte with a y. Hehehe.",
+        "Fry crack corn and I don't care, Leela crack corn and I still don't care, Bender crack corn and he is great! TAKE THAT YOU STUPID CORN!!!",
+        "Fine! I will make my OWN theme park. With blackjack... and hookers! You know what, forget the theme park.",
+        "Stupid can opener! You killed my father. And now you've come back for me!",
+        "Hey! I got a busted ass here, and I don't see anyone kissing *it*!",
+        "There. This'll teach those bastards who's lovable",
+        "This is the worst kind of discrimination. The kind against ME!",
+        "Honey, I wouldn't talk about taste if I was wearing a lime green tank top.",
+        "Death to humans!",
+        "We'll soon stage an attack on technology worthy of being chronicled in an anthem by Rush!",
+        "It's every robot's duty to give his life for humanity... (circuit deactivates) Aw, crap! I can't go into battle, I'm a concientous objector! you know, a coward.",
+        "I am Bender. Please insert girder."
+    ],
+    "praises": [
+        "Ask not for whom the bone bones -- it bones for {0}"
     ]
 }
