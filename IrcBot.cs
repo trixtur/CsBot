@@ -113,7 +113,7 @@ namespace IrcBot.cs
                                     joined1 = true;
                                 else if (fromChannel == CHANNEL2)
                                     joined2 = true;
-                                ch.HandleMessage(":" + COMMAND_START + "say Hello All!", fromChannel, addresser);
+                                ch.HandleMessage(":" + COMMAND_START + "say I'm back baby!", fromChannel, addresser);
                                 continue;
                             }
                             // Welcome the nickname to channel by sending a notice
@@ -132,6 +132,7 @@ namespace IrcBot.cs
                         }
                         else if (inputLine.Contains(COMMAND_START + "quit"))
                         {
+			    ch.HandleMessage(":" + COMMAND_START + "say Awe, Crap!", fromChannel, addresser);
                             ping.Stop();
                             goto CloseProgram;
                         }

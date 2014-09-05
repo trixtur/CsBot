@@ -145,7 +145,7 @@ namespace CsBot
                             Console.WriteLine(m_addresser + " insulted " + toInsult + ".");
                             //Say(m_addresser + ": Ok");
                             //Say(toInsult + ": You Suck!");
-                            Say("/me thinks " + toInsult + " isn't the sharpest tool in the shed.");
+                            Say("/me thinks " + toInsult + " is screwier than his Aunt Rita, and she's a screw.");
                         }
                     }
                     break;
@@ -259,7 +259,7 @@ namespace CsBot
                     int d1, d2, total;
                     Random r = new Random();
                     d1 = r.Next(1, DICE + 1);
-                    Thread.Sleep(d1 * 100);
+                    Thread.Sleep(d1 * 50);
                     d2 = r.Next(1, DICE + 1);
                     total = d1 + d2;
                     Say(m_addresser + " rolled a " + d1.ToString() + " and a " + d2.ToString() + " for a total of " + total.ToString());
