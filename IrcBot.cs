@@ -6,6 +6,8 @@ namespace IrcBot.cs
     using System.IO;
     using System.Threading;
     using System.Collections.Generic;
+    using System.Runtime.Serialization;
+    using System.Runtime.Serialization.Json;
     using CsBot;
     
     /*
@@ -15,21 +17,8 @@ namespace IrcBot.cs
     */
     class IrcBot
     {
-        // Irc server to connect
-        //public static string SERVER = "10.87.183.29";
-        public static string SERVER = "kr0w.com"; //"chat.freenode.net";
-        public static string PASSWORD = "m1b0t";
-        // Irc server's port (6667 is default port)
-        private static int PORT = 6667;
-        // User information defined in RFC 2812 (Internet Relay Chat: Client Protocol) is sent to irc server
-        private static string USER = "USER be|\\|der 198.91.54.142 kr0w :Be|\\|der";
-        // Bot's nickname
-        private static string NICK = "Be|\\|der";
-        // Channel to join
-        private static string CHANNEL = "#pyrous";
-        private static string KEY = ""; //Example: jeff
-        private static string CHANNEL2 = "#CsBot";
-        private static string COMMAND_START = "~";
+        private static string SETTINGS_FILE = "settings.json";
+        public static Settings settings;
         // StreamWriter is declared here so that PingSender can access it
         public static StreamWriter writer;
         public static StreamReader reader;
@@ -41,60 +30,66 @@ namespace IrcBot.cs
             NetworkStream stream;
             string inputLine;
             string nickname;
-            string fromChannel = CHANNEL;
             string addresser = "";
             try
             {
+                FileStream setting_file = new FileStream(SETTINGS_FILE, FileMode.Open);
+                DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Settings));
+                settings = (Settings)js.ReadObject(setting_file);
+                setting_file.Close();
+                setting_file = null;
+                string fromChannel = settings.channels[0].name;
                 m_irc = new TcpClient();
                 bool joined1 = false;
                 bool joined2 = false;
                 bool identified = false;
-                m_irc.Connect(SERVER, PORT);
+                m_irc.Connect(settings.server, settings.port);
                 stream = m_irc.GetStream();
                 reader = new StreamReader(stream);
                 writer = new StreamWriter(stream);
-                Console.WriteLine(USER);
+                Console.WriteLine(settings.user);
                 // Start PingSender thread
                 PingSender.cs.PingSender ping = new PingSender.cs.PingSender();
                 ping.Start();
-                writer.WriteLine(USER);
+                writer.WriteLine(settings.user);
                 writer.Flush();
-                writer.WriteLine("NICK " + NICK);
+                writer.WriteLine("NICK " + settings.nick);
                 writer.Flush();
-                Console.WriteLine("NICK " + NICK);
+                Console.WriteLine("NICK " + settings.nick);
                 ch = new CommandHandler(writer, reader);
-                //writer.WriteLine("JOIN " + CHANNEL + " " + KEY);
-                //writer.WriteLine("JOIN " + CHANNEL);
+                CsBot.CommandHandler.settings = settings;
+                //writer.WriteLine("JOIN " + settings.channels[0].name + " " + KEY);
+                //writer.WriteLine("JOIN " + settings.channels[0].name);
                 //writer.Flush();
-                //writer.WriteLine("JOIN " + CHANNEL2);
+                //writer.WriteLine("JOIN " + settings.channels[0].name2);
                 //writer.Flush();
                 while (true)
                 {
                     while ((inputLine = reader.ReadLine()) != null)
                     {
-                        if( inputLine.Contains(CHANNEL) || inputLine.Contains(CHANNEL2))
-                        //if (inputLine.Contains(CHANNEL))
+                        if( inputLine.Contains(settings.channels[0].name) || inputLine.Contains(settings.channels[1].name))
+                        //if (inputLine.Contains(settings.channels[0].name))
                             fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
                         string parsedLine = null;
-                        if (inputLine.Contains(NICK + " = " + CHANNEL) || inputLine.Contains(NICK + " = " + CHANNEL2))
-                        //if (inputLine.Contains(NICK + " = " + CHANNEL))
+                        if (inputLine.Contains(settings.nick + " = " + settings.channels[0].name) || inputLine.Contains(settings.nick + " = " + settings.channels[1].name))
+                        //if (inputLine.Contains(settings.nick + " = " + settings.channels[0].name))
                         {
                             CsBot.CommandHandler.ParseUsers(inputLine);
                         }
                         if (joined1 && !inputLine.EndsWith(fromChannel))
                         {
                             //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
-                            if (!inputLine.EndsWith(CHANNEL) && (parsedLine == null || !parsedLine.StartsWith(":" + COMMAND_START)))
+                            if (!inputLine.EndsWith(settings.channels[0].name) && (parsedLine == null || !parsedLine.StartsWith(":" + settings.command_start)))
                             {
-                                parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + CHANNEL.Length + 1).Trim();
+                                parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + settings.channels[0].name.Length + 1).Trim();
                             }
                         }
                         if (joined2 && !inputLine.EndsWith(fromChannel))
                         {
                             //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
-                            if (!inputLine.EndsWith(CHANNEL2) && (parsedLine == null || !parsedLine.StartsWith(":" + COMMAND_START)))
+                            if (!inputLine.EndsWith(settings.channels[1].name) && (parsedLine == null || !parsedLine.StartsWith(":" + settings.command_start)))
                             {
-                                parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + CHANNEL2.Length + 1).Trim();
+                                parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + settings.channels[1].name.Length + 1).Trim();
                             }
                         }
 
@@ -107,19 +102,19 @@ namespace IrcBot.cs
                         {
                             // Parse nickname of person who joined the channel
                             nickname = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                            if (nickname == NICK)
+                            if (nickname == settings.nick)
                             {
-                                if (fromChannel == CHANNEL)
+                                if (fromChannel == settings.channels[0].name)
                                     joined1 = true;
-                                else if (fromChannel == CHANNEL2)
+                                else if (fromChannel == settings.channels[1].name)
                                     joined2 = true;
-                                ch.HandleMessage(":" + COMMAND_START + "say I'm back baby!", fromChannel, addresser);
+                                ch.HandleMessage(":" + settings.command_start + "say I'm back baby!", fromChannel, addresser);
                                 continue;
                             }
                             // Welcome the nickname to channel by sending a notice
                             writer.WriteLine("NOTICE " + nickname + ": Hi " + nickname +
                             " and welcome to " + fromChannel + " channel!");
-                            ch.HandleMessage(":" + COMMAND_START + "say " + nickname + ": Hi and welcome to " + fromChannel + " channel!", fromChannel, addresser);
+                            ch.HandleMessage(":" + settings.command_start + "say " + nickname + ": Hi and welcome to " + fromChannel + " channel!", fromChannel, addresser);
                             ch.AddUser(nickname);
                             writer.Flush();
                             // Sleep to prevent excess flood
@@ -130,13 +125,44 @@ namespace IrcBot.cs
                             identified = true;
                             Console.WriteLine(inputLine);
                         }
-                        else if (inputLine.Contains(COMMAND_START + "quit"))
+                        else if (inputLine.Contains("!") && inputLine.Contains(" :" + settings.command_start + "quit"))
                         {
-			    ch.HandleMessage(":" + COMMAND_START + "say Awe, Crap!", fromChannel, addresser);
-                            ping.Stop();
-                            goto CloseProgram;
+                            addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+                            bool useChannel = false;
+                            if (inputLine.IndexOf("#") >= 0) {
+                                useChannel = true;
+                                fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
+                            }
+
+                            if (settings.admins != null && Array.IndexOf(settings.admins, addresser) >= 0) {
+                                ch.HandleMessage(":" + settings.command_start + "say Awe, Crap!", fromChannel, addresser);
+                                ping.Stop();
+                                goto CloseProgram;
+                            } else {
+                                CsBot.CommandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
+                            }
                         }
-                        else if (inputLine.Contains(COMMAND_START) && parsedLine != null && parsedLine.StartsWith(":" + COMMAND_START))
+                        else if (inputLine.Contains("!") && inputLine.Contains(" :" + settings.command_start + "reload"))
+                        {
+                            addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+                            bool useChannel = false;
+                            if (inputLine.IndexOf("#") >= 0) {
+                                useChannel = true;
+                                fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
+                            }
+
+                            if (settings.admins != null && Array.IndexOf(settings.admins, addresser) >= 0) {
+                                setting_file = new FileStream(SETTINGS_FILE, FileMode.Open);
+                                settings = (Settings)js.ReadObject(setting_file);
+                                setting_file.Close();
+                                setting_file = null;
+                                CsBot.CommandHandler.settings = settings;
+                                CsBot.CommandHandler.Say("Reloaded settings from file.", useChannel ? fromChannel : addresser);
+                            } else {
+                                CsBot.CommandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
+                            }
+                        }
+                        else if (inputLine.Contains(settings.command_start) && parsedLine != null && parsedLine.StartsWith(":" + settings.command_start))
                         {
                             addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
                             fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
@@ -149,21 +175,21 @@ namespace IrcBot.cs
                         }
                         else if (inputLine.Contains("PONG") && (!joined1 || !joined2))
                         {
-                            if (KEY != "")
-                                writer.WriteLine("JOIN " + CHANNEL + " " + KEY);
+                            if (settings.channels[0].key != "")
+                                writer.WriteLine("JOIN " + settings.channels[0].name + " " + settings.channels[0].key);
                             else
                             {
-                                writer.WriteLine("JOIN " + CHANNEL);
+                                writer.WriteLine("JOIN " + settings.channels[0].name);
                             }
                             writer.Flush();
-                            writer.WriteLine("JOIN " + CHANNEL2);
+                            writer.WriteLine("JOIN " + settings.channels[1].name);
                             writer.Flush();
                         }
                         else if (inputLine.Contains("PONG") && (joined1 || joined2) && !identified)
                         {
-                            ch.HandleMessage(":" + COMMAND_START + "say identify " + PASSWORD, "NickServ", addresser);
+                            ch.HandleMessage(":" + settings.command_start + "say identify " + settings.password, "NickServ", addresser);
                         }
-                        else if (inputLine.Contains(NICK) && inputLine.Contains("PRIVMSG") && (inputLine.Contains("rock") || inputLine.Contains("paper") || inputLine.Contains("scissors")))
+                        else if (inputLine.Contains(settings.nick) && inputLine.Contains("PRIVMSG") && (inputLine.Contains("rock") || inputLine.Contains("paper") || inputLine.Contains("scissors")))
                         {
                             Console.WriteLine(inputLine);
                             addresser = inputLine.Substring(inputLine.IndexOf(":") + 1, inputLine.IndexOf("!") - inputLine.IndexOf(":") - 1);
@@ -171,7 +197,7 @@ namespace IrcBot.cs
                             ch.DirectRoShamBo(choice);
 
                         }
-                        else if (inputLine.Contains(NICK) && inputLine.Contains("PRIVMSG") && inputLine.Contains(":" + COMMAND_START))
+                        else if (inputLine.Contains(settings.nick) && inputLine.Contains("PRIVMSG") && inputLine.Contains(":" + settings.command_start))
                         {
                             addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
                             string command = inputLine.Substring(inputLine.LastIndexOf(":"));
@@ -241,7 +267,7 @@ namespace PingSender.cs
         {
             while (true)
             {
-                IrcBot.cs.IrcBot.writer.WriteLine(PING + IrcBot.cs.IrcBot.SERVER);
+                IrcBot.cs.IrcBot.writer.WriteLine(PING + IrcBot.cs.IrcBot.settings.server);
                 IrcBot.cs.IrcBot.writer.Flush();
                 Thread.Sleep(15000);
             }

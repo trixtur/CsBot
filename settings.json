@@ -1,0 +1,27 @@
+{
+    "server": "kr0w.com",
+    "password": "m1b0t",
+    "port": 6667,
+    "user": "USER be|\\|der 198.91.54.142 kr0w :Be|\\|der",
+    "nick": "Be|\\|der",
+    "channels": [
+        {
+            "id": 0,
+            "name": "#pyrous",
+            "key" : ""
+        },
+        {
+            "id": 1,
+            "name": "#CsBot"
+        }
+    ],
+    "admins": [
+        "kr0w",
+        "trixtur"
+    ],
+    "command_start": "~",
+    "insults": [
+    ],
+    "quotes": [
+    ]
+}
