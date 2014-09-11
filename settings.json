@@ -51,6 +51,10 @@
         "I am Bender. Please insert girder."
     ],
     "praises": [
-        "Ask not for whom the bone bones -- it bones for {0}"
+        "Ask not for whom the bone bones -- it bones for {0}",
+	"{0} is the sharpest screw in the box.",
+	"{0}, I guess you can be lovable too.",
+	"{0} just might be famous enough to get away with running people over",
+	"Only {0} can tell me what to do!"
     ]
 }
