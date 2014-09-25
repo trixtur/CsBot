@@ -4,6 +4,9 @@ using System.Text;
 using System.IO;
 using System.Threading;
 using System.Net;
+using System.Xml;
+using System.ServiceModel.Syndication;
+using System.Linq;
 
 namespace CsBot
 {
@@ -734,83 +737,105 @@ namespace CsBot
                             Say(m_addresser + " meant: " + lastSaid);
                         }
                         break;
-                    case "getfeeds":
-                        StreamReader reader;
-                        WebRequest rss;
-                        if (command.Length == endCommand + 1)
+                    case "getnext":
+                        int count = 0;
+                        SyndicationFeed feed = m_users[m_addresser].Feed;
+                        int feedCount = m_users[m_addresser].FeedCount;
+                        if (feed == null)
                         {
-                            rss = WebRequest.Create("http://rss.news.yahoo.com/rss/topstories#");
+                            Say("You must use " + settings.command_start + "getfeeds before trying to list them.");
+                            return;
+                        }
+                        if (feedCount >= feed.Items.Count() || feedCount < 0)
+                        {
+                            feedCount = 0;
+                            Say("Reached max, starting over.");
+                        }
+
+                        for(;feedCount < feed.Items.Count(); feedCount++) {
+                            SyndicationItem item = feed.Items.ElementAt(feedCount);
+                            Say("Item " + (feedCount+1) + " of " + feed.Items.Count() + ": " + item.Title.Text.Trim());
+                            count++;
+                            if(count == 4) break;
+                        }
+                        m_users[m_addresser].FeedCount = ++feedCount;
+                        break;
+                    case "getmore":
+                        int feedNumber;
+                        feed = m_users[m_addresser].Feed;
+                        if (feed == null)
+                        {
+                            Say("You must use " + settings.command_start + "getfeeds before trying to get more information.");
+                            return;
+                        }
+
+                        if (command.Length == endCommand +1 || !Int32.TryParse(command.Substring(endCommand + 2).Trim().ToLower(), out feedNumber))
+                        {
+                            Say("Usage: " + settings.command_start + "getmore # (Where # is an item from the rss feed)");
                         }
                         else
                         {
-                            rss = WebRequest.Create(command.Substring(endCommand + 2).Trim().ToLower());
-                        }
-                        Stream ansstream;
-                        WebResponse ans;
-                        string stringans;
-                        int timer = 0;
-                        string output = null;
-                        string[] linedoutput = null;
-                        ans = rss.GetResponse();
-                        ansstream = ans.GetResponseStream();
-                        reader = new StreamReader(ansstream);
-                        while (!reader.EndOfStream)
-                        {
-                            stringans = reader.ReadToEnd();
-                            while (stringans.Contains("<item>"))
+                            feedNumber--;
+                            if (feedNumber < 0 || feedNumber > feed.Items.Count())
                             {
-                                output += stringans.Substring(stringans.IndexOf("<item>") + 6, stringans.IndexOf("</item>") - 7 - stringans.IndexOf("<item>"));
-                                stringans = stringans.Remove(stringans.IndexOf("<item>"), stringans.IndexOf("</item>") - stringans.IndexOf("<item>") + 7);
+                                Say("Number is not in the right range. Must be from 1 to " + feed.Items.Count() + ".");
                             }
-                            while (output.Contains("<link>"))
+                            else
                             {
-                                output = output.Remove(output.IndexOf("<link>"), output.IndexOf("</pubDate>") - output.IndexOf("<link>") + 10);
-                            }
-                            while (output.Contains("<media"))
-                            {
-                               output = output.Remove(output.IndexOf("<media"), output.IndexOf("</media:credit>") - output.IndexOf("<media") + 15);
-                            }
-                            while (output.Contains("/a>"))
-                            {
-                                while (output.IndexOf("/a>") < output.IndexOf("<description>"))
-                                    output = output.Remove(output.IndexOf("/a>"), 3);
-                                if (output.IndexOf("<description>") < 0)
-                                    output = output.Remove(output.IndexOf("/a>"), 3);
-                                else
-                                    output = output.Remove(output.IndexOf("<description>"), output.IndexOf("/a>") - output.IndexOf("<description>") + 3);
-                            }
-                            while (output.Contains("<") || output.Contains(">"))
-                            {
-                                while(output.IndexOf('>') < output.IndexOf('<'))
-                                    output = output.Remove(output.IndexOf('>'), 1);
-                                output = output.Remove(output.IndexOf('<'), output.IndexOf('>') - output.IndexOf('<') + 1);
-                            }
-                            while (output.Contains("&#60;"))
-                            {
-                                output = output.Remove(output.IndexOf("&#60;"), output.IndexOf("\"/") - output.IndexOf("&#60;") + 2);
-                            }
-                            while (output.Contains("&#39;"))
-                            {
-                                output = output.Replace("&#39;", "'");
-                            }
-                            while (output.Contains("&#039;"))
-                            {
-                                output = output.Replace("&#039;", "'");
-                            }
-                            output.Trim();
-                            linedoutput = output.Split('\n');
-                            for (int i = 0; i < linedoutput.Length; i++)
-                            {
-                                Say(linedoutput[i].Trim(), m_addresser);
-                                timer++;
-                                if (timer > 4)
+                                count = 0;
+                                Say("Links for " + feed.Items.ElementAt(feedNumber).Title.Text + "(Max 4):");
+                                foreach(SyndicationLink link in feed.Items.ElementAt(feedNumber).Links)
                                 {
-                                    Thread.Sleep(3000);
-                                    timer = 0;
+                                    Say(link.Uri.ToString().Trim());
+                                    count++;
+                                    if (count == 4) return;
                                 }
                             }
                         }
-                        reader.Close();
+                        break;
+                    case "getfeeds":
+                        XmlReader rssReader;
+                        if (command.Length == endCommand + 1)
+                        {
+                            rssReader = XmlReader.Create("http://rss.news.yahoo.com/rss/topstories#");
+                        }
+                        else
+                        {
+                            try
+                            {
+                                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(command.Substring(endCommand + 2).Trim().ToLower());
+                                request.AllowAutoRedirect = true;
+                                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                                rssReader = XmlReader.Create(response.GetResponseStream());
+                            }
+                            catch(Exception e)
+                            {
+                                Say("Usage: " + settings.command_start + "getfeeds http://<rsssite>/rss/<rssfeed#>");
+                                Console.WriteLine(e.Message);
+                                return;
+                            }
+                        }
+                        try 
+                        {
+                            feed = SyndicationFeed.Load(rssReader);
+                            m_users[m_addresser].Feed = feed;
+                            rssReader.Close();
+                            count = 0;
+                            m_users[m_addresser].FeedCount = 4;
+                            
+                            Say("Items 1 through 4 of " + feed.Items.Count() + " items.");
+                            foreach(SyndicationItem item in feed.Items)
+                            {
+                                Say(item.Title.Text.Trim());
+                                count++;
+                                if(count == 4) return;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Say("Received invalid feed data.");
+                            Console.WriteLine(e.Message);
+                        }
                         break;
                     default:
                         Console.WriteLine("\n" + fixedCommand);

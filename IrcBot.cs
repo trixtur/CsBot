@@ -199,8 +199,9 @@ namespace IrcBot.cs
                         }
                         else if (inputLine.Contains(settings.nick) && inputLine.Contains("PRIVMSG") && inputLine.Contains(":" + settings.command_start))
                         {
+                            Console.WriteLine("PrivateMessage: " + inputLine);
                             addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                            string command = inputLine.Substring(inputLine.LastIndexOf(":"));
+                            string command = inputLine.Substring(inputLine.LastIndexOf(":" + settings.command_start));
                             ch.HandleMessage(command, addresser, addresser);
                         }
                         else

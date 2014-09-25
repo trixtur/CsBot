@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.ServiceModel.Syndication;
 
 namespace CsBot
 {
@@ -13,7 +14,6 @@ namespace CsBot
         bool farkle_flag = false;
         bool has_farkel_token = false;
         int farkle_value = 0;
-
 
         public string Name
         {
@@ -51,5 +51,7 @@ namespace CsBot
             get { return has_farkel_token; }
             set { has_farkel_token = value; }
         }
+        public SyndicationFeed Feed { get; set; }
+        public int FeedCount { get; set; }
     }
 }

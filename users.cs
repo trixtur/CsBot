@@ -179,5 +179,17 @@ namespace CsBot
             Dictionary<string, user>.KeyCollection.Enumerator e = m_users.Keys.GetEnumerator();
             return e;
         }
+
+        public user this[string name]
+        {
+            get
+            {
+                return m_users[name];
+            }
+            set
+            {
+                return; //Don't allow
+            }
+        }
     }
 }
