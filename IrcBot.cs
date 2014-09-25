@@ -24,6 +24,7 @@ namespace IrcBot.cs
         public static StreamReader reader;
         private static CommandHandler ch;
         private static TcpClient m_irc;
+        private static bool isUnderscoreNick = false;
 
         static void Main(string[] args)
         {
@@ -180,19 +181,52 @@ namespace IrcBot.cs
                         }
                         else if (inputLine.Contains("PONG") && (!joined1 || !joined2))
                         {
-                            if (settings.channels[0].key != "")
-                                writer.WriteLine("JOIN " + settings.channels[0].name + " " + settings.channels[0].key);
+                            if (isUnderscoreNick)
+                            {
+                                writer.WriteLine("PRIVMSG NickServ :ghost " + settings.nick + " " + settings.password);
+                                writer.WriteLine("NICK " + settings.nick);
+                                Console.WriteLine("NICK " + settings.nick);
+                                ch.HandleMessage(":" + settings.command_start + "say identify " + settings.password, "NickServ", settings.nick);
+                                isUnderscoreNick = false;
+                            }
                             else
                             {
-                                writer.WriteLine("JOIN " + settings.channels[0].name);
+                                if (settings.channels[0].key != "")
+                                    writer.WriteLine("JOIN " + settings.channels[0].name + " " + settings.channels[0].key);
+                                else
+                                {
+                                    writer.WriteLine("JOIN " + settings.channels[0].name);
+                                }
+                                writer.Flush();
+                                writer.WriteLine("JOIN " + settings.channels[1].name);
+                                writer.Flush();
                             }
-                            writer.Flush();
-                            writer.WriteLine("JOIN " + settings.channels[1].name);
-                            writer.Flush();
                         }
                         else if (inputLine.Contains("PONG") && (joined1 || joined2) && !identified)
                         {
                             ch.HandleMessage(":" + settings.command_start + "say identify " + settings.password, "NickServ", addresser);
+                        }
+                        else if (inputLine.Contains(":Nickname is already in use."))
+                        {
+                            Console.WriteLine("Reopening with _ nick.");
+                            writer.Close();
+                            reader.Close();
+                            m_irc.Close();
+                            m_irc = new TcpClient();
+                            m_irc.Connect(settings.server, settings.port);
+                            stream = m_irc.GetStream();
+                            reader = new StreamReader(stream);
+                            writer = new StreamWriter(stream);
+                            Console.WriteLine(settings.user);
+                            // Start PingSender thread
+                            ping = new PingSender.cs.PingSender();
+                            ping.Start();
+                            writer.WriteLine(settings.user);
+                            writer.Flush();
+                            writer.WriteLine("NICK _" + settings.nick);
+                            Console.WriteLine("NICK _" + settings.nick);
+                            ch = new CommandHandler(writer, reader);
+                            isUnderscoreNick = true;
                         }
                         else if (inputLine.Contains(settings.nick) && inputLine.Contains("PRIVMSG") && (inputLine.Contains("rock") || inputLine.Contains("paper") || inputLine.Contains("scissors")))
                         {

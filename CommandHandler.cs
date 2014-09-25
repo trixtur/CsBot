@@ -948,10 +948,17 @@ namespace CsBot
         }
 
         public static void UpdateUserName(string origUser, string newUser) {
-            user tempUser = m_users[origUser];
-            m_users.removeUser(origUser);
-            m_users.addUser(newUser, tempUser);
-            Console.WriteLine("Updated username from " + origUser + " to " + newUser);
+            if (m_users.hasUser(origUser))
+            {
+                user tempUser = m_users[origUser];
+                m_users.removeUser(origUser);
+                m_users.addUser(newUser, tempUser);
+                Console.WriteLine("Updated username from " + origUser + " to " + newUser);
+            }
+            else if(newUser != settings.nick)
+            {
+                m_users.addUser(newUser);
+            }
         }
 
         public static void ParseUsers(string usersInput)
