@@ -98,6 +98,11 @@ namespace IrcBot.cs
                             Console.WriteLine(inputLine);
                         }
 
+                        if (inputLine.Contains("NICK :")) {
+                            string origUser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+                            string newUser = inputLine.Substring(inputLine.IndexOf("NICK :") + 6);
+                            CsBot.CommandHandler.UpdateUserName(origUser, newUser);
+                        }
                         if (inputLine.EndsWith("JOIN " + fromChannel))
                         {
                             // Parse nickname of person who joined the channel

@@ -947,6 +947,13 @@ namespace CsBot
             Say(m_addresser + " you rolled " + infoOutput + " for a total of " + (FarkleTotal + TempFarkleTotal) + ".");
         }
 
+        public static void UpdateUserName(string origUser, string newUser) {
+            user tempUser = m_users[origUser];
+            m_users.removeUser(origUser);
+            m_users.addUser(newUser, tempUser);
+            Console.WriteLine("Updated username from " + origUser + " to " + newUser);
+        }
+
         public static void ParseUsers(string usersInput)
         {
             string[] users = usersInput.Substring(usersInput.LastIndexOf(settings.nick)).Split(" ".ToCharArray());

@@ -18,10 +18,18 @@ namespace CsBot
             return m_users.ContainsKey(user);
         }
 
-        public void addUser(string user)
+        public void removeUser(string user)
         {
-            user tmpUser = new user();
-            tmpUser.Name = user;
+            m_users.Remove(user);
+        }
+
+        public void addUser(string user, user tmpUser = null)
+        {
+            if (tmpUser == null) {
+                tmpUser = new user();
+                tmpUser.Name = user;
+            }
+
             if (!m_users.ContainsKey(user))
                 m_users.Add(user, tmpUser);
         }
