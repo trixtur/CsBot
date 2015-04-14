@@ -2,6 +2,8 @@
     "server": "kr0w.com",
     "password": "m1b0t",
     "port": 6667,
+    "secure": 0,
+    "server_validate": false,
     "user": "USER be|\\|der 198.91.54.142 kr0w :Be|\\|der",
     "nick": "Be|\\|der",
     "channels": [

@@ -2,6 +2,8 @@ namespace IrcBot.cs
 {
     using System;
     using System.Net;
+    using System.Net.Security;
+    using System.Security.Cryptography.X509Certificates;
     using System.Net.Sockets;
     using System.IO;
     using System.Threading;
@@ -28,7 +30,7 @@ namespace IrcBot.cs
 
         static void Main(string[] args)
         {
-            NetworkStream stream;
+            object stream;
             string inputLine;
             string nickname;
             string addresser = "";
@@ -45,9 +47,15 @@ namespace IrcBot.cs
                 bool joined2 = false;
                 bool identified = false;
                 m_irc.Connect(settings.server, settings.port);
-                stream = m_irc.GetStream();
-                reader = new StreamReader(stream);
-                writer = new StreamWriter(stream);
+                if (settings.secure == "1") {
+                    stream = new SslStream (m_irc.GetStream(), true, new RemoteCertificateValidationCallback (ValidateServerCertificate));
+                    SslStream sslStream = (SslStream) stream;
+                    sslStream.AuthenticateAsClient(settings.server);
+                } else {
+                    stream = m_irc.GetStream();
+                }
+                reader = new StreamReader((Stream)stream);
+                writer = new StreamWriter((Stream)stream);
                 Console.WriteLine(settings.user);
                 // Start PingSender thread
                 PingSender.cs.PingSender ping = new PingSender.cs.PingSender();
@@ -214,9 +222,15 @@ namespace IrcBot.cs
                             m_irc.Close();
                             m_irc = new TcpClient();
                             m_irc.Connect(settings.server, settings.port);
-                            stream = m_irc.GetStream();
-                            reader = new StreamReader(stream);
-                            writer = new StreamWriter(stream);
+                            if (settings.secure == "1") {
+                                stream = new SslStream (m_irc.GetStream(), true, new RemoteCertificateValidationCallback (ValidateServerCertificate));
+                                SslStream sslStream = (SslStream) stream;
+                                sslStream.AuthenticateAsClient(settings.server);
+                            } else {
+                                stream = m_irc.GetStream();
+                            }
+                            reader = new StreamReader((Stream)stream);
+                            writer = new StreamWriter((Stream)stream);
                             Console.WriteLine(settings.user);
                             // Start PingSender thread
                             ping = new PingSender.cs.PingSender();
@@ -263,7 +277,9 @@ namespace IrcBot.cs
             catch (Exception e)
             {
                 // Close all streams
+                if(writer != null)
                 writer.Close();
+                if(reader != null)
                 reader.Close();
                 m_irc.Close();
                 // Show the exception, sleep for a while and try to establish a new connection to irc server
@@ -272,6 +288,19 @@ namespace IrcBot.cs
                 string[] argv = { };
                 Main(argv);
             }
+        }
+
+        public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+            if(sslPolicyErrors == SslPolicyErrors.None)
+                return true;
+
+            else if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors && settings.server_validate == false) {
+                return true;
+            }
+
+            Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
+
+            return false;
         }
     }
 }

@@ -17,6 +17,12 @@ namespace CsBot
         [DataMember(Name="port", IsRequired=true)]
         public int port;
 
+        [DataMember(Name="secure", IsRequired=false)]
+        public string secure;
+
+        [DataMember(Name="server_validate", IsRequired=false)]
+        public bool server_validate;
+
         [DataMember(Name="user", IsRequired=true)]
         public String user;
 
