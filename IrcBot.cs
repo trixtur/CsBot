@@ -294,13 +294,21 @@ namespace IrcBot.cs
             if(sslPolicyErrors == SslPolicyErrors.None)
                 return true;
 
-            else if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors && settings.server_validate == false) {
-                return true;
+            foreach(X509ChainStatus status in chain.ChainStatus) {
+                if (certificate.Subject == certificate.Issuer &&
+                        status.Status == System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.UntrustedRoot &&
+                        settings.server_validate == false) {
+                    continue;
+                    
+                }
+                else if (status.Status != System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.NoError &&
+                        (settings.server_validate != false || status.Status != System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.UntrustedRoot)) {
+                    Console.WriteLine("Certificate not valid: {0}, {1}", sslPolicyErrors, status.StatusInformation);
+                    return false;
+                }
             }
 
-            Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
-
-            return false;
+            return true;
         }
     }
 }
