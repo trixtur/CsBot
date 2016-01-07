@@ -19,7 +19,8 @@ namespace IrcBot.cs
     */
     class IrcBot
     {
-        private static string SETTINGS_FILE = "settings.json";
+        //private static string SETTINGS_FILE = "settings.json";
+        private static string SETTINGS_FILE = "https://csbot.kr0w.com/api.php/config";
         public static Settings settings;
         // StreamWriter is declared here so that PingSender can access it
         public static StreamWriter writer;
@@ -36,11 +37,17 @@ namespace IrcBot.cs
             string addresser = "";
             try
             {
-                FileStream setting_file = new FileStream(SETTINGS_FILE, FileMode.Open);
-                DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Settings));
-                settings = (Settings)js.ReadObject(setting_file);
-                setting_file.Close();
-                setting_file = null;
+                //FileStream setting_file = new FileStream(SETTINGS_FILE, FileMode.Open);
+
+		ServicePointManager.ServerCertificateValidationCallback = ValidateServerCertificate;
+		using (var webClient = new System.Net.WebClient()) { 
+			Stream setting_file = webClient.OpenRead(SETTINGS_FILE); 
+			DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Settings));
+			settings = (Settings)js.ReadObject(setting_file);
+		}
+
+                //setting_file.Close();
+                //setting_file = null;
                 string fromChannel = settings.channels[0].name;
                 m_irc = new TcpClient();
                 bool joined1 = false;
@@ -166,10 +173,15 @@ namespace IrcBot.cs
                             }
 
                             if (settings.admins != null && Array.IndexOf(settings.admins, addresser) >= 0) {
-                                setting_file = new FileStream(SETTINGS_FILE, FileMode.Open);
-                                settings = (Settings)js.ReadObject(setting_file);
-                                setting_file.Close();
-                                setting_file = null;
+				using (var webClient = new System.Net.WebClient()) { 
+					Stream setting_file = webClient.OpenRead(SETTINGS_FILE); 
+					DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Settings));
+					settings = (Settings)js.ReadObject(setting_file);
+				}
+                                //setting_file = new FileStream(SETTINGS_FILE, FileMode.Open);
+                                //settings = (Settings)js.ReadObject(setting_file);
+                                //setting_file.Close();
+                                //setting_file = null;
                                 CsBot.CommandHandler.settings = settings;
                                 CsBot.CommandHandler.Say("Reloaded settings from file.", useChannel ? fromChannel : addresser);
                             } else {
@@ -281,7 +293,9 @@ namespace IrcBot.cs
                 writer.Close();
                 if(reader != null)
                 reader.Close();
-                m_irc.Close();
+		if (m_irc != null) {
+			m_irc.Close();
+		}
                 // Show the exception, sleep for a while and try to establish a new connection to irc server
                 Console.WriteLine("Exception info: " + e.ToString());
                 Thread.Sleep(5000);
@@ -297,12 +311,12 @@ namespace IrcBot.cs
             foreach(X509ChainStatus status in chain.ChainStatus) {
                 if (certificate.Subject == certificate.Issuer &&
                         status.Status == System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.UntrustedRoot &&
-                        settings.server_validate == false) {
+                        settings != null && settings.server_validate == false) {
                     continue;
                     
                 }
                 else if (status.Status != System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.NoError &&
-                        (settings.server_validate != false || status.Status != System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.UntrustedRoot)) {
+                        ((settings != null && settings.server_validate != false) || status.Status != System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.UntrustedRoot)) {
                     Console.WriteLine("Certificate not valid: {0}, {1}", sslPolicyErrors, status.StatusInformation);
                     return false;
                 }
