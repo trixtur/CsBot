@@ -52,7 +52,7 @@ namespace IrcBot.cs
                 m_irc = new TcpClient();
                 bool joined1 = false;
                 bool joined2 = false;
-                bool identified = false;
+                bool identified = true;
                 m_irc.Connect(settings.server, settings.port);
                 if (settings.secure == "1") {
                     stream = new SslStream (m_irc.GetStream(), true, new RemoteCertificateValidationCallback (ValidateServerCertificate));
@@ -71,6 +71,8 @@ namespace IrcBot.cs
                 writer.Flush();
                 writer.WriteLine("NICK " + settings.nick);
                 writer.Flush();
+                writer.WriteLine("PASS " + settings.password);
+                writer.Flush();
                 Console.WriteLine("NICK " + settings.nick);
                 ch = new CommandHandler(writer, reader);
                 CsBot.CommandHandler.settings = settings;
@@ -83,31 +85,27 @@ namespace IrcBot.cs
                 {
                     while ((inputLine = reader.ReadLine()) != null)
                     {
-                        if( inputLine.Contains(settings.channels[0].name) || inputLine.Contains(settings.channels[1].name))
-                        //if (inputLine.Contains(settings.channels[0].name))
-                            fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
                         string parsedLine = null;
-                        if (inputLine.Contains(settings.nick + " = " + settings.channels[0].name) || inputLine.Contains(settings.nick + " = " + settings.channels[1].name))
-                        //if (inputLine.Contains(settings.nick + " = " + settings.channels[0].name))
-                        {
-                            CsBot.CommandHandler.ParseUsers(inputLine);
-                        }
-                        if (joined1 && !inputLine.EndsWith(fromChannel))
-                        {
-                            //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
-                            if (!inputLine.EndsWith(settings.channels[0].name) && (parsedLine == null || !parsedLine.StartsWith(":" + settings.command_start)))
-                            {
-                                parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + settings.channels[0].name.Length + 1).Trim();
-                            }
-                        }
-                        if (joined2 && !inputLine.EndsWith(fromChannel))
-                        {
-                            //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
-                            if (!inputLine.EndsWith(settings.channels[1].name) && (parsedLine == null || !parsedLine.StartsWith(":" + settings.command_start)))
-                            {
-                                parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + settings.channels[1].name.Length + 1).Trim();
-                            }
-                        }
+			foreach (var channel in settings.channels) {
+				if (inputLine.Contains(channel.name)) {
+					fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
+				}
+
+				if (inputLine.Contains(settings.nick + " = " + channel.name) || inputLine.Contains(settings.nick + " = " + channel.name))
+				//if (inputLine.Contains(settings.nick + " = " + settings.channels[0].name))
+				{
+				    CsBot.CommandHandler.ParseUsers(inputLine);
+				}
+				//if (inputLine.Contains(settings.channels[0].name))
+				if (joined1 && !inputLine.EndsWith(fromChannel))
+				{
+				    //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
+				    if (!inputLine.EndsWith(channel.name) && (parsedLine == null || !parsedLine.StartsWith(":" + settings.command_start)))
+				    {
+					parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + channel.name.Length + 1).Trim();
+				    }
+				}
+			}
 
                         if (!joined1 || !joined2)
                         {
@@ -211,15 +209,16 @@ namespace IrcBot.cs
                             }
                             else
                             {
-                                if (settings.channels[0].key != "")
-                                    writer.WriteLine("JOIN " + settings.channels[0].name + " " + settings.channels[0].key);
-                                else
-                                {
-                                    writer.WriteLine("JOIN " + settings.channels[0].name);
-                                }
-                                writer.Flush();
-                                writer.WriteLine("JOIN " + settings.channels[1].name);
-                                writer.Flush();
+				for (int i = 0; i < settings.channels.Count; i++) 
+				{
+					if (settings.channels[i].key != "")
+					    writer.WriteLine("JOIN " + settings.channels[i].name + " " + settings.channels[i].key);
+					else
+					{
+					    writer.WriteLine("JOIN " + settings.channels[i].name);
+					}
+					writer.Flush();
+				}
                             }
                         }
                         else if (inputLine.Contains("PONG") && (joined1 || joined2) && !identified)
@@ -274,7 +273,7 @@ namespace IrcBot.cs
                             if (inputLine.Contains("PRIVMSG") && inputLine.Contains("!"))
                             {
                                 string userName = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                                ch.LastMessage(userName, inputLine);
+                                ch.LastMessage(userName, inputLine, fromChannel);
                             }
                         }
                     }

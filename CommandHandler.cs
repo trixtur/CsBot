@@ -963,17 +963,26 @@ namespace CsBot
 
         public static void ParseUsers(string usersInput)
         {
-            string[] users = usersInput.Substring(usersInput.LastIndexOf(settings.nick)).Split(" ".ToCharArray());
+		Console.WriteLine("Users Input " + usersInput);
+            string[] users = usersInput.Substring(usersInput.LastIndexOf(":")+1).Split(" ".ToCharArray());
             for (int i = 0; i < users.Length; i++)
             {
+		if (users[i] == "") continue;
+
                 if (users[i] != settings.nick && !m_users.hasUser(users[i]))
                 {
-                    if (users[i].StartsWith("@"))
+                    if (users[i].StartsWith("@")) {
                         m_users.addUser(users[i].Substring(1));
-                    else
+			Console.WriteLine("Found user " + users[i].Substring(1));
+                    } else { 
                         m_users.addUser(users[i]);
+			Console.WriteLine("Found user " + users[i]);
+		    }
                 }
             }
+	    foreach (string user in m_users) {
+		Console.WriteLine("Users  " + user);
+	    }
         }
 
         private static bool FarkleIsThreePairs(Dictionary<int, int> dice)
@@ -1157,18 +1166,15 @@ namespace CsBot
                     Say("Valid options are either rock, paper, or scissors.", m_addresser);
                     break;
             }
-            if (m_fromChannel != settings.channels[0].name && m_fromChannel != settings.channels[1].name) {
-                m_fromChannel = settings.channels[0].name;
-            }
 
             HandleMessage(":" + settings.command_start + "rps", m_fromChannel, m_addresser);
         }
 
-        public void LastMessage(string user, string inputLine)
+        public void LastMessage(string user, string inputLine, string fromChannel)
         {
             if (m_users.hasUser(user))
             {
-                string message = inputLine.Substring(inputLine.LastIndexOf(settings.channels[0].name + " :") + settings.channels[0].name.Length + 2);
+                string message = inputLine.Substring(inputLine.LastIndexOf(fromChannel + " :") + fromChannel.Length + 2);
                 m_users.addUserLastMessage(user, message);
             }
         }
