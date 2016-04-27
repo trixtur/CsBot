@@ -10,6 +10,7 @@ namespace IrcBot.cs
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Json;
+    using System.Configuration;
     using CsBot;
     
     /*
@@ -20,7 +21,7 @@ namespace IrcBot.cs
     class IrcBot
     {
         //private static string SETTINGS_FILE = "settings.json";
-        private static string SETTINGS_FILE = "https://csbot.kr0w.com/api.php/config";
+        private static string SETTINGS_FILE = ConfigurationManager.AppSettings["Site"];
         public static Settings settings;
         // StreamWriter is declared here so that PingSender can access it
         public static StreamWriter writer;
@@ -31,6 +32,7 @@ namespace IrcBot.cs
 
         static void Main(string[] args)
         {
+Console.WriteLine(ConfigurationManager.AppSettings["Site"]);
             object stream;
             string inputLine;
             string nickname;
@@ -39,11 +41,15 @@ namespace IrcBot.cs
             {
                 //FileStream setting_file = new FileStream(SETTINGS_FILE, FileMode.Open);
 
+		Console.WriteLine("Trying to pull config.");
 		ServicePointManager.ServerCertificateValidationCallback = ValidateServerCertificate;
+		//System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
 		using (var webClient = new System.Net.WebClient()) { 
+			Console.WriteLine("Pulling config.");
 			Stream setting_file = webClient.OpenRead(SETTINGS_FILE); 
 			DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Settings));
 			settings = (Settings)js.ReadObject(setting_file);
+			Console.WriteLine("Config File:{0}",settings);
 		}
 
                 //setting_file.Close();
@@ -181,7 +187,7 @@ namespace IrcBot.cs
                                 //setting_file.Close();
                                 //setting_file = null;
                                 CsBot.CommandHandler.settings = settings;
-                                CsBot.CommandHandler.Say("Reloaded settings from file.", useChannel ? fromChannel : addresser);
+                                CsBot.CommandHandler.Say("Reloaded settings from web service.", useChannel ? fromChannel : addresser);
                             } else {
                                 CsBot.CommandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
                             }
@@ -307,6 +313,8 @@ namespace IrcBot.cs
             if(sslPolicyErrors == SslPolicyErrors.None)
                 return true;
 
+	    // TODO take this out for actual validation.
+	    return true;
             foreach(X509ChainStatus status in chain.ChainStatus) {
                 if (certificate.Subject == certificate.Issuer &&
                         status.Status == System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.UntrustedRoot &&

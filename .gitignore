@@ -2,3 +2,5 @@
 bin/
 Backup/
 obj/
+App.config
+CsBot.exe.config

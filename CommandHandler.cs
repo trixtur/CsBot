@@ -60,7 +60,9 @@ namespace CsBot
                 s = "\x1" + s.Replace("/me", "ACTION") + "\x1";
             if (s.EndsWith("me"))
                 s = s.Replace(" me", " " + m_addresser);
-            if (s.Contains(" me "))
+	    if (s.Contains(" {nick} "))
+		s = s.Replace(" {nick} ", " me ");
+	    if (s.Contains(" me "))
                 s = s.Replace(" me ", " " + m_addresser + " ");
             if (s.Contains(" " + settings.nick + " "))
                 s = s.Replace(" " + settings.nick + " ", " me ");
@@ -81,6 +83,8 @@ namespace CsBot
                 s = s.Replace(" me", " " + m_addresser);
             if (s.Contains(" me "))
                 s = s.Replace(" me ", " " + m_addresser + " ");
+	    if (s.Contains(" {nick} "))
+                s = s.Replace(" {nick} ", " me ");
             if (s.Contains(" " + settings.nick + " "))
                 s = s.Replace(" " + settings.nick + " ", " me ");
             Console.WriteLine("PRIVMSG " + m_fromChannel + " :" + s);
