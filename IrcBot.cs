@@ -90,6 +90,10 @@ namespace IrcBot.cs
             }
             catch (Exception e)
             {
+		foreach (Channel channel in settings.channels) {
+			ch.HandleMessage(":" + settings.command_start + "say Awe, Crap!", channel.name, "self");
+		}
+
                 // Close all streams
                 if(writer != null)
                 writer.Close();
@@ -199,7 +203,9 @@ namespace IrcBot.cs
                             }
 
                             if (settings.admins != null && Array.IndexOf(settings.admins, addresser) >= 0) {
-                                ch.HandleMessage(":" + settings.command_start + "say Awe, Crap!", fromChannel, addresser);
+				foreach (Channel channel in settings.channels) {
+					ch.HandleMessage(":" + settings.command_start + "say Awe, Crap!", channel.name, addresser);
+				}
                                 ping.Stop();
                                 IrcBot.CloseProgram(writer, reader, m_irc);
                             } else {
