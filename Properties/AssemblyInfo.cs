@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("CsBot")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Legrand")]
+[assembly: AssemblyCompany("PyrousNET")]
 [assembly: AssemblyProduct("CsBot")]
-[assembly: AssemblyCopyright("Copyright © Legrand 2008")]
+[assembly: AssemblyCopyright("Copyright © PyrousNET 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
