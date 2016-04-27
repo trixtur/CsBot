@@ -130,205 +130,204 @@ namespace IrcBot.cs
 		bool identified,
 		object stream) 
 	{
-                while (true)
-                {
-                    while ((inputLine = reader.ReadLine()) != null)
-                    {
-                        string parsedLine = null;
-			foreach (var channel in settings.channels) {
-				if (inputLine.Contains(channel.name)) {
-					fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
-				}
-
-				if (inputLine.Contains(settings.nick + " = " + channel.name) || inputLine.Contains(settings.nick + " = " + channel.name))
-				//if (inputLine.Contains(settings.nick + " = " + settings.channels[0].name))
-				{
-				    CsBot.CommandHandler.ParseUsers(inputLine);
-				}
-				//if (inputLine.Contains(settings.channels[0].name))
-				if (joined1 && !inputLine.EndsWith(fromChannel))
-				{
-				    //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
-				    if (!inputLine.EndsWith(channel.name) && (parsedLine == null || !parsedLine.StartsWith(":" + settings.command_start)))
-				    {
-					parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + channel.name.Length + 1).Trim();
-				    }
-				}
+                
+	    while (true)
+	    {
+		inputLine = reader.ReadLine();
+		string parsedLine = null;
+		foreach (var channel in settings.channels) {
+			if (inputLine.Contains(channel.name)) {
+				fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
 			}
 
-                        if (!joined1 || !joined2)
-                        {
-                            Console.WriteLine(inputLine);
-                        }
+			if (inputLine.Contains(settings.nick + " = " + channel.name) || inputLine.Contains(settings.nick + " = " + channel.name))
+			//if (inputLine.Contains(settings.nick + " = " + settings.channels[0].name))
+			{
+			    CsBot.CommandHandler.ParseUsers(inputLine);
+			}
+			//if (inputLine.Contains(settings.channels[0].name))
+			if (joined1 && !inputLine.EndsWith(fromChannel))
+			{
+			    //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
+			    if (!inputLine.EndsWith(channel.name) && (parsedLine == null || !parsedLine.StartsWith(":" + settings.command_start)))
+			    {
+				parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + channel.name.Length + 1).Trim();
+			    }
+			}
+		}
 
-                        if (inputLine.Contains("NICK :")) {
-                            string origUser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                            string newUser = inputLine.Substring(inputLine.IndexOf("NICK :") + 6);
-                            CsBot.CommandHandler.UpdateUserName(origUser, newUser);
-                        }
-                        if (inputLine.EndsWith("JOIN " + fromChannel))
-                        {
-                            // Parse nickname of person who joined the channel
-                            nickname = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                            if (nickname == settings.nick)
-                            {
-                                if (fromChannel == settings.channels[0].name)
-                                    joined1 = true;
-                                else if (fromChannel == settings.channels[1].name)
-                                    joined2 = true;
-                                ch.HandleMessage(":" + settings.command_start + "say I'm back baby!", fromChannel, addresser);
-                                continue;
-                            }
-                            // Welcome the nickname to channel by sending a notice
-                            writer.WriteLine("NOTICE " + nickname + ": Hi " + nickname +
-                            " and welcome to " + fromChannel + " channel!");
-                            ch.HandleMessage(":" + settings.command_start + "say " + nickname + ": Hi and welcome to " + fromChannel + " channel!", fromChannel, addresser);
-                            ch.AddUser(nickname);
-                            writer.Flush();
-                            // Sleep to prevent excess flood
-                            Thread.Sleep(2000);
-                        }
-                        else if (inputLine.StartsWith(":NickServ") && inputLine.Contains("You are now identified"))
-                        {
-                            identified = true;
-                            Console.WriteLine(inputLine);
-                        }
-                        else if (inputLine.Contains("!") && inputLine.Contains(" :" + settings.command_start + "quit"))
-                        {
-                            addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                            bool useChannel = false;
-                            if (inputLine.IndexOf("#") >= 0) {
-                                useChannel = true;
-                                fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
-                            }
+		if (!joined1 || !joined2)
+		{
+		    Console.WriteLine(inputLine);
+		}
 
-                            if (settings.admins != null && Array.IndexOf(settings.admins, addresser) >= 0) {
-				foreach (Channel channel in settings.channels) {
-					ch.HandleMessage(":" + settings.command_start + "say Awe, Crap!", channel.name, addresser);
-				}
-                                ping.Stop();
-                                IrcBot.CloseProgram(writer, reader, m_irc);
-                            } else {
-                                CsBot.CommandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
-                            }
-                        }
-                        else if (inputLine.Contains("!") && inputLine.Contains(" :" + settings.command_start + "reload"))
-                        {
-                            addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                            bool useChannel = false;
-                            if (inputLine.IndexOf("#") >= 0) {
-                                useChannel = true;
-                                fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
-                            }
+		if (inputLine.Contains("NICK :")) {
+		    string origUser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+		    string newUser = inputLine.Substring(inputLine.IndexOf("NICK :") + 6);
+		    CsBot.CommandHandler.UpdateUserName(origUser, newUser);
+		}
+		if (inputLine.EndsWith("JOIN " + fromChannel))
+		{
+		    // Parse nickname of person who joined the channel
+		    nickname = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+		    if (nickname == settings.nick)
+		    {
+			if (fromChannel == settings.channels[0].name)
+			    joined1 = true;
+			else if (fromChannel == settings.channels[1].name)
+			    joined2 = true;
+			ch.HandleMessage(":" + settings.command_start + "say I'm back baby!", fromChannel, addresser);
+			continue;
+		    }
+		    // Welcome the nickname to channel by sending a notice
+		    writer.WriteLine("NOTICE " + nickname + ": Hi " + nickname +
+		    " and welcome to " + fromChannel + " channel!");
+		    ch.HandleMessage(":" + settings.command_start + "say " + nickname + ": Hi and welcome to " + fromChannel + " channel!", fromChannel, addresser);
+		    ch.AddUser(nickname);
+		    writer.Flush();
+		    // Sleep to prevent excess flood
+		    Thread.Sleep(2000);
+		}
+		else if (inputLine.StartsWith(":NickServ") && inputLine.Contains("You are now identified"))
+		{
+		    identified = true;
+		    Console.WriteLine(inputLine);
+		}
+		else if (inputLine.Contains("!") && inputLine.Contains(" :" + settings.command_start + "quit"))
+		{
+		    addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+		    bool useChannel = false;
+		    if (inputLine.IndexOf("#") >= 0) {
+			useChannel = true;
+			fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
+		    }
 
-                            if (settings.admins != null && Array.IndexOf(settings.admins, addresser) >= 0) {
-				using (var webClient = new System.Net.WebClient()) { 
-					Stream setting_file = webClient.OpenRead(SETTINGS_FILE); 
-					DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Settings));
-					settings = (Settings)js.ReadObject(setting_file);
-				}
-                                //setting_file = new FileStream(SETTINGS_FILE, FileMode.Open);
-                                //settings = (Settings)js.ReadObject(setting_file);
-                                //setting_file.Close();
-                                //setting_file = null;
-                                CsBot.CommandHandler.settings = settings;
-                                CsBot.CommandHandler.Say("Reloaded settings from web service.", useChannel ? fromChannel : addresser);
-                            } else {
-                                CsBot.CommandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
-                            }
-                        }
-                        else if (inputLine.Contains(settings.command_start) && parsedLine != null && parsedLine.StartsWith(":" + settings.command_start))
-                        {
-                            addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                            fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
-                            ch.HandleMessage(parsedLine, fromChannel, addresser);
-                        }
-                        else if (inputLine.StartsWith("PING :"))
-                        {
-                            writer.WriteLine("PONG :" + inputLine.Substring(inputLine.IndexOf(":") + 1));
-                            writer.Flush();
-                        }
-                        else if (inputLine.Contains("PONG") && (!joined1 || !joined2))
-                        {
-                            if (isUnderscoreNick)
-                            {
-                                writer.WriteLine("PRIVMSG NickServ :ghost " + settings.nick + " " + settings.password);
-                                writer.WriteLine("NICK " + settings.nick);
-                                Console.WriteLine("NICK " + settings.nick);
-                                ch.HandleMessage(":" + settings.command_start + "say identify " + settings.password, "NickServ", settings.nick);
-                                isUnderscoreNick = false;
-                            }
-                            else
-                            {
-				for (int i = 0; i < settings.channels.Count; i++) 
+		    if (settings.admins != null && Array.IndexOf(settings.admins, addresser) >= 0) {
+			foreach (Channel channel in settings.channels) {
+				ch.HandleMessage(":" + settings.command_start + "say Awe, Crap!", channel.name, addresser);
+			}
+			ping.Stop();
+			IrcBot.CloseProgram(writer, reader, m_irc);
+		    } else {
+			CsBot.CommandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
+		    }
+		}
+		else if (inputLine.Contains("!") && inputLine.Contains(" :" + settings.command_start + "reload"))
+		{
+		    addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+		    bool useChannel = false;
+		    if (inputLine.IndexOf("#") >= 0) {
+			useChannel = true;
+			fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
+		    }
+
+		    if (settings.admins != null && Array.IndexOf(settings.admins, addresser) >= 0) {
+			using (var webClient = new System.Net.WebClient()) { 
+				Stream setting_file = webClient.OpenRead(SETTINGS_FILE); 
+				DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Settings));
+				settings = (Settings)js.ReadObject(setting_file);
+			}
+			//setting_file = new FileStream(SETTINGS_FILE, FileMode.Open);
+			//settings = (Settings)js.ReadObject(setting_file);
+			//setting_file.Close();
+			//setting_file = null;
+			CsBot.CommandHandler.settings = settings;
+			CsBot.CommandHandler.Say("Reloaded settings from web service.", useChannel ? fromChannel : addresser);
+		    } else {
+			CsBot.CommandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
+		    }
+		}
+		else if (inputLine.Contains(settings.command_start) && parsedLine != null && parsedLine.StartsWith(":" + settings.command_start))
+		{
+		    addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+		    fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
+		    ch.HandleMessage(parsedLine, fromChannel, addresser);
+		}
+		else if (inputLine.StartsWith("PING :"))
+		{
+		    writer.WriteLine("PONG :" + inputLine.Substring(inputLine.IndexOf(":") + 1));
+		    writer.Flush();
+		}
+		else if (inputLine.Contains("PONG") && (!joined1 || !joined2))
+		{
+		    if (isUnderscoreNick)
+		    {
+			writer.WriteLine("PRIVMSG NickServ :ghost " + settings.nick + " " + settings.password);
+			writer.WriteLine("NICK " + settings.nick);
+			Console.WriteLine("NICK " + settings.nick);
+			ch.HandleMessage(":" + settings.command_start + "say identify " + settings.password, "NickServ", settings.nick);
+			isUnderscoreNick = false;
+		    }
+		    else
+		    {
+			for (int i = 0; i < settings.channels.Count; i++) 
+			{
+				if (settings.channels[i].key != "")
+				    writer.WriteLine("JOIN " + settings.channels[i].name + " " + settings.channels[i].key);
+				else
 				{
-					if (settings.channels[i].key != "")
-					    writer.WriteLine("JOIN " + settings.channels[i].name + " " + settings.channels[i].key);
-					else
-					{
-					    writer.WriteLine("JOIN " + settings.channels[i].name);
-					}
-					writer.Flush();
+				    writer.WriteLine("JOIN " + settings.channels[i].name);
 				}
-                            }
-                        }
-                        else if (inputLine.Contains("PONG") && (joined1 || joined2) && !identified)
-                        {
-                            ch.HandleMessage(":" + settings.command_start + "say identify " + settings.password, "NickServ", addresser);
-                        }
-                        else if (inputLine.Contains(":Nickname is already in use."))
-                        {
-                            Console.WriteLine("Reopening with _ nick.");
-                            writer.Close();
-                            reader.Close();
-                            m_irc.Close();
-                            m_irc = new TcpClient();
-                            m_irc.Connect(settings.server, settings.port);
-                            if (settings.secure == "1") {
-                                stream = new SslStream (m_irc.GetStream(), true, new RemoteCertificateValidationCallback (ValidateServerCertificate));
-                                SslStream sslStream = (SslStream) stream;
-                                sslStream.AuthenticateAsClient(settings.server);
-                            } else {
-                                stream = m_irc.GetStream();
-                            }
-                            reader = new StreamReader((Stream)stream);
-                            writer = new StreamWriter((Stream)stream);
-                            Console.WriteLine(settings.user);
-                            // Start PingSender thread
-                            ping = new PingSender.cs.PingSender();
-                            ping.Start();
-                            writer.WriteLine(settings.user);
-                            writer.Flush();
-                            writer.WriteLine("NICK _" + settings.nick);
-                            Console.WriteLine("NICK _" + settings.nick);
-                            ch = new CommandHandler(writer, reader);
-                            isUnderscoreNick = true;
-                        }
-                        else if (inputLine.Contains(settings.nick) && inputLine.Contains("PRIVMSG") && (inputLine.Contains("rock") || inputLine.Contains("paper") || inputLine.Contains("scissors")))
-                        {
-                            Console.WriteLine(inputLine);
-                            addresser = inputLine.Substring(inputLine.IndexOf(":") + 1, inputLine.IndexOf("!") - inputLine.IndexOf(":") - 1);
-                            string choice = inputLine.Substring(inputLine.LastIndexOf(":") + 1);
-                            ch.DirectRoShamBo(choice);
+				writer.Flush();
+			}
+		    }
+		}
+		else if (inputLine.Contains("PONG") && (joined1 || joined2) && !identified)
+		{
+		    ch.HandleMessage(":" + settings.command_start + "say identify " + settings.password, "NickServ", addresser);
+		}
+		else if (inputLine.Contains(":Nickname is already in use."))
+		{
+		    Console.WriteLine("Reopening with _ nick.");
+		    writer.Close();
+		    reader.Close();
+		    m_irc.Close();
+		    m_irc = new TcpClient();
+		    m_irc.Connect(settings.server, settings.port);
+		    if (settings.secure == "1") {
+			stream = new SslStream (m_irc.GetStream(), true, new RemoteCertificateValidationCallback (ValidateServerCertificate));
+			SslStream sslStream = (SslStream) stream;
+			sslStream.AuthenticateAsClient(settings.server);
+		    } else {
+			stream = m_irc.GetStream();
+		    }
+		    reader = new StreamReader((Stream)stream);
+		    writer = new StreamWriter((Stream)stream);
+		    Console.WriteLine(settings.user);
+		    // Start PingSender thread
+		    ping = new PingSender.cs.PingSender();
+		    ping.Start();
+		    writer.WriteLine(settings.user);
+		    writer.Flush();
+		    writer.WriteLine("NICK _" + settings.nick);
+		    Console.WriteLine("NICK _" + settings.nick);
+		    ch = new CommandHandler(writer, reader);
+		    isUnderscoreNick = true;
+		}
+		else if (inputLine.Contains(settings.nick) && inputLine.Contains("PRIVMSG") && (inputLine.Contains("rock") || inputLine.Contains("paper") || inputLine.Contains("scissors")))
+		{
+		    Console.WriteLine(inputLine);
+		    addresser = inputLine.Substring(inputLine.IndexOf(":") + 1, inputLine.IndexOf("!") - inputLine.IndexOf(":") - 1);
+		    string choice = inputLine.Substring(inputLine.LastIndexOf(":") + 1);
+		    ch.DirectRoShamBo(choice);
 
-                        }
-                        else if (inputLine.Contains(settings.nick) && inputLine.Contains("PRIVMSG") && inputLine.Contains(":" + settings.command_start))
-                        {
-                            Console.WriteLine("PrivateMessage: " + inputLine);
-                            addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                            string command = inputLine.Substring(inputLine.LastIndexOf(":" + settings.command_start));
-                            ch.HandleMessage(command, addresser, addresser);
-                        }
-                        else
-                        {
-                            if (inputLine.Contains("PRIVMSG") && inputLine.Contains("!"))
-                            {
-                                string userName = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                                ch.LastMessage(userName, inputLine, fromChannel);
-                            }
-                        }
-                    }
-                }
+		}
+		else if (inputLine.Contains(settings.nick) && inputLine.Contains("PRIVMSG") && inputLine.Contains(":" + settings.command_start))
+		{
+		    Console.WriteLine("PrivateMessage: " + inputLine);
+		    addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+		    string command = inputLine.Substring(inputLine.LastIndexOf(":" + settings.command_start));
+		    ch.HandleMessage(command, addresser, addresser);
+		}
+		else
+		{
+		    if (inputLine.Contains("PRIVMSG") && inputLine.Contains("!"))
+		    {
+			string userName = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+			ch.LastMessage(userName, inputLine, fromChannel);
+		    }
+		}
+	    }
 	}
 
 	private static Settings ObtainConfig() {
