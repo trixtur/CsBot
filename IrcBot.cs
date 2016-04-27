@@ -112,6 +112,7 @@ namespace IrcBot.cs
                 writer.Close();
                 reader.Close();
                 m_irc.Close();
+		System.Environment.Exit(0);
 	}
 
 	private static void EventLoop(
