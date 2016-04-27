@@ -32,29 +32,18 @@ namespace IrcBot.cs
 
         static void Main(string[] args)
         {
-Console.WriteLine(ConfigurationManager.AppSettings["Site"]);
             object stream;
-            string inputLine;
-            string nickname;
+            string inputLine = "";
+            string nickname = "";
             string addresser = "";
+	    string fromChannel;
             try
             {
                 //FileStream setting_file = new FileStream(SETTINGS_FILE, FileMode.Open);
 
-		Console.WriteLine("Trying to pull config.");
-		ServicePointManager.ServerCertificateValidationCallback = ValidateServerCertificate;
-		//System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
-		using (var webClient = new System.Net.WebClient()) { 
-			Console.WriteLine("Pulling config.");
-			Stream setting_file = webClient.OpenRead(SETTINGS_FILE); 
-			DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Settings));
-			settings = (Settings)js.ReadObject(setting_file);
-			Console.WriteLine("Config File:{0}",settings);
-		}
+		settings = IrcBot.ObtainConfig();
 
-                //setting_file.Close();
-                //setting_file = null;
-                string fromChannel = settings.channels[0].name;
+                fromChannel = settings.channels[0].name;
                 m_irc = new TcpClient();
                 bool joined1 = false;
                 bool joined2 = false;
@@ -87,6 +76,55 @@ Console.WriteLine(ConfigurationManager.AppSettings["Site"]);
                 //writer.Flush();
                 //writer.WriteLine("JOIN " + settings.channels[0].name2);
                 //writer.Flush();
+
+		IrcBot.EventLoop(inputLine, 
+			addresser, 
+			fromChannel, 
+			ping, 
+			joined1, 
+			joined2,
+			nickname,
+			identified,
+			stream);
+
+            }
+            catch (Exception e)
+            {
+                // Close all streams
+                if(writer != null)
+                writer.Close();
+                if(reader != null)
+                reader.Close();
+		if (m_irc != null) {
+			m_irc.Close();
+		}
+                // Show the exception, sleep for a while and try to establish a new connection to irc server
+                Console.WriteLine("Exception info: " + e.ToString());
+                Thread.Sleep(5000);
+                string[] argv = { };
+                Main(argv);
+            }
+        }
+
+	private static void CloseProgram(StreamWriter writer,StreamReader reader,TcpClient m_irc) 
+	{
+                // Close all streams
+                writer.Close();
+                reader.Close();
+                m_irc.Close();
+	}
+
+	private static void EventLoop(
+		string inputLine, 
+		string addresser, 
+		string fromChannel,
+		PingSender.cs.PingSender ping,
+		bool joined1,
+		bool joined2,
+		string nickname,
+		bool identified,
+		object stream) 
+	{
                 while (true)
                 {
                     while ((inputLine = reader.ReadLine()) != null)
@@ -162,7 +200,7 @@ Console.WriteLine(ConfigurationManager.AppSettings["Site"]);
                             if (settings.admins != null && Array.IndexOf(settings.admins, addresser) >= 0) {
                                 ch.HandleMessage(":" + settings.command_start + "say Awe, Crap!", fromChannel, addresser);
                                 ping.Stop();
-                                goto CloseProgram;
+                                IrcBot.CloseProgram(writer, reader, m_irc);
                             } else {
                                 CsBot.CommandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
                             }
@@ -284,30 +322,24 @@ Console.WriteLine(ConfigurationManager.AppSettings["Site"]);
                         }
                     }
                 }
-                CloseProgram:
-                // Close all streams
-                writer.Close();
-                reader.Close();
-                m_irc.Close();
-                return;
-            }
-            catch (Exception e)
-            {
-                // Close all streams
-                if(writer != null)
-                writer.Close();
-                if(reader != null)
-                reader.Close();
-		if (m_irc != null) {
-			m_irc.Close();
+	}
+
+	private static Settings ObtainConfig() {
+		Console.WriteLine("Trying to pull config.");
+		ServicePointManager.ServerCertificateValidationCallback = ValidateServerCertificate;
+		//System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
+		using (var webClient = new System.Net.WebClient()) { 
+			Console.WriteLine("Pulling config.");
+			Stream setting_file = webClient.OpenRead(SETTINGS_FILE); 
+			DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Settings));
+			settings = (Settings)js.ReadObject(setting_file);
+			Console.WriteLine("Config File:{0}",settings);
 		}
-                // Show the exception, sleep for a while and try to establish a new connection to irc server
-                Console.WriteLine("Exception info: " + e.ToString());
-                Thread.Sleep(5000);
-                string[] argv = { };
-                Main(argv);
-            }
-        }
+
+                //setting_file.Close();
+                //setting_file = null;
+		return settings;
+	}
 
         public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
             if(sslPolicyErrors == SslPolicyErrors.None)
