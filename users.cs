@@ -1,58 +1,48 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CsBot
 {
-    class users
+    class Users
     {
-        private Dictionary<string, user> m_users;
+        readonly Dictionary<string, User> m_users;
 
-        public users()
+        public Users()
         {
-            m_users = new System.Collections.Generic.Dictionary<string, user>();
+            m_users = new Dictionary<string, User>();
         }
 
-        public bool hasUser(string user)
+        public bool HasUser(string user)
         {
             return m_users.ContainsKey(user);
         }
 
-        public void removeUser(string user)
+        public void Remove (string user)
         {
-            m_users.Remove(user);
+            if (m_users.ContainsKey(user))
+                m_users.Remove(user);
         }
 
-        public void addUser(string user, user tmpUser = null)
+        public void Add(string user, User tmpUser = null)
         {
             if (tmpUser == null) {
-                tmpUser = new user();
-                tmpUser.Name = user;
+                tmpUser = new User { Name = user };
             }
 
             if (!m_users.ContainsKey(user))
                 m_users.Add(user, tmpUser);
         }
 
-        public bool isPlayingRPS(out string playing_user)
+        public bool IsPlayingRPS(string current_user)
         {
-            Dictionary<string, user>.KeyCollection.Enumerator e = m_users.Keys.GetEnumerator();
-            e.MoveNext();
-            for (int i = 0; i < m_users.Count; i++)
-            {
-                if (m_users[e.Current].RPSFlag)
-                {
-                    playing_user = e.Current;
-                    return true;
-                }
-                e.MoveNext();
-            }
-            playing_user = string.Empty;
+            if (m_users.ContainsKey(current_user))
+                return m_users[current_user].RPSFlag;
+
             return false;
         }
 
-        public bool isOpponentPlayingRPS(string addresser, out string playing_user) {
-            Dictionary<string, user>.KeyCollection.Enumerator e = m_users.Keys.GetEnumerator();
+        public bool IsOpponentPlayingRPS(string addresser, out string playing_user) {
+            Dictionary<string, User>.KeyCollection.Enumerator e = m_users.Keys.GetEnumerator();
             e.MoveNext();
             for (int i = 0; i < m_users.Count; i++)
             {
@@ -67,31 +57,29 @@ namespace CsBot
             return false;
         }
 
-        public bool isPlayingRPS(string current_user)
-        {
-            return m_users[current_user].RPSFlag;
-        }
 
-        public bool isPlayingFarkle(string current_user)
+        public bool IsPlayingFarkle(string current_user)
         {
-            return m_users[current_user].FarkleFlag;
+            if (m_users.ContainsKey(current_user))
+                return m_users[current_user].FarkleFlag;
+
+            return false;
         }
 
         public void ClearFarkleScores()
         {
-            foreach (string m in m_users.Keys)
-            {
-                FarkleValue(m, -FarkleValue(m));
-            }
+            foreach (var user in m_users.Keys)
+                FarkleValue(user, -FarkleValue(user));
         }
 
-        public bool isPlayingFarkle()
+        public bool IsPlayingFarkle()
         {
             bool ans = false;
-            foreach (string m in m_users.Keys)
+
+            foreach (var user in m_users.Keys)
             {
-                ans = m_users[m].FarkleFlag;
-                if (ans == true)
+                ans = m_users[user].FarkleFlag;
+                if (ans)
                     break;
             }
             return ans;
@@ -103,7 +91,7 @@ namespace CsBot
             foreach (string m in m_users.Keys)
             {
                 ans = m_users[m].HasFarkleToken;
-                if (ans == true)
+                if (ans)
                     break;
             }
             return ans;
@@ -118,55 +106,48 @@ namespace CsBot
         public void FarkleValue(string player, int value)
         {
             if (m_users.ContainsKey(player))
-            {
                 m_users[player].FarkleValue = value;
-            }
         }
 
         public int FarkleValue(string player)
         {
             if (m_users.ContainsKey(player))
                 return m_users[player].FarkleValue;
-            else
-                return 0;
+
+            return 0;
         }
 
         public void SetFarkleToken(string player, bool value)
         {
-            if (m_users.ContainsKey(player)) {
+            if (m_users.ContainsKey(player))
                 m_users[player].HasFarkleToken = value;
-            } else {
-                return;
-            }
         }
 
         public bool GetFarkleToken(string player)
         {
             if (m_users.ContainsKey(player))
                 return m_users[player].HasFarkleToken;
-            else
-                return false;
+
+            return false;
         }
 
         public void RPSValue(string player, int value)
         {
-            if (m_users.ContainsKey(player))
-            {
-                m_users[player].RPSFlag = true;
-                m_users[player].RPS = value;
-            }
+            if (!m_users.ContainsKey(player)) return;
+
+            m_users[player].RPSFlag = true;
+            m_users[player].RPS = value;
         }
 
         public int RPSValue(string player)
         {
             if (m_users.ContainsKey(player))
-            {
                 return m_users[player].RPS;
-            }
+
             return -1;
         }
 
-        public void addUserLastMessage(string uname, string message)
+        public void AddUserLastMessage(string uname, string message)
         {
             m_users[uname].Message = message;
         }
@@ -182,22 +163,12 @@ namespace CsBot
             return m_users[uname].Message;
         }
 
-        public IEnumerator<string> GetEnumerator()
-        {
-            Dictionary<string, user>.KeyCollection.Enumerator e = m_users.Keys.GetEnumerator();
-            return e;
-        }
+        public User this[string name] => m_users[name];
 
-        public user this[string name]
+        public void PrintUsers()
         {
-            get
-            {
-                return m_users[name];
-            }
-            set
-            {
-                return; //Don't allow
-            }
+            foreach (var user in m_users.Keys)
+                Console.WriteLine("Users  " + user);
         }
     }
 }

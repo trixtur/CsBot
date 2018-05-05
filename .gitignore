@@ -4,3 +4,8 @@ Backup/
 obj/
 App.config
 CsBot.exe.config
+.vs
+packages
+*.csproj.user
+*.DotSettings.user
+MigrationBackup
