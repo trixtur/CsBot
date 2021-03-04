@@ -45,9 +45,7 @@ namespace CsBot
                 using (m_irc = new TcpClient())
                 {
 
-                    bool joined1 = false;
-                    bool joined2 = false;
-                    bool identified = true;
+                    Console.WriteLine("Trying to connect to server {0}.",Settings.server);
                     m_irc.Connect(Settings.server, Settings.port);
 
                     Stream stream;
@@ -81,7 +79,7 @@ namespace CsBot
                     //Writer.WriteLine("JOIN " + settings.channels[0].name2);
                     //Writer.Flush();
 
-                    EventLoop(addresser, fromChannel, ping, joined1, joined2, nickname, identified, stream);
+                    EventLoop(addresser, fromChannel, ping, nickname, stream);
                 }
             }
             catch (Exception e)
@@ -113,15 +111,18 @@ namespace CsBot
             Environment.Exit(0);
         }
 
-        void EventLoop(string addresser, string fromChannel, PingSender ping, bool joined1, bool joined2, string nickname, bool identified, object stream)
+        void EventLoop(string addresser, string fromChannel, PingSender ping, string nickname, object stream)
         {
+            bool joined = false;
+            bool identified = true;
+
             while (true)
             {
                 var inputLine = Reader.ReadLine();
                 string parsedLine = null;
                 foreach (var channel in Settings.channels)
                 {
-                    if (inputLine.Contains(channel.name))
+                    if (inputLine.Contains(channel.name) && inputLine.IndexOf("#") > -1)
                         fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
 
                     if (inputLine.Contains(Settings.nick + " = " + channel.name) || inputLine.Contains(Settings.nick + " = " + channel.name))
@@ -129,7 +130,7 @@ namespace CsBot
                         commandHandler.ParseUsers(inputLine);
 
                     //if (inputLine.Contains(settings.channels[0].name))
-                    if (joined1 && !inputLine.EndsWith(fromChannel))
+                    if (joined && !inputLine.EndsWith(fromChannel))
                     {
                         //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
                         if (!inputLine.EndsWith(channel.name) && (parsedLine == null || !parsedLine.StartsWith(":" + Settings.command_start)))
@@ -137,7 +138,7 @@ namespace CsBot
                     }
                 }
 
-                if (!joined1 || !joined2)
+                if (!joined)
                     Console.WriteLine(inputLine);
 
                 if (inputLine.Contains(Constants.NICK))
@@ -154,9 +155,8 @@ namespace CsBot
                     if (nickname == Settings.nick)
                     {
                         if (fromChannel == Settings.channels[0].name)
-                            joined1 = true;
-                        else if (fromChannel == Settings.channels[1].name)
-                            joined2 = true;
+                            joined = true;
+
                         commandHandler.HandleMessage(":" + Settings.command_start + "say I'm back baby!", fromChannel, addresser);
                         continue;
                     }
@@ -228,7 +228,7 @@ namespace CsBot
                     Writer.WriteLine(Constants.PONG + inputLine.Substring(inputLine.IndexOf(":") + 1));
                     Writer.Flush();
                 }
-                else if (inputLine.Contains("PONG") && (!joined1 || !joined2))
+                else if (inputLine.Contains("PONG") && (!joined))
                 {
                     if (isUnderscoreNick)
                     {
@@ -251,7 +251,7 @@ namespace CsBot
                         }
                     }
                 }
-                else if (inputLine.Contains("PONG") && (joined1 || joined2) && !identified)
+                else if (inputLine.Contains("PONG") && (joined) && !identified)
                 {
                     commandHandler.HandleMessage(":" + Settings.command_start + "say identify " + Settings.password, "NickServ", addresser);
                 }

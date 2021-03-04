@@ -8,7 +8,7 @@ namespace CsBot
     class CommandHandler
     {
         internal readonly IrcBot ircBot;
-        static readonly Random random = new Random();
+        public static readonly Random random = new Random();
         /*private static string ircBot.Settings.nick = "Be|\\|der";
         private const string ircBot.Settings.command_start = "~";
         private static string ircBot.Settings.channels[0].name = "#pyrous";
@@ -123,27 +123,31 @@ namespace CsBot
             switch (fixedCommand)
             {
                 case "insult":
-                    if (command.Length == endCommand + 1)
-                    {
-                        Say(m_addresser + ": Who do you want " + ircBot.Settings.nick + " to insult?");
-                    }
-                    else
-                    {
-                        string toInsult = command.Substring(endCommand + 2).Trim();
-                        if (!m_users.HasUser(toInsult))
+                    if (true) {
+                        new Insult(this).handle(command, endCommand);
+                    } else {
+                        if (command.Length == endCommand + 1)
                         {
-                            Say(m_addresser + ": That person doesn't exist.");
+                            Say(m_addresser + ": Who do you want " + ircBot.Settings.nick + " to insult?");
                         }
                         else
                         {
-                            Console.WriteLine(m_addresser + " insulted " + toInsult + ".");
-                            if (ircBot.Settings.insults != null && ircBot.Settings.insults.Length > 0)
+                            string toInsult = command.Substring(endCommand + 2).Trim();
+                            if (!m_users.HasUser(toInsult))
                             {
-                                Say("/me " + string.Format(ircBot.Settings.insults[random.Next(0, 10000) % ircBot.Settings.insults.Length], toInsult));
+                                Say(m_addresser + ": That person doesn't exist.");
                             }
                             else
                             {
-                                Say("/me thinks " + toInsult + " is screwier than his Aunt Rita, and she's a screw.");
+                                Console.WriteLine(m_addresser + " insulted " + toInsult + ".");
+                                if (ircBot.Settings.insults != null && ircBot.Settings.insults.Length > 0)
+                                {
+                                    Say("/me " + string.Format(ircBot.Settings.insults[random.Next(0, 10000) % ircBot.Settings.insults.Length], toInsult));
+                                }
+                                else
+                                {
+                                    Say("/me thinks " + toInsult + " is screwier than his Aunt Rita, and she's a screw.");
+                                }
                             }
                         }
                     }
@@ -408,6 +412,21 @@ namespace CsBot
                 string message = inputLine.Substring(inputLine.LastIndexOf(fromChannel + " :") + fromChannel.Length + 2);
                 m_users.AddUserLastMessage(user, message);
             }
+        }
+
+        public string GetAddresser()
+        {
+            return this.m_addresser;
+        }
+
+        public IrcBot GetIrcBot()
+        {
+            return this.ircBot;
+        }
+
+        public Users GetUsers()
+        {
+            return this.m_users;
         }
     }
 }

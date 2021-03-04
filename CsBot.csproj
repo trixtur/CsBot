@@ -67,6 +67,7 @@
     <Compile Include="Channel.cs" />
     <Compile Include="CommandHandler.cs" />
     <Compile Include="Command\RssFeedCommand.cs" />
+    <Compile Include="Command\Insult.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Command\IrcCommand.cs" />
     <Compile Include="Games\Farkle.cs" />
