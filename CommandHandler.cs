@@ -124,6 +124,7 @@ namespace CsBot
             {
                 case "insult":
                     if (true) {
+                        Console.WriteLine("Using new insult handler.");
                         new Insult(this).handle(command, endCommand);
                     } else {
                         if (command.Length == endCommand + 1)

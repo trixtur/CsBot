@@ -73,6 +73,8 @@ namespace CsBot
                     Writer.Flush();
                     Console.WriteLine("NICK " + Settings.nick);
                     commandHandler = new CommandHandler(this);
+                    Writer.WriteLine("PRIVMSG mattermost LOGIN " + Settings.nick + " " + Settings.password);
+                    Writer.Flush();
                     //Writer.WriteLine("JOIN " + settings.channels[0].name + " " + KEY);
                     //Writer.WriteLine("JOIN " + settings.channels[0].name);
                     //Writer.Flush();
@@ -84,8 +86,7 @@ namespace CsBot
             }
             catch (Exception e)
             {
-                foreach (var channel in Settings.channels)
-                    commandHandler.HandleMessage(":" + Settings.command_start + "say Awe, Crap!", channel.name, "self");
+                commandHandler.HandleMessage(":" + Settings.command_start + "say Awe, Crap!", "#bots", "self");
 
                 // Show the exception, sleep for a while and try to establish a new connection to irc server
                 Console.WriteLine("Exception info: " + e);
@@ -120,6 +121,7 @@ namespace CsBot
             {
                 var inputLine = Reader.ReadLine();
                 string parsedLine = null;
+
                 foreach (var channel in Settings.channels)
                 {
                     if (inputLine.Contains(channel.name) && inputLine.IndexOf("#") > -1)
@@ -157,7 +159,9 @@ namespace CsBot
                         if (fromChannel == Settings.channels[0].name)
                             joined = true;
 
-                        commandHandler.HandleMessage(":" + Settings.command_start + "say I'm back baby!", fromChannel, addresser);
+                        if (fromChannel == "#bots") {
+                            commandHandler.HandleMessage(":" + Settings.command_start + "say I'm back baby!", fromChannel, addresser);
+                        }
                         continue;
                     }
                     // Welcome the nickname to channel by sending a notice
@@ -186,8 +190,7 @@ namespace CsBot
 
                     if (Settings.admins != null && Array.IndexOf(Settings.admins, addresser) >= 0)
                     {
-                        foreach (var channel in Settings.channels)
-                            commandHandler.HandleMessage(":" + Settings.command_start + "say Awe, Crap!", channel.name, addresser);
+                        commandHandler.HandleMessage(":" + Settings.command_start + "say Awe, Crap!", "#bots", addresser);
 
                         ping.Stop();
                         CloseProgram();
@@ -254,6 +257,12 @@ namespace CsBot
                 else if (inputLine.Contains("PONG") && (joined) && !identified)
                 {
                     commandHandler.HandleMessage(":" + Settings.command_start + "say identify " + Settings.password, "NickServ", addresser);
+                }
+                else if (inputLine.Contains("LOGIN"))
+                {
+                    Console.WriteLine("{0} and {1}", Settings.nick, Settings.password);
+                    Writer.WriteLine("PRIVMSG mattermost LOGIN " + Settings.nick + " " + Settings.password);
+                    Writer.Flush();
                 }
                 else if (inputLine.Contains(":Nickname is already in use."))
                 {
@@ -323,8 +332,10 @@ namespace CsBot
             using (var webClient = new WebClient())
             {
                 Console.WriteLine("Pulling config.");
+                Console.WriteLine("Settings file: {0}", SETTINGS_FILE);
                 var setting_file = webClient.DownloadString(SETTINGS_FILE);
                 Settings = JsonConvert.DeserializeObject<Settings>(setting_file);
+                Settings.password = ConfigurationManager.AppSettings["Password"];
                 Console.WriteLine("Config File:{0}", Settings);
             }
         }
