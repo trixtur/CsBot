@@ -1,3 +1,4 @@
+using System;
 using System.ServiceModel.Syndication;
 
 namespace CsBot
@@ -12,7 +13,7 @@ namespace CsBot
 
         public int RPS { get; set; } = -2;
 
-        public bool RPSFlag { get; set; }
+        public bool RPSFlag { get; set; } = false;
 
         public int FarkleValue
         {
@@ -20,9 +21,9 @@ namespace CsBot
             set => farkle_value += value;
         }
 
-        public bool FarkleFlag { get; set; }
+        public bool FarkleFlag { get; set; } = false;
 
-        public bool HasFarkleToken { get; set; }
+        public bool HasFarkleToken { get; set; } = false;
 
         public SyndicationFeed Feed { get; set; }
 

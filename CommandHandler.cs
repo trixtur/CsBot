@@ -16,7 +16,6 @@ namespace CsBot
         private static string m_fromChannel = ircBot.Settings.channels[0].name;
         */
         string m_fromChannel;
-        int DICE = 6;
         internal string m_addresser = "";
         internal readonly Users m_users;
         Farkle farkle;
@@ -72,7 +71,7 @@ namespace CsBot
             ircBot.Writer.Flush();
         }
 
-        string GetChannel(string input)
+        public string GetChannel(string input)
         {
             var parts = input.Split(' ');
             return parts.FirstOrDefault(part => part.StartsWith("#"));
@@ -120,171 +119,30 @@ namespace CsBot
                 endCommand = fixedCommand.Length;
             }
 
+            new Insult(this, fixedCommand).handle(command, endCommand);
+            new Quote(this, fixedCommand).handle(command, endCommand);
+            new Praise(this, fixedCommand).handle(command, endCommand);
+            new APB(this, fixedCommand).handle(command, endCommand);
+            new Caffeine(this, fixedCommand).handle(command, endCommand);
+            new Say(this, fixedCommand).handle(command, endCommand);
+            new Emote(this, fixedCommand).handle(command, endCommand);
+            new Roll(this, fixedCommand).Play(command, endCommand);
+
             switch (fixedCommand)
             {
                 case "insult":
-                    if (true) {
-                        Console.WriteLine("Using new insult handler.");
-                        new Insult(this).handle(command, endCommand);
-                    } else {
-                        if (command.Length == endCommand + 1)
-                        {
-                            Say(m_addresser + ": Who do you want " + ircBot.Settings.nick + " to insult?");
-                        }
-                        else
-                        {
-                            string toInsult = command.Substring(endCommand + 2).Trim();
-                            if (!m_users.HasUser(toInsult))
-                            {
-                                Say(m_addresser + ": That person doesn't exist.");
-                            }
-                            else
-                            {
-                                Console.WriteLine(m_addresser + " insulted " + toInsult + ".");
-                                if (ircBot.Settings.insults != null && ircBot.Settings.insults.Length > 0)
-                                {
-                                    Say("/me " + string.Format(ircBot.Settings.insults[random.Next(0, 10000) % ircBot.Settings.insults.Length], toInsult));
-                                }
-                                else
-                                {
-                                    Say("/me thinks " + toInsult + " is screwier than his Aunt Rita, and she's a screw.");
-                                }
-                            }
-                        }
-                    }
-                    break;
                 case "quote":
-                    if (ircBot.Settings.quotes != null && ircBot.Settings.quotes.Length > 0)
-                    {
-                        Say(ircBot.Settings.quotes[random.Next(0, 10000) % ircBot.Settings.quotes.Length]);
-                    }
-                    else
-                    {
-                        Say("Hey, the blues. The tragic sound of other people's suffering. Thant's kind of a pick-me-up.");
-                    }
-                    break;
                 case "praise":
-                    if (command.Length == endCommand + 1)
-                    {
-                        Say(m_addresser + ": Who do you want " + ircBot.Settings.nick + " to praise?");
-                    }
-                    else
-                    {
-                        string toPraise = command.Substring(endCommand + 2).Trim();
-                        if (!m_users.HasUser(toPraise))
-                        {
-                            Say(m_addresser + ": That person doesn't exist.");
-                        }
-                        else
-                        {
-                            Console.WriteLine(m_addresser + " praised " + toPraise + ".");
-                            if (ircBot.Settings.praises != null && ircBot.Settings.praises.Length > 0)
-                            {
-                                Say("/me " + string.Format(ircBot.Settings.praises[random.Next(0, 10000) % ircBot.Settings.praises.Length], toPraise));
-                            }
-                            else
-                            {
-                                Say("/me thinks " + toPraise + " is very smart.");
-                            }
-                        }
-                    }
-                    break;
                 case "apb":
-                    if (command.Length == endCommand + 1)
-                    {
-                        Say(m_addresser + ": Who do you want " + ircBot.Settings.nick + " to find?");
-                    }
-                    else
-                    {
-                        string toFind = command.Substring(endCommand + 2).Trim();
-                        if (!m_users.HasUser(toFind))
-                        {
-                            Say(m_addresser + ": That person doesn't exist.");
-                        }
-                        else
-                        {
-                            Console.WriteLine(m_addresser + " put out apb for " + toFind);
-                            Say("/me sends out the blood hounds to find " + toFind + ".");
-                        }
-                    }
-                    break;
                 case "caffeine":
-                    if (command.Length == endCommand + 1)
-                    {
-                        Say("/me walks over to " + m_addresser + " and gives them a shot of caffeine straight into the blood stream.");
-                    }
-                    else
-                    {
-                        int shots;
-                        if (!int.TryParse(command.Substring(endCommand + 2).Trim(), out shots))
-                        {
-                            Say(m_addresser + ": I didn't understand, how many shots of caffeine did you want?");
-                        }
-                        else if (shots == 1)
-                        {
-                            Say("/me walks over to " + m_addresser + " and gives them a shot of caffeine straight into the blood stream.");
-                        }
-                        else
-                        {
-                            Say("/me walks over to " + m_addresser + " and gives them " + shots + " shots of caffeine straight into the blood stream.");
-                        }
-                    }
-                    break;
                 case "say":
-                    if (command.Length == endCommand + 1)
-                    {
-                        Say(m_addresser + ": What did you want " + ircBot.Settings.nick + " to say?");
-                    }
-                    else
-                    {
-                        string toSay = command.Substring(endCommand + 2).Trim();
-                        if (toSay.StartsWith("in"))
-                        {
-                            string channel = GetChannel(toSay);
-                            if (channel != null)
-                            {
-                                string toSayIn = toSay.Substring(toSay.IndexOf(channel) + channel.Length + 1);
-                                Say(toSayIn, channel);
-                            }
-                        }
-                        else
-                        {
-                            Say(toSay, m_fromChannel);
-                        }
-                    }
-                    break;
                 case "emote":
-                    if (command.Length == endCommand + 1)
-                    {
-                        Say(m_addresser + ": What did you want " + ircBot.Settings.nick + " to emote?");
-                    }
-                    else
-                    {
-                        string toEmote = command.Substring(endCommand + 2).Trim();
-                        if (toEmote.StartsWith("in"))
-                        {
-                            string channel = GetChannel(toEmote);
-                            if (channel != null)
-                            {
-                                string toEmoteIn = toEmote.Substring(toEmote.IndexOf(channel) + channel.Length + 1);
-                                Say("/me " + toEmoteIn, channel);
-                            }
-                        }
-                        else
-                        {
-                            Say("/me " + toEmote);
-                        }
-                    }
-                    break;
                 case "roll":
-                    int d1, d2, total;
-                    d1 = random.Next(1, DICE + 1);
-                    d2 = random.Next(1, DICE + 1);
-                    total = d1 + d2;
-                    Say(m_addresser + " rolled a " + d1 + " and a " + d2 + " for a total of " + total);
+
                     break;
                 case "rps":
-                    new RockPaperScissors(this).Play(this, command, endCommand);
+                    new RockPaperScissors(this).Play(command, endCommand);
+
                     break;
                 case "farklehelp":
                     farkle.Help();
@@ -304,22 +162,8 @@ namespace CsBot
                     farkle.JoinFarkle();
                     break;
                 case "s":
-                    if (command.Length == endCommand + 1)
-                    {
-                        Say(m_addresser + ": What did you want " + ircBot.Settings.nick + " to replace?");
-                    }
-                    else if (command.IndexOf("/") == -1)
-                    {
-                        Say(m_addresser + ": Usage is ~s/<wrong phrase>/<corrected phrase>/");
-                    }
-                    else
-                    {
-                        string toReplace = command.Substring(command.IndexOf("/") + 1, command.Substring(command.IndexOf("/") + 1).IndexOf("/"));
-                        string withString = command.Substring(command.IndexOf("/", command.IndexOf(toReplace))).Replace("/", "");
-                        string lastSaid = m_users.getUserMessage(m_addresser);
-                        lastSaid = lastSaid.Replace(toReplace, withString);
-                        Say(m_addresser + " meant: " + lastSaid);
-                    }
+                    new StringReplace(this).handle(command, endCommand);
+
                     break;
                 case "getnext":
                     rssFeed.GetNext();
@@ -428,6 +272,16 @@ namespace CsBot
         public Users GetUsers()
         {
             return this.m_users;
+        }
+
+        public string GetFromChannel()
+        {
+            return this.m_fromChannel;
+        }
+
+        public string[] GetQuotes()
+        {
+            return this.ircBot.Settings.quotes;
         }
     }
 }

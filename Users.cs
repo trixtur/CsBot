@@ -43,9 +43,11 @@ namespace CsBot
 
         public bool IsOpponentPlayingRPS(string addresser, out string playing_user) {
             Dictionary<string, User>.KeyCollection.Enumerator e = m_users.Keys.GetEnumerator();
+            Console.WriteLine("Current: {0}", e.Current);
             e.MoveNext();
             for (int i = 0; i < m_users.Count; i++)
             {
+                Console.WriteLine("Current: {0} is playing {1}.", e.Current, m_users[e.Current].RPSFlag);
                 if (m_users[e.Current].RPSFlag && e.Current != addresser)
                 {
                     playing_user = e.Current;
@@ -133,10 +135,11 @@ namespace CsBot
 
         public void RPSValue(string player, int value)
         {
-            if (!m_users.ContainsKey(player)) return;
-
-            m_users[player].RPSFlag = true;
-            m_users[player].RPS = value;
+            if (m_users.ContainsKey(player))
+            {
+                m_users[player].RPSFlag = true;
+                m_users[player].RPS = value;
+            }
         }
 
         public int RPSValue(string player)
