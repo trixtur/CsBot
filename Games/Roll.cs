@@ -2,25 +2,22 @@ using System;
 
 namespace CsBot.Games
 {
-    class Roll
+    class Roll : iGame
     {
         CommandHandler handler;
         int d1, d2, total;
         readonly int DICE = 6;
         Random random;
-        bool shouldRun;
 
-        public Roll(CommandHandler handler, string command)
+        public Roll(CommandHandler handler)
         {
             this.handler = handler;
             random = new Random();
-
-            shouldRun = command == this.GetType().Name.ToLower();
         }
 
-        public void Play(string command, int endCommand)
+        public void Play(string command, int endCommand, string verb)
         {
-            if (!shouldRun) return;
+            if (verb != this.GetType().Name.ToLower()) return;
 
             string addresser = this.handler.GetAddresser();
 

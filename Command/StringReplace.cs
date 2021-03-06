@@ -2,7 +2,7 @@ using System;
 
 namespace CsBot.Command
 {
-    class StringReplace
+    class StringReplace : iCommand
     {
         CommandHandler handler;
 
@@ -11,8 +11,10 @@ namespace CsBot.Command
             this.handler = handler;
         }
 
-        public void handle(string command, int endCommand)
+        public void handle(string command, int endCommand, string verb)
         {
+            if (verb != "s") return;
+
             string addresser = this.handler.GetAddresser();
             IrcBot ircBot = this.handler.GetIrcBot();
             Users users = this.handler.GetUsers();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CsBot.Command;
 using CsBot.Games;
@@ -20,12 +21,28 @@ namespace CsBot
         internal readonly Users m_users;
         Farkle farkle;
         RssFeedCommand rssFeed;
+        List<iCommand> Commands;
+        List<iGame> Games;
 
         public CommandHandler(IrcBot ircBot)
         {
             this.ircBot = ircBot;
             m_users = new Users();
             rssFeed = new RssFeedCommand(this);
+
+            Commands = new List<iCommand>();
+            Games = new List<iGame>();
+
+            Commands.Add(new Insult(this));
+            Commands.Add(new Quote(this));
+            Commands.Add(new Praise(this));
+            Commands.Add(new APB(this));
+            Commands.Add(new Caffeine(this));
+            Commands.Add(new Say(this));
+            Commands.Add(new Emote(this));
+            Commands.Add(new StringReplace(this));
+
+            Games.Add(new Roll(this));
         }
 
         /// <summary>
@@ -119,14 +136,15 @@ namespace CsBot
                 endCommand = fixedCommand.Length;
             }
 
-            new Insult(this, fixedCommand).handle(command, endCommand);
-            new Quote(this, fixedCommand).handle(command, endCommand);
-            new Praise(this, fixedCommand).handle(command, endCommand);
-            new APB(this, fixedCommand).handle(command, endCommand);
-            new Caffeine(this, fixedCommand).handle(command, endCommand);
-            new Say(this, fixedCommand).handle(command, endCommand);
-            new Emote(this, fixedCommand).handle(command, endCommand);
-            new Roll(this, fixedCommand).Play(command, endCommand);
+            foreach (iCommand c in Commands)
+            {
+                c.handle(command, endCommand, fixedCommand);
+            }
+
+            foreach (iGame g in Games)
+            {
+                g.Play(command, endCommand, fixedCommand);
+            }
 
             switch (fixedCommand)
             {
@@ -138,6 +156,7 @@ namespace CsBot
                 case "say":
                 case "emote":
                 case "roll":
+                case "s":
 
                     break;
                 case "rps":
@@ -160,10 +179,6 @@ namespace CsBot
                     if (farkle == null)
                         farkle = new Farkle(this);
                     farkle.JoinFarkle();
-                    break;
-                case "s":
-                    new StringReplace(this).handle(command, endCommand);
-
                     break;
                 case "getnext":
                     rssFeed.GetNext();

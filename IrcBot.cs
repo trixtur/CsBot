@@ -86,11 +86,12 @@ namespace CsBot
             }
             catch (Exception e)
             {
-                commandHandler.HandleMessage(":" + Settings.command_start + "say Awe, Crap!", "#bots", "self");
-
                 // Show the exception, sleep for a while and try to establish a new connection to irc server
                 Console.WriteLine("Exception info: " + e);
                 Task.Delay(5000);
+
+                commandHandler.HandleMessage(":" + Settings.command_start + "say Awe, Crap!", "#bots", "self");
+
                 string[] argv = { };
                 Start();
             }
@@ -135,7 +136,7 @@ namespace CsBot
                     if (joined && !inputLine.EndsWith(fromChannel))
                     {
                         //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
-                        if (!inputLine.EndsWith(channel.name) && (parsedLine == null || !parsedLine.StartsWith(":" + Settings.command_start)))
+                        if (!inputLine.EndsWith(channel.name) && (parsedLine == null || !parsedLine.StartsWith(":" + Settings.command_start)) && channel.name == fromChannel)
                             parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + channel.name.Length + 1).Trim();
                     }
                 }

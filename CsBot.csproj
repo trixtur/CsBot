@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CsBot</RootNamespace>
     <AssemblyName>CsBot</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Channel.cs" />
     <Compile Include="CommandHandler.cs" />
+    <Compile Include="Command\iCommand.cs" />
     <Compile Include="Command\RssFeedCommand.cs" />
     <Compile Include="Command\Insult.cs" />
     <Compile Include="Command\Praise.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Command\IrcCommand.cs" />
     <Compile Include="Games\Farkle.cs" />
+    <Compile Include="Games\iGame.cs" />
     <Compile Include="Games\RockPaperScissors.cs" />
     <Compile Include="Games\Roll.cs" />
     <Compile Include="PingSender.cs" />
@@ -90,6 +92,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.1">

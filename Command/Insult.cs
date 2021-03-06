@@ -2,21 +2,18 @@ using System;
 
 namespace CsBot.Command
 {
-    class Insult
+    class Insult : iCommand
     {
         CommandHandler handler;
-        bool shouldRun;
 
-        public Insult(CommandHandler handler, string command)
+        public Insult(CommandHandler handler)
         {
             this.handler = handler;
-
-            shouldRun = command == this.GetType().Name.ToLower();
         }
 
-        public void handle(string command, int endCommand)
+        public void handle(string command, int endCommand, string verb)
         {
-            if (!shouldRun) return;
+            if (verb != this.GetType().Name.ToLower()) return;
 
             string addresser = this.handler.GetAddresser();
             IrcBot ircBot = this.handler.GetIrcBot();
