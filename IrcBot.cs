@@ -298,7 +298,7 @@ namespace CsBot
                     commandHandler = new CommandHandler(this);
                     isUnderscoreNick = true;
                 }
-                else if (inputLine.Contains(Settings.nick) && inputLine.Contains("PRIVMSG") && (inputLine.Contains("rock") || inputLine.Contains("paper") || inputLine.Contains("scissors")))
+                else if (inputLine.Contains("PRIVMSG") && (inputLine.Contains("rock") || inputLine.Contains("paper") || inputLine.Contains("scissors")))
                 {
                     Console.WriteLine(inputLine);
                     addresser = inputLine.Substring(inputLine.IndexOf(":") + 1, inputLine.IndexOf("!") - inputLine.IndexOf(":") - 1);
@@ -306,7 +306,7 @@ namespace CsBot
                     commandHandler.DirectRoShamBo(choice);
 
                 }
-                else if (inputLine.Contains(Settings.nick) && inputLine.Contains("PRIVMSG") && inputLine.Contains(":" + Settings.command_start))
+                else if (inputLine.Contains("PRIVMSG") && inputLine.Contains(":" + Settings.command_start))
                 {
                     Console.WriteLine("PrivateMessage: " + inputLine);
                     addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);

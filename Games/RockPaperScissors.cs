@@ -4,9 +4,10 @@ namespace CsBot.Games
 {
     public enum RoShamBo { Rock, Paper, Scissors };
 
-    class RockPaperScissors
+    class RockPaperScissors : iGame
     {
         CommandHandler handler;
+        private const string GameName = "rps";
 
         Users m_users => handler.m_users;
         string m_addresser => handler.m_addresser;
@@ -17,8 +18,10 @@ namespace CsBot.Games
             this.handler = handler;
         }
 
-        public void Play(string command, int endCommand)
+        public void Play(string command, int endCommand, string verb)
         {
+            if (verb != GameName) return;
+
             if (command.Length == endCommand + 1 && m_users.RPSValue(m_addresser) == -2)
             {
                 this.handler.Say("/me whispers something to " + m_addresser + ".");

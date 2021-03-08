@@ -43,6 +43,7 @@ namespace CsBot
             Commands.Add(new StringReplace(this));
 
             Games.Add(new Roll(this));
+            Games.Add(new RockPaperScissors(this));
         }
 
         /// <summary>
@@ -156,11 +157,8 @@ namespace CsBot
                 case "say":
                 case "emote":
                 case "roll":
-                case "s":
-
-                    break;
                 case "rps":
-                    new RockPaperScissors(this).Play(command, endCommand);
+                case "s":
 
                     break;
                 case "farklehelp":
