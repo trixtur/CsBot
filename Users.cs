@@ -33,33 +33,6 @@ namespace CsBot
                 m_users.Add(user, tmpUser);
         }
 
-        public bool IsPlayingRPS(string current_user)
-        {
-            if (m_users.ContainsKey(current_user))
-                return m_users[current_user].RPSFlag;
-
-            return false;
-        }
-
-        public bool IsOpponentPlayingRPS(string addresser, out string playing_user) {
-            Dictionary<string, User>.KeyCollection.Enumerator e = m_users.Keys.GetEnumerator();
-            Console.WriteLine("Current: {0}", e.Current);
-            e.MoveNext();
-            for (int i = 0; i < m_users.Count; i++)
-            {
-                Console.WriteLine("Current: {0} is playing {1}.", e.Current, m_users[e.Current].RPSFlag);
-                if (m_users[e.Current].RPSFlag && e.Current != addresser)
-                {
-                    playing_user = e.Current;
-                    return true;
-                }
-                e.MoveNext();
-            }
-            playing_user = string.Empty;
-            return false;
-        }
-
-
         public bool IsPlayingFarkle(string current_user)
         {
             if (m_users.ContainsKey(current_user))
@@ -133,32 +106,9 @@ namespace CsBot
             return false;
         }
 
-        public void RPSValue(string player, int value)
-        {
-            if (m_users.ContainsKey(player))
-            {
-                m_users[player].RPSFlag = true;
-                m_users[player].RPS = value;
-            }
-        }
-
-        public int RPSValue(string player)
-        {
-            if (m_users.ContainsKey(player))
-                return m_users[player].RPS;
-
-            return -1;
-        }
-
         public void AddUserLastMessage(string uname, string message)
         {
             m_users[uname].Message = message;
-        }
-
-        public void StopRPS(string uname)
-        {
-            m_users[uname].RPS = -2;
-            m_users[uname].RPSFlag = false;
         }
 
         public string getUserMessage(string uname)
@@ -172,6 +122,22 @@ namespace CsBot
         {
             foreach (var user in m_users.Keys)
                 Console.WriteLine("Users  " + user);
+        }
+
+        public bool ContainsKey(string key) {
+            return m_users.ContainsKey(key);
+	    }
+
+        public User getUserByKey(string key) {
+            return m_users[key];
+        }
+
+        public Dictionary<string,User>.KeyCollection.Enumerator GetEnumerator() {
+            return m_users.Keys.GetEnumerator();
+	    }
+
+        public int GetCount() {
+            return m_users.Count;
         }
     }
 }

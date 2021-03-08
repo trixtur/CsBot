@@ -23,6 +23,7 @@ namespace CsBot
         RssFeedCommand rssFeed;
         List<iCommand> Commands;
         List<iGame> Games;
+        internal enum GamesList { Roll, RockPaperScissors };
 
         public CommandHandler(IrcBot ircBot)
         {
@@ -243,16 +244,18 @@ namespace CsBot
 
         public void DirectRoShamBo(string choice)
         {
+            RockPaperScissors rps = (RockPaperScissors)Games[(int)GamesList.RockPaperScissors];
+
             switch (choice)
             {
                 case "rock":
-                    m_users.RPSValue(m_addresser, (int)RoShamBo.Rock);
+		            rps.RPSValue(m_addresser, (int)RoShamBo.Rock);
                     break;
                 case "paper":
-                    m_users.RPSValue(m_addresser, (int)RoShamBo.Paper);
+                    rps.RPSValue(m_addresser, (int)RoShamBo.Paper);
                     break;
                 case "scissors":
-                    m_users.RPSValue(m_addresser, (int)RoShamBo.Scissors);
+                    rps.RPSValue(m_addresser, (int)RoShamBo.Scissors);
                     break;
                 default:
                     Say("/me whispers something to " + m_addresser + ".");
