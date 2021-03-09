@@ -2,30 +2,30 @@ using System;
 
 namespace CsBot.Command
 {
-    class Quote : iCommand
+    class Quote : ICommand
     {
-        CommandHandler handler;
-        Random random;
+	    readonly CommandHandler handler;
+	    readonly Random random;
 
         public Quote (CommandHandler handler)
         {
             this.handler = handler;
-            this.random = new Random();
+            random = new Random();
         }
 
-        public void handle(string command, int endCommand, string verb)
+        public void Handle(string command, int endCommand, string verb)
         {
-            if (verb != this.GetType().Name.ToLower()) return;
+            if (verb != GetType().Name.ToLower()) return;
 
-            string[] quotes = this.handler.GetQuotes();
+            var quotes = handler.GetQuotes();
 
             if (quotes != null && quotes.Length > 0)
             {
-                this.handler.Say(quotes[this.random.Next(0, 10000) % quotes.Length]);
+                handler.Say(quotes[random.Next(0, 10000) % quotes.Length]);
             }
             else
             {
-                this.handler.Say("Hey, the blues. The tragic sound of other people's suffering. Thant's kind of a pick-me-up.");
+                handler.Say("Hey, the blues. The tragic sound of other people's suffering. Thant's kind of a pick-me-up.");
             }
         }
     }

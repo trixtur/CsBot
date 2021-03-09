@@ -41,11 +41,11 @@ namespace CsBot
             {
                 ObtainConfig();
 
-                var fromChannel = Settings.channels[0].name;
+                var fromChannel = Settings.channels[0].Name;
                 using (m_irc = new TcpClient())
                 {
 
-                    Console.WriteLine("Trying to connect to server {0}.",Settings.server);
+                    Console.WriteLine($"Trying to connect to server {Settings.server}.");
                     m_irc.Connect(Settings.server, Settings.port);
 
                     Stream stream;
@@ -67,16 +67,16 @@ namespace CsBot
                     ping.Start();
                     Writer.WriteLine(Settings.user);
                     Writer.Flush();
-                    Writer.WriteLine("NICK " + Settings.nick);
+                    Writer.WriteLine($"NICK {Settings.nick}");
                     Writer.Flush();
-                    Writer.WriteLine("PASS " + Settings.password);
+                    Writer.WriteLine($"PASS {Settings.password}");
                     Writer.Flush();
-                    Console.WriteLine("NICK " + Settings.nick);
+                    Console.WriteLine($"NICK {Settings.nick}");
                     commandHandler = new CommandHandler(this);
-                    Writer.WriteLine("PRIVMSG mattermost LOGIN " + Settings.nick + " " + Settings.password);
+                    Writer.WriteLine($"PRIVMSG mattermost LOGIN {Settings.nick} {Settings.password}");
                     Writer.Flush();
-                    //Writer.WriteLine("JOIN " + settings.channels[0].name + " " + KEY);
-                    //Writer.WriteLine("JOIN " + settings.channels[0].name);
+                    //Writer.WriteLine("JOIN " + settings.channels[0].Name + " " + KEY);
+                    //Writer.WriteLine("JOIN " + settings.channels[0].Name);
                     //Writer.Flush();
                     //Writer.WriteLine("JOIN " + settings.channels[0].name2);
                     //Writer.Flush();
@@ -87,12 +87,12 @@ namespace CsBot
             catch (Exception e)
             {
                 // Show the exception, sleep for a while and try to establish a new connection to irc server
-                Console.WriteLine("Exception info: " + e);
+                Console.WriteLine($"Exception info: {e}");
                 Task.Delay(5000);
 
-                commandHandler.HandleMessage(":" + Settings.command_start + "say Awe, Crap!", "#bots", "self");
+                commandHandler.HandleMessage($":{Settings.command_start}say Awe, Crap!", "#bots", "self");
 
-                string[] argv = { };
+                var argv = Array.Empty<string>();
                 Start();
             }
             finally
@@ -125,19 +125,21 @@ namespace CsBot
 
                 foreach (var channel in Settings.channels)
                 {
-                    if (inputLine.Contains(channel.name) && inputLine.IndexOf("#") > -1)
+                    if (inputLine.Contains(channel.Name) && inputLine.IndexOf("#") > -1)
                         fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
 
-                    if (inputLine.Contains(Settings.nick + " = " + channel.name) || inputLine.Contains(Settings.nick + " = " + channel.name))
-                    //if (inputLine.Contains(settings.nick + " = " + settings.channels[0].name))
+                    if (inputLine.Contains($"{Settings.nick} = {channel.Name}") || inputLine.Contains(
+		                    $"{Settings.nick} = {channel.Name}"))
+                    //if (inputLine.Contains(settings.nick + " = " + settings.channels[0].Name))
                         commandHandler.ParseUsers(inputLine);
 
-                    //if (inputLine.Contains(settings.channels[0].name))
+                    //if (inputLine.Contains(settings.channels[0].Name))
                     if (joined && !inputLine.EndsWith(fromChannel))
                     {
                         //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
-                        if (!inputLine.EndsWith(channel.name) && (parsedLine == null || !parsedLine.StartsWith(":" + Settings.command_start)) && channel.name == fromChannel)
-                            parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + channel.name.Length + 1).Trim();
+                        if (!inputLine.EndsWith(channel.Name) && (parsedLine == null || !parsedLine.StartsWith(
+	                        $":{Settings.command_start}")) && channel.Name == fromChannel)
+                            parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + channel.Name.Length + 1).Trim();
                     }
                 }
 
@@ -151,24 +153,24 @@ namespace CsBot
                     commandHandler.UpdateUserName(origUser, newUser);
                 }
 
-                if (inputLine.EndsWith("JOIN " + fromChannel))
+                if (inputLine.EndsWith($"JOIN {fromChannel}"))
                 {
                     // Parse nickname of person who joined the channel
                     nickname = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
                     if (nickname == Settings.nick)
                     {
-                        if (fromChannel == Settings.channels[0].name)
+                        if (fromChannel == Settings.channels[0].Name)
                             joined = true;
 
                         if (fromChannel == "#bots") {
-                            commandHandler.HandleMessage(":" + Settings.command_start + "say I'm back baby!", fromChannel, addresser);
+                            commandHandler.HandleMessage($":{Settings.command_start}say I'm back baby!", fromChannel, addresser);
                         }
                         continue;
                     }
                     // Welcome the nickname to channel by sending a notice
-                    Writer.WriteLine("NOTICE " + nickname + ": Hi " + nickname +
-                    " and welcome to " + fromChannel + " channel!");
-                    commandHandler.HandleMessage(":" + Settings.command_start + "say " + nickname + ": Hi and welcome to " + fromChannel + " channel!", fromChannel, addresser);
+                    Writer.WriteLine($"NOTICE {nickname}: Hi {nickname} and welcome to {fromChannel} channel!");
+                    commandHandler.HandleMessage(
+	                    $":{Settings.command_start}say {nickname}: Hi and welcome to {fromChannel} channel!", fromChannel, addresser);
                     commandHandler.AddUser(nickname);
                     Writer.Flush();
                     // Sleep to prevent excess flood
@@ -179,11 +181,11 @@ namespace CsBot
                     identified = true;
                     Console.WriteLine(inputLine);
                 }
-                else if (inputLine.Contains("!") && inputLine.Contains(" :" + Settings.command_start + "quit"))
+                else if (inputLine.Contains("!") && inputLine.Contains($" :{Settings.command_start}quit"))
                 {
                     addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
                     bool useChannel = false;
-                    if (inputLine.IndexOf("#") >= 0)
+                    if (inputLine.Contains("#"))
                     {
                         useChannel = true;
                         fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
@@ -191,7 +193,7 @@ namespace CsBot
 
                     if (Settings.admins != null && Array.IndexOf(Settings.admins, addresser) >= 0)
                     {
-                        commandHandler.HandleMessage(":" + Settings.command_start + "say Awe, Crap!", "#bots", addresser);
+                        commandHandler.HandleMessage($":{Settings.command_start}say Awe, Crap!", "#bots", addresser);
 
                         ping.Stop();
                         CloseProgram();
@@ -201,11 +203,11 @@ namespace CsBot
                         commandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
                     }
                 }
-                else if (inputLine.Contains("!") && inputLine.Contains(" :" + Settings.command_start + "reload"))
+                else if (inputLine.Contains("!") && inputLine.Contains($" :{Settings.command_start}reload"))
                 {
                     addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
                     bool useChannel = false;
-                    if (inputLine.IndexOf("#") >= 0)
+                    if (inputLine.Contains("#"))
                     {
                         useChannel = true;
                         fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
@@ -221,7 +223,8 @@ namespace CsBot
                         commandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
                     }
                 }
-                else if (inputLine.Contains(Settings.command_start) && parsedLine != null && parsedLine.StartsWith(":" + Settings.command_start))
+                else if (inputLine.Contains(Settings.command_start) && parsedLine != null && parsedLine.StartsWith(
+	                $":{Settings.command_start}"))
                 {
                     addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
                     fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
@@ -236,20 +239,20 @@ namespace CsBot
                 {
                     if (isUnderscoreNick)
                     {
-                        Writer.WriteLine("PRIVMSG NickServ :ghost " + Settings.nick + " " + Settings.password);
-                        Writer.WriteLine("NICK " + Settings.nick);
-                        Console.WriteLine("NICK " + Settings.nick);
-                        commandHandler.HandleMessage(":" + Settings.command_start + "say identify " + Settings.password, "NickServ", Settings.nick);
+                        Writer.WriteLine($"PRIVMSG NickServ :ghost {Settings.nick} {Settings.password}");
+                        Writer.WriteLine($"NICK {Settings.nick}");
+                        Console.WriteLine($"NICK {Settings.nick}");
+                        commandHandler.HandleMessage($":{Settings.command_start}say identify {Settings.password}", "NickServ", Settings.nick);
                         isUnderscoreNick = false;
                     }
                     else
                     {
                         foreach (var channel in Settings.channels)
                         {
-                            if (channel.key != "")
-                                Writer.WriteLine("JOIN " + channel.name + " " + channel.key);
+                            if (channel.Key != "")
+                                Writer.WriteLine($"JOIN {channel.Name} {channel.Key}");
                             else
-                                Writer.WriteLine("JOIN " + channel.name);
+                                Writer.WriteLine($"JOIN {channel.Name}");
 
                             Writer.Flush();
                         }
@@ -257,12 +260,12 @@ namespace CsBot
                 }
                 else if (inputLine.Contains("PONG") && (joined) && !identified)
                 {
-                    commandHandler.HandleMessage(":" + Settings.command_start + "say identify " + Settings.password, "NickServ", addresser);
+                    commandHandler.HandleMessage($":{Settings.command_start}say identify {Settings.password}", "NickServ", addresser);
                 }
                 else if (inputLine.Contains("LOGIN"))
                 {
-                    Console.WriteLine("{0} and {1}", Settings.nick, Settings.password);
-                    Writer.WriteLine("PRIVMSG mattermost LOGIN " + Settings.nick + " " + Settings.password);
+                    Console.WriteLine($"{Settings.nick} and {Settings.password}");
+                    Writer.WriteLine($"PRIVMSG mattermost LOGIN {Settings.nick} {Settings.password}");
                     Writer.Flush();
                 }
                 else if (inputLine.Contains(":Nickname is already in use."))
@@ -293,8 +296,8 @@ namespace CsBot
                     ping.Start();
                     Writer.WriteLine(Settings.user);
                     Writer.Flush();
-                    Writer.WriteLine("NICK _" + Settings.nick);
-                    Console.WriteLine("NICK _" + Settings.nick);
+                    Writer.WriteLine($"NICK _{Settings.nick}");
+                    Console.WriteLine($"NICK _{Settings.nick}");
                     commandHandler = new CommandHandler(this);
                     isUnderscoreNick = true;
                 }
@@ -306,11 +309,11 @@ namespace CsBot
                     commandHandler.DirectRoShamBo(choice);
 
                 }
-                else if (inputLine.Contains("PRIVMSG") && inputLine.Contains(":" + Settings.command_start))
+                else if (inputLine.Contains("PRIVMSG") && inputLine.Contains($":{Settings.command_start}"))
                 {
-                    Console.WriteLine("PrivateMessage: " + inputLine);
+                    Console.WriteLine($"PrivateMessage: {inputLine}");
                     addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                    string command = inputLine.Substring(inputLine.LastIndexOf(":" + Settings.command_start));
+                    string command = inputLine.Substring(inputLine.LastIndexOf($":{Settings.command_start}"));
                     commandHandler.HandleMessage(command, addresser, addresser);
                 }
                 else
@@ -333,11 +336,11 @@ namespace CsBot
             using (var webClient = new WebClient())
             {
                 Console.WriteLine("Pulling config.");
-                Console.WriteLine("Settings file: {0}", SETTINGS_FILE);
+                Console.WriteLine($"Settings file: {SETTINGS_FILE}");
                 var setting_file = webClient.DownloadString(SETTINGS_FILE);
                 Settings = JsonConvert.DeserializeObject<Settings>(setting_file);
                 Settings.password = ConfigurationManager.AppSettings["Password"];
-                Console.WriteLine("Config File:{0}", Settings);
+                Console.WriteLine($"Config File:{Settings}");
             }
         }
 

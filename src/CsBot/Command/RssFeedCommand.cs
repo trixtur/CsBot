@@ -6,11 +6,11 @@ using System.Xml;
 
 namespace CsBot.Command
 {
-    class RssFeedCommand
+	class RssFeedCommand
     {
-        CommandHandler handler;
+	    readonly CommandHandler handler;
         SyndicationFeed feed;
-        int count = 0;
+        int count;
 
 
         Users m_users => handler.m_users;
@@ -24,11 +24,11 @@ namespace CsBot.Command
 
         public void GetNext()
         {
-            SyndicationFeed feed = m_users[m_addresser].Feed;
-            int feedCount = m_users[m_addresser].FeedCount;
+            var feed = m_users[m_addresser].Feed;
+            var feedCount = m_users[m_addresser].FeedCount;
             if (feed == null)
             {
-                handler.Say("You must use " + ircBot.Settings.command_start + "getfeeds before trying to list them.");
+                handler.Say($"You must use {ircBot.Settings.command_start}getfeeds before trying to list them.");
                 return;
             }
             if (feedCount >= feed.Items.Count() || feedCount < 0)
@@ -39,8 +39,8 @@ namespace CsBot.Command
 
             for (; feedCount < feed.Items.Count(); feedCount++)
             {
-                SyndicationItem item = feed.Items.ElementAt(feedCount);
-                handler.Say("Item " + (feedCount + 1) + " of " + feed.Items.Count() + ": " + item.Title.Text.Trim());
+                var item = feed.Items.ElementAt(feedCount);
+                handler.Say($"Item {feedCount + 1} of {feed.Items.Count()}: {item.Title.Text.Trim()}");
                 count++;
                 if (count == 4) break;
             }
@@ -49,30 +49,29 @@ namespace CsBot.Command
 
         public void GetMore(string command, int endCommand)
         {
-            int feedNumber;
-            feed = m_users[m_addresser].Feed;
+	        feed = m_users[m_addresser].Feed;
             if (feed == null)
             {
-                handler.Say("You must use " + ircBot.Settings.command_start + "getfeeds before trying to get more information.");
+                handler.Say($"You must use {ircBot.Settings.command_start}getfeeds before trying to get more information.");
                 return;
             }
 
-            if (command.Length == endCommand + 1 || !int.TryParse(command.Substring(endCommand + 2).Trim().ToLower(), out feedNumber))
+            if (command.Length == endCommand + 1 || !int.TryParse(command.Substring(endCommand + 2).Trim().ToLower(), out var feedNumber))
             {
-                handler.Say("Usage: " + ircBot.Settings.command_start + "getmore # (Where # is an item from the rss feed)");
+                handler.Say($"Usage: {ircBot.Settings.command_start}getmore # (Where # is an item from the rss feed)");
             }
             else
             {
                 feedNumber--;
                 if (feedNumber < 0 || feedNumber > feed.Items.Count())
                 {
-                    handler.Say("Number is not in the right range. Must be from 1 to " + feed.Items.Count() + ".");
+                    handler.Say($"Number is not in the right range. Must be from 1 to {feed.Items.Count()}.");
                 }
                 else
                 {
                     count = 0;
-                    handler.Say("Links for " + feed.Items.ElementAt(feedNumber).Title.Text + "(Max 4):");
-                    foreach (SyndicationLink link in feed.Items.ElementAt(feedNumber).Links)
+                    handler.Say($"Links for {feed.Items.ElementAt(feedNumber).Title.Text}(Max 4):");
+                    foreach (var link in feed.Items.ElementAt(feedNumber).Links)
                     {
                         handler.Say(link.Uri.ToString().Trim());
                         count++;
@@ -100,11 +99,12 @@ namespace CsBot.Command
                 }
                 catch (Exception e)
                 {
-                    handler.Say("Usage: " + ircBot.Settings.command_start + "getfeeds http://<rsssite>/rss/<rssfeed#>");
+                    handler.Say($"Usage: {ircBot.Settings.command_start}getfeeds http://<rsssite>/rss/<rssfeed#>");
                     Console.WriteLine(e.Message);
                     return;
                 }
             }
+
             try
             {
                 feed = SyndicationFeed.Load(rssReader);
@@ -113,8 +113,8 @@ namespace CsBot.Command
                 count = 0;
                 m_users[m_addresser].FeedCount = 4;
 
-                handler.Say("Items 1 through 4 of " + feed.Items.Count() + " items.");
-                foreach (SyndicationItem item in feed.Items)
+                handler.Say($"Items 1 through 4 of {feed.Items.Count()} items.");
+                foreach (var item in feed.Items)
                 {
                     handler.Say(item.Title.Text.Trim());
                     count++;

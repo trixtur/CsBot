@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace CsBot.Command
 {
-    interface iCommand
+    interface ICommand
     {
-        void handle(string command, int endCommand, string verb);
+        void Handle(string command, int endCommand, string verb);
     }
 }

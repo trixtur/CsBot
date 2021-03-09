@@ -2,44 +2,44 @@ using System;
 
 namespace CsBot.Command
 {
-    class Say : iCommand
+    class Say : ICommand
     {
-        CommandHandler handler;
+	    readonly CommandHandler handler;
 
         public Say(CommandHandler handler)
         {
             this.handler = handler;
         }
 
-        public void handle(string command, int endCommand, string verb)
+        public void Handle(string command, int endCommand, string verb)
         {
-            if (verb != this.GetType().Name.ToLower()) return;
+            if (verb != GetType().Name.ToLower()) return;
 
-            string addresser = this.handler.GetAddresser();
-            IrcBot ircBot = this.handler.GetIrcBot();
-            Users users = this.handler.GetUsers();
+            string addresser = handler.GetAddresser();
+            IrcBot ircBot = handler.GetIrcBot();
+            Users users = handler.GetUsers();
             Random random = new Random();
-            string fromChannel = this.handler.GetFromChannel();
+            string fromChannel = handler.GetFromChannel();
 
             if (command.Length == endCommand + 1)
             {
-                this.handler.Say(addresser + ": What did you want " + ircBot.Settings.nick + " to say?");
+                handler.Say($"{addresser}: What did you want {ircBot.Settings.nick} to say?");
             }
             else
             {
                 string toSay = command.Substring(endCommand + 2).Trim();
                 if (toSay.StartsWith("in"))
                 {
-                    string channel = this.handler.GetChannel(toSay);
+                    string channel = handler.GetChannel(toSay);
                     if (channel != null)
                     {
                         string toSayIn = toSay.Substring(toSay.IndexOf(channel) + channel.Length + 1);
-                        this.handler.Say(toSayIn, channel);
+                        handler.Say(toSayIn, channel);
                     }
                 }
                 else
                 {
-                    this.handler.Say(toSay, fromChannel);
+                    handler.Say(toSay, fromChannel);
                 }
             }
         }

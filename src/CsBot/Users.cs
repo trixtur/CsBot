@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 
@@ -26,18 +25,16 @@ namespace CsBot
 
         public void Add(string user, User tmpUser = null)
         {
-            if (tmpUser == null) {
-                tmpUser = new User { Name = user };
-            }
+	        tmpUser ??= new User {Name = user};
 
-            if (!m_users.ContainsKey(user))
+	        if (!m_users.ContainsKey(user))
                 m_users.Add(user, tmpUser);
         }
 
-        public bool IsPlayingFarkle(string current_user)
+        public bool IsPlayingFarkle(string currentUser)
         {
-            if (m_users.ContainsKey(current_user))
-                return m_users[current_user].FarkleFlag;
+            if (m_users.ContainsKey(currentUser))
+                return m_users[currentUser].FarkleFlag;
 
             return false;
         }
@@ -58,6 +55,7 @@ namespace CsBot
                 if (ans)
                     break;
             }
+
             return ans;
         }
 
@@ -112,7 +110,7 @@ namespace CsBot
             m_users[uname].Message = message;
         }
 
-        public string getUserMessage(string uname)
+        public string GetUserMessage(string uname)
         {
             return m_users[uname].Message;
         }
@@ -122,14 +120,14 @@ namespace CsBot
         public void PrintUsers()
         {
             foreach (var user in m_users.Keys)
-                Console.WriteLine("Users  " + user);
+                Console.WriteLine($"Users  {user}");
         }
 
         public bool ContainsKey(string key) {
             return m_users.ContainsKey(key);
 	    }
 
-        public User getUserByKey(string key) {
+        public User GetUserByKey(string key) {
             return m_users[key];
         }
 
@@ -137,8 +135,6 @@ namespace CsBot
             return m_users.Keys.GetEnumerator();
 	    }
 
-        public int GetCount() {
-            return m_users.Count;
-        }
+        public int GetCount() => m_users.Count;
     }
 }

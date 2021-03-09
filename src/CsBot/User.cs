@@ -4,7 +4,7 @@ namespace CsBot
 {
     class User
     {
-        int farkle_value;
+        int farkleValue;
 
         public string Name { get; set; }
 
@@ -16,8 +16,8 @@ namespace CsBot
 
         public int FarkleValue
         {
-            get => farkle_value;
-            set => farkle_value += value;
+            get => farkleValue;
+            set => farkleValue += value;
         }
 
         public bool FarkleFlag { get; set; } = false;

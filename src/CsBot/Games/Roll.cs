@@ -2,12 +2,12 @@ using System;
 
 namespace CsBot.Games
 {
-    class Roll : iGame
+    class Roll : IGame
     {
-        CommandHandler handler;
+	    readonly CommandHandler handler;
         int d1, d2, total;
         readonly int DICE = 6;
-        Random random;
+        readonly Random random;
 
         public Roll(CommandHandler handler)
         {
@@ -17,19 +17,16 @@ namespace CsBot.Games
 
         public void Play(string command, int endCommand, string verb)
         {
-            if (verb != this.GetType().Name.ToLower()) return;
+            if (verb != GetType().Name.ToLower()) return;
 
-            string addresser = this.handler.GetAddresser();
+            string addresser = handler.GetAddresser();
 
-            this.d1 = random.Next(1, DICE + 1);
-            this.d2 = random.Next(1, DICE + 1);
+            d1 = random.Next(1, DICE + 1);
+            d2 = random.Next(1, DICE + 1);
 
             total = d1 + d2;
 
-            handler.Say(addresser + 
-                    " rolled a " + d1 + 
-                    " and a " + d2 + 
-                    " for a total of " + total
+            handler.Say($"{addresser} rolled a {d1} and a {d2} for a total of {total}"
             );
         }
     }
