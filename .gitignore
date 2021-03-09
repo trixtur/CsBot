@@ -9,3 +9,4 @@ packages
 *.csproj.user
 *.DotSettings.user
 MigrationBackup
+*.suo
