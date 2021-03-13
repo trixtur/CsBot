@@ -15,7 +15,7 @@ namespace CsBot.Command
 
         Users Users { get => handler.Users; }
         string Addresser { get => handler.Addresser; }
-        IrcBot IrcBot { get => handler.IrcBot; }
+        IrcBotService IrcBotService { get => handler.IrcBotService; }
 
         public RssFeedCommand(CommandHandler handler)
         {
@@ -28,7 +28,7 @@ namespace CsBot.Command
             var feedCount = Users[Addresser].FeedCount;
             if (feed == null)
             {
-                handler.Say($"You must use {IrcBot.Settings.CommandStart}getfeeds before trying to list them.");
+                handler.Say($"You must use {IrcBotService.Settings.CommandStart}getfeeds before trying to list them.");
                 return;
             }
             if (feedCount >= feed.Items.Count() || feedCount < 0)
@@ -52,13 +52,13 @@ namespace CsBot.Command
 	        feed = Users[Addresser].Feed;
             if (feed == null)
             {
-                handler.Say($"You must use {IrcBot.Settings.CommandStart}getfeeds before trying to get more information.");
+                handler.Say($"You must use {IrcBotService.Settings.CommandStart}getfeeds before trying to get more information.");
                 return;
             }
 
             if (command.Length == endCommand + 1 || !int.TryParse(command.Substring(endCommand + 2).Trim().ToLower(), out var feedNumber))
             {
-                handler.Say($"Usage: {IrcBot.Settings.CommandStart}getmore # (Where # is an item from the rss feed)");
+                handler.Say($"Usage: {IrcBotService.Settings.CommandStart}getmore # (Where # is an item from the rss feed)");
             }
             else
             {
@@ -99,7 +99,7 @@ namespace CsBot.Command
                 }
                 catch (Exception e)
                 {
-                    handler.Say($"Usage: {IrcBot.Settings.CommandStart}getfeeds http://<rsssite>/rss/<rssfeed#>");
+                    handler.Say($"Usage: {IrcBotService.Settings.CommandStart}getfeeds http://<rsssite>/rss/<rssfeed#>");
                     Console.WriteLine(e.Message);
                     return;
                 }

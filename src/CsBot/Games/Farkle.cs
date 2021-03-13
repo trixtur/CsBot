@@ -20,7 +20,7 @@ namespace CsBot.Games
 
         Users m_users => handler.Users;
         string m_addresser => handler.Addresser;
-        IrcBot ircBot => handler.IrcBot;
+        IrcBotService IrcBotService => handler.IrcBotService;
 
 
         public Farkle(CommandHandler handler)
@@ -53,7 +53,7 @@ namespace CsBot.Games
 
             if (FarkleMembers.Count < 2)
             {
-                handler.Say($"You need atleast 2 people to play. Use {ircBot.Settings.CommandStart}joinfarkle to join the game.");
+                handler.Say($"You need atleast 2 people to play. Use {IrcBotService.Settings.CommandStart}joinfarkle to join the game.");
                 return;
             }
             // Done with preliminary checks
@@ -69,7 +69,7 @@ namespace CsBot.Games
                 if (DiceToThrow > 0 && m_users.GetFarkleToken(m_addresser) && dice.Count != 0)
                 {
                     handler.Say($"{m_addresser} you have already rolled once, instead answer the question.", m_addresser);
-                    handler.Say($"{m_addresser} use {ircBot.Settings.CommandStart}farkle n # to rethrow dice.", m_addresser);
+                    handler.Say($"{m_addresser} use {IrcBotService.Settings.CommandStart}farkle n # to rethrow dice.", m_addresser);
                     return;
                 }
                 if (DiceToThrow == 0 && m_users.GetFarkleToken(m_addresser))
@@ -158,12 +158,12 @@ namespace CsBot.Games
                 var tempPartDice = 0;
                 var possible = true;
                 var whileItterations = 1;
-                command = command.Replace($":{ircBot.Settings.CommandStart}farkle n ", "");
+                command = command.Replace($":{IrcBotService.Settings.CommandStart}farkle n ", "");
                 
                 if (FarkleDiceAllScoring())
                 {
                     //FarkleTotal += TempFarkleTotal;
-                    handler.Say($"{m_addresser} all dice scoring, so added {FarkleTotal} to your score {ircBot.Settings.CommandStart}farkle to continue.");
+                    handler.Say($"{m_addresser} all dice scoring, so added {FarkleTotal} to your score {IrcBotService.Settings.CommandStart}farkle to continue.");
                     DiceToThrow = 0;
                     return;
                 }
@@ -288,7 +288,7 @@ namespace CsBot.Games
             {
                 if (!m_users.GetFarkleToken(m_addresser) || TempFarkleTotal != 0 || FarkleTotal != 0)
                 {
-                    handler.Say($"{m_addresser} use {ircBot.Settings.CommandStart}farkle y/{ircBot.Settings.CommandStart}farkle n #.", m_addresser);
+                    handler.Say($"{m_addresser} use {IrcBotService.Settings.CommandStart}farkle y/{IrcBotService.Settings.CommandStart}farkle n #.", m_addresser);
                     return;
                 }
 
@@ -345,7 +345,7 @@ namespace CsBot.Games
                 if (!m_users.IsPlayingFarkle())
                 {
                     handler.Say(
-	                    $"{m_addresser} has started a game of farkle, to join type {ircBot.Settings.CommandStart}joinfarkle");
+	                    $"{m_addresser} has started a game of farkle, to join type {IrcBotService.Settings.CommandStart}joinfarkle");
                     m_users.SetFarkleToken(m_addresser, true);
                 }
             }
@@ -363,14 +363,14 @@ namespace CsBot.Games
         public void Help()
         {
             handler.Say("To play farkle you have the following commands:", m_addresser);
-            handler.Say($"{ircBot.Settings.CommandStart}farkle Rolls at the start of game play", m_addresser);
+            handler.Say($"{IrcBotService.Settings.CommandStart}farkle Rolls at the start of game play", m_addresser);
             handler.Say("and is used when all rolled dice are scoring.", m_addresser);
-            handler.Say($"{ircBot.Settings.CommandStart}farkle n #  Re-rolls # of dice, and keeps the highest of the rest.", m_addresser);
-            handler.Say($"{ircBot.Settings.CommandStart}farkle y Keeps all dice and ends your turn.", m_addresser);
-            handler.Say($"{ircBot.Settings.CommandStart}farklescore <player> Returns your score or players if provided.", m_addresser);
-            handler.Say($"{ircBot.Settings.CommandStart}joinfarkle Join a new game of farkle.", m_addresser);
-            handler.Say($"{ircBot.Settings.CommandStart}farklehelp This help information.", m_addresser);
-            handler.Say($"{ircBot.Settings.CommandStart}farkelforfeit To stop in the middle of a game.", m_addresser);
+            handler.Say($"{IrcBotService.Settings.CommandStart}farkle n #  Re-rolls # of dice, and keeps the highest of the rest.", m_addresser);
+            handler.Say($"{IrcBotService.Settings.CommandStart}farkle y Keeps all dice and ends your turn.", m_addresser);
+            handler.Say($"{IrcBotService.Settings.CommandStart}farklescore <player> Returns your score or players if provided.", m_addresser);
+            handler.Say($"{IrcBotService.Settings.CommandStart}joinfarkle Join a new game of farkle.", m_addresser);
+            handler.Say($"{IrcBotService.Settings.CommandStart}farklehelp This help information.", m_addresser);
+            handler.Say($"{IrcBotService.Settings.CommandStart}farkelforfeit To stop in the middle of a game.", m_addresser);
         }
 
         public void Score(string command, int endCommand)

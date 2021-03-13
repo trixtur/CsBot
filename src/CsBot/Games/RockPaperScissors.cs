@@ -11,7 +11,7 @@ namespace CsBot.Games
 
         Users m_users => handler.Users;
         string m_addresser => handler.Addresser;
-        IrcBot ircBot => handler.IrcBot;
+        IrcBotService IrcBotService => handler.IrcBotService;
 
         public RockPaperScissors(CommandHandler handler)
         {
@@ -29,7 +29,7 @@ namespace CsBot.Games
             }
             else if (RPSValue(m_addresser) == -2)
             {
-                handler.Say($"Please just use {ircBot.Settings.CommandStart}rps as a single command. Thanks!");
+                handler.Say($"Please just use {IrcBotService.Settings.CommandStart}rps as a single command. Thanks!");
             }
 
             var isPlaying = IsOpponentPlayingRPS(m_addresser, out var opponent); 
