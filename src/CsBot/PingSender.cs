@@ -9,12 +9,12 @@ namespace CsBot
     class PingSender
     {
         readonly Timer timer;
-        readonly IrcBot ircBot;
+        readonly IrcBotService _ircBotService;
 
         // Empty constructor makes instance of Thread
-        public PingSender(IrcBot ircBot)
+        public PingSender(IrcBotService ircBotService)
         {
-            this.ircBot = ircBot;
+            _ircBotService = ircBotService;
 
             timer = new Timer {
                 Interval = 15000
@@ -24,8 +24,8 @@ namespace CsBot
         // Send PING to irc server every 15 seconds
         void SendPing(object sender, ElapsedEventArgs e)
         {
-            ircBot.Writer.WriteLine(Constants.PING + ircBot.Settings.Server);
-            ircBot.Writer.Flush();
+            _ircBotService.Writer.WriteLine(Constants.PING + _ircBotService.Settings.Server);
+            _ircBotService.Writer.Flush();
         }
 
         // Starts the thread

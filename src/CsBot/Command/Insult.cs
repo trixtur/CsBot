@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace CsBot.Command
 {
@@ -34,10 +35,10 @@ namespace CsBot.Command
                 else
                 {
                     Console.WriteLine($"{addresser} insulted {toInsult}.");
-                    if (ircBot.Settings.Insults != null && ircBot.Settings.Insults.Length > 0)
+                    if (ircBot.Settings.Insults != null && ircBot.Settings.Insults.Any())
                     {
                         handler.Say(
-	                        $"/me {string.Format(ircBot.Settings.Insults[random.Next(0, 10000) % ircBot.Settings.Insults.Length], toInsult)}");
+	                        $"/me {string.Format(ircBot.Settings.Insults[random.Next(0, 10000) % ircBot.Settings.Insults.Count], toInsult)}");
                     }
                     else
                     {

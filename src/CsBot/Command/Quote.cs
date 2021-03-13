@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace CsBot.Command
 {
@@ -19,9 +20,9 @@ namespace CsBot.Command
 
             var quotes = handler.GetQuotes();
 
-            if (quotes != null && quotes.Length > 0)
+            if (quotes != null && quotes.Any ())
             {
-                handler.Say(quotes[random.Next(0, 10000) % quotes.Length]);
+                handler.Say(quotes[random.Next(0, 10000) % quotes.Count]);
             }
             else
             {

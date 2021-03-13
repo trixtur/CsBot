@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace CsBot.Command
 {
@@ -34,9 +35,9 @@ namespace CsBot.Command
             else
             {
                 Console.WriteLine($"{addresser} praised {toPraise}.");
-                if (ircBot.Settings.Praises != null && ircBot.Settings.Praises.Length > 0)
+                if (ircBot.Settings.Praises != null && ircBot.Settings.Praises.Any ())
                 {
-                    handler.Say($"/me {string.Format(ircBot.Settings.Praises[random.Next(0, 10000) % ircBot.Settings.Praises.Length], toPraise)}");
+                    handler.Say($"/me {string.Format(ircBot.Settings.Praises[random.Next(0, 10000) % ircBot.Settings.Praises.Count], toPraise)}");
                 }
                 else
                 {

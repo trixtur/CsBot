@@ -10,3 +10,4 @@ packages
 *.DotSettings.user
 MigrationBackup
 *.suo
+.idea/
