@@ -15,18 +15,18 @@ namespace CsBot.Command
         {
             if (verb != GetType().Name.ToLower()) return;
 
-            string addresser = handler.GetAddresser();
-            IrcBot ircBot = handler.GetIrcBot();
-            Users users = handler.GetUsers();
-            Random random = new Random();
+            var addresser = handler.GetAddresser();
+            var ircBot = handler.GetIrcBot();
+            var users = handler.GetUsers();
+            var random = new Random();
 
             if (command.Length == endCommand + 1)
             {
-                handler.Say($"{addresser}: Who do you want {ircBot.Settings.nick} to find?");
+                handler.Say($"{addresser}: Who do you want {ircBot.Settings.Nick} to find?");
             }
             else
             {
-                string toFind = command[(endCommand + 2)..].Trim();
+                var toFind = command[(endCommand + 2)..].Trim();
                 if (!users.HasUser(toFind))
                 {
                     handler.Say($"{addresser}: That person doesn't exist.");

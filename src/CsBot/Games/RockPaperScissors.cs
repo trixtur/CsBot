@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace CsBot.Games
 {
@@ -8,11 +7,11 @@ namespace CsBot.Games
     class RockPaperScissors : IGame
     {
 	    readonly CommandHandler handler;
-        private const string GameName = "rps";
+        const string GameName = "rps";
 
-        Users m_users => handler.m_users;
-        string m_addresser => handler.m_addresser;
-        IrcBot ircBot => handler.ircBot;
+        Users m_users => handler.Users;
+        string m_addresser => handler.Addresser;
+        IrcBot ircBot => handler.IrcBot;
 
         public RockPaperScissors(CommandHandler handler)
         {
@@ -30,30 +29,30 @@ namespace CsBot.Games
             }
             else if (RPSValue(m_addresser) == -2)
             {
-                handler.Say($"Please just use {ircBot.Settings.command_start}rps as a single command. Thanks!");
+                handler.Say($"Please just use {ircBot.Settings.CommandStart}rps as a single command. Thanks!");
             }
 
-            bool isPlaying = IsOpponentPlayingRPS(m_addresser, out var opponent); 
+            var isPlaying = IsOpponentPlayingRPS(m_addresser, out var opponent); 
             Console.WriteLine($"isPlaying: {isPlaying} opponent: {opponent}");
             if (isPlaying && (!opponent.Equals(m_addresser)) && RPSValue(m_addresser) != -2 && RPSValue(opponent) != -2)
             {
-                int opponent_throw = RPSValue(opponent);
-                int my_throw = RPSValue(m_addresser);
+                var opponentThrow = RPSValue(opponent);
+                var myThrow = RPSValue(m_addresser);
                 StopRPS(opponent);
                 StopRPS(m_addresser);
-                if (opponent_throw == my_throw)
+                if (opponentThrow == myThrow)
                     handler.Say($"The Rock, Paper, Scissors game between {opponent} and {m_addresser} ended in a tie.");
-                else if (opponent_throw == (int)RoShamBo.Rock && my_throw == (int)RoShamBo.Scissors)
+                else if (opponentThrow == (int)RoShamBo.Rock && myThrow == (int)RoShamBo.Scissors)
                     handler.Say($"{opponent} has beaten {m_addresser} at a game of Rock, Paper, Scissors.");
-                else if (opponent_throw == (int)RoShamBo.Scissors && my_throw == (int)RoShamBo.Rock)
+                else if (opponentThrow == (int)RoShamBo.Scissors && myThrow == (int)RoShamBo.Rock)
                     handler.Say($"{m_addresser} has beaten {opponent} at a game of Rock, Paper, Scissors.");
-                else if (opponent_throw == (int)RoShamBo.Paper && my_throw == (int)RoShamBo.Scissors)
+                else if (opponentThrow == (int)RoShamBo.Paper && myThrow == (int)RoShamBo.Scissors)
                     handler.Say($"{m_addresser} has beaten {opponent} at a game of Rock, Paper, Scissors.");
-                else if (opponent_throw == (int)RoShamBo.Scissors && my_throw == (int)RoShamBo.Paper)
+                else if (opponentThrow == (int)RoShamBo.Scissors && myThrow == (int)RoShamBo.Paper)
                     handler.Say($"{opponent} has beaten {m_addresser} at a game of Rock, Paper, Scissors.");
-                else if (opponent_throw == (int)RoShamBo.Paper && my_throw == (int)RoShamBo.Rock)
+                else if (opponentThrow == (int)RoShamBo.Paper && myThrow == (int)RoShamBo.Rock)
                     handler.Say($"{opponent} has beaten {m_addresser} at a game of Rock, Paper, Scissors.");
-                else if (opponent_throw == (int)RoShamBo.Rock && my_throw == (int)RoShamBo.Paper)
+                else if (opponentThrow == (int)RoShamBo.Rock && myThrow == (int)RoShamBo.Paper)
                     handler.Say($"{m_addresser} has beaten {opponent} at a game of Rock, Paper, Scissors.");
             }
             else if (opponent.Equals(string.Empty) && !IsPlayingRPS(m_addresser))
@@ -92,7 +91,7 @@ namespace CsBot.Games
 	        using var e = m_users.GetEnumerator();
             Console.WriteLine($"Current: {e.Current}");
             e.MoveNext();
-            for (int i = 0; i < m_users.GetCount(); i++)
+            for (var i = 0; i < m_users.GetCount(); i++)
             {
                 Console.WriteLine($"Current: {e.Current} is playing {m_users[e.Current].RPSFlag}.");
                 if (m_users[e.Current].RPSFlag && e.Current != addresser)

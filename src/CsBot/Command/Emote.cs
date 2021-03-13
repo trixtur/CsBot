@@ -15,25 +15,25 @@ namespace CsBot.Command
         {
             if (verb != GetType().Name.ToLower()) return;
 
-            string addresser = handler.GetAddresser();
-            IrcBot ircBot = handler.GetIrcBot();
-            Users users = handler.GetUsers();
-            Random random = new Random();
-            string fromChannel = handler.GetFromChannel();
+            var addresser = handler.GetAddresser();
+            var ircBot = handler.GetIrcBot();
+            var users = handler.GetUsers();
+            var random = new Random();
+            var fromChannel = handler.GetFromChannel();
 
             if (command.Length == endCommand + 1)
             {
-                handler.Say($"{addresser}: What did you want {ircBot.Settings.nick} to emote?");
+                handler.Say($"{addresser}: What did you want {ircBot.Settings.Nick} to emote?");
             }
             else
             {
-                string toEmote = command.Substring(endCommand + 2).Trim();
+                var toEmote = command.Substring(endCommand + 2).Trim();
                 if (toEmote.StartsWith("in"))
                 {
-                    string channel = handler.GetChannel(toEmote);
+                    var channel = handler.GetChannel(toEmote);
                     if (channel != null)
                     {
-                        string toEmoteIn = toEmote.Substring(toEmote.IndexOf(channel) + channel.Length + 1);
+                        var toEmoteIn = toEmote.Substring(toEmote.IndexOf(channel) + channel.Length + 1);
                         handler.Say($"/me {toEmoteIn}", channel);
                     }
                 }

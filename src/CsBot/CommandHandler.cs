@@ -1,35 +1,37 @@
-using CsBot.Command;
-using CsBot.Games;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using CsBot.Command;
+using CsBot.Games;
 
 namespace CsBot
 {
 	class CommandHandler
     {
-        internal readonly IrcBot ircBot;
-        public static readonly Random random = new Random();
-        /*private static string ircBot.Settings.nick = "Be|\\|der";
-        private const string ircBot.Settings.command_start = "~";
-        private static string ircBot.Settings.channels[0].Name = "#pyrous";
-        private static string ircBot.Settings.channels[0].name2 = "#CsBot";
-        private static string m_fromChannel = ircBot.Settings.channels[0].Name;
+        public IrcBot IrcBot { get; }
+        public static readonly Random random = new ();
+        /*private static string IrcBot.Settings.nick = "Be|\\|der";
+        private const string IrcBot.Settings.command_start = "~";
+        private static string IrcBot.Settings.channels[0].Name = "#pyrous";
+        private static string IrcBot.Settings.channels[0].name2 = "#CsBot";
+        private static string FromChannel = IrcBot.Settings.channels[0].Name;
         */
-        string m_fromChannel;
-        internal string m_addresser = "";
-        internal readonly Users m_users;
+        
+        public string FromChannel { get; set; }
+        public string Addresser { get; set; } = "";
+        public Users Users { get; }
+
         Farkle farkle;
         readonly RssFeedCommand rssFeed;
         readonly List<ICommand> Commands;
         readonly List<IGame> Games;
-        internal enum GamesList { Roll, RockPaperScissors };
+        enum GamesList { Roll, RockPaperScissors };
 
         public CommandHandler(IrcBot ircBot)
         {
-            this.ircBot = ircBot;
-            m_users = new Users();
+            IrcBot = ircBot;
+            Users = new Users();
             rssFeed = new RssFeedCommand(this);
 
             Commands = new List<ICommand>();
@@ -58,16 +60,16 @@ namespace CsBot
             if (s.StartsWith("/me"))
                 s = $"{s.Replace("/me", "ACTION")}";
             if (s.EndsWith("me"))
-                s = s.Replace(" me", $" {m_addresser}");
+                s = s.Replace(" me", $" {Addresser}");
             if (s.Contains(" {nick} "))
                 s = s.Replace(" {nick} ", " me ");
             if (s.Contains(" me "))
-                s = s.Replace(" me ", $" {m_addresser} ");
-            if (s.Contains($" {ircBot.Settings.nick} "))
-                s = s.Replace($" {ircBot.Settings.nick} ", " me ");
+                s = s.Replace(" me ", $" {Addresser} ");
+            if (s.Contains($" {IrcBot.Settings.Nick} "))
+                s = s.Replace($" {IrcBot.Settings.Nick} ", " me ");
             Console.WriteLine($"PRIVMSG {c} :{s}");
-            ircBot.Writer.WriteLine($"PRIVMSG {c} :{s}");
-            ircBot.Writer.Flush();
+            IrcBot.Writer.WriteLine($"PRIVMSG {c} :{s}");
+            IrcBot.Writer.Flush();
         }
 
         /// <summary>
@@ -79,16 +81,16 @@ namespace CsBot
             if (s.StartsWith("/me"))
                 s = $"{s.Replace("/me", "ACTION")}";
             if (s.EndsWith("me") || s.EndsWith("me"))
-                s = s.Replace(" me", $" {m_addresser}");
+                s = s.Replace(" me", $" {Addresser}");
             if (s.Contains(" me "))
-                s = s.Replace(" me ", $" {m_addresser} ");
+                s = s.Replace(" me ", $" {Addresser} ");
             if (s.Contains(" {nick} "))
                 s = s.Replace(" {nick} ", " me ");
-            if (s.Contains($" {ircBot.Settings.nick} "))
-                s = s.Replace($" {ircBot.Settings.nick} ", " me ");
-            Console.WriteLine($"PRIVMSG {m_fromChannel} :{s}");
-            ircBot.Writer.WriteLine($"PRIVMSG {m_fromChannel} :{s}");
-            ircBot.Writer.Flush();
+            if (s.Contains($" {IrcBot.Settings.Nick} "))
+                s = s.Replace($" {IrcBot.Settings.Nick} ", " me ");
+            Console.WriteLine($"PRIVMSG {FromChannel} :{s}");
+            IrcBot.Writer.WriteLine($"PRIVMSG {FromChannel} :{s}");
+            IrcBot.Writer.Flush();
         }
 
         public string GetChannel(string input)
@@ -100,17 +102,17 @@ namespace CsBot
         public void HandleMessage(string command, string fromChannel, string addresser)
         {
             Console.WriteLine($"Handling message: {command} : {fromChannel} : {addresser}");
-            m_fromChannel = fromChannel;
-            m_addresser = addresser;
-            int endCommand = command.IndexOf(" ") - 1;
+            FromChannel = fromChannel;
+            Addresser = addresser;
+            var endCommand = command.IndexOf(" ") - 1;
             if (endCommand < 0)
                 endCommand = command.Length - 1;
-            string fixedCommand = command.Substring(1, endCommand);
+            var fixedCommand = command.Substring(1, endCommand);
 
-            if (fixedCommand.StartsWith(ircBot.Settings.command_start))
+            if (fixedCommand.StartsWith(IrcBot.Settings.CommandStart))
             { //If present remove leading command, otherwise log it.
-                fixedCommand = fixedCommand.TrimStart(ircBot.Settings.command_start.ToCharArray());
-                command = command.TrimStart(ircBot.Settings.command_start.ToCharArray());
+                fixedCommand = fixedCommand.TrimStart(IrcBot.Settings.CommandStart.ToCharArray());
+                command = command.TrimStart(IrcBot.Settings.CommandStart.ToCharArray());
             }
             else
             {
@@ -128,23 +130,23 @@ namespace CsBot
             if (fixedCommand.StartsWith("1"))
             {
                 fixedCommand = "say";
-                command = command.Replace("1", $"say in {ircBot.Settings.channels[0].Name}");
+                command = command.Replace("1", $"say in {IrcBot.Settings.Channels[0].Name}");
                 endCommand = fixedCommand.Length;
             }
 
             if (fixedCommand.StartsWith("2"))
             {
                 fixedCommand = "emote";
-                command = command.Replace("2", $"emote in {ircBot.Settings.channels[0].Name}");
+                command = command.Replace("2", $"emote in {IrcBot.Settings.Channels[0].Name}");
                 endCommand = fixedCommand.Length;
             }
 
-            foreach (ICommand c in Commands)
+            foreach (var c in Commands)
             {
                 c.Handle(command, endCommand, fixedCommand);
             }
 
-            foreach (IGame g in Games)
+            foreach (var g in Games)
             {
                 g.Play(command, endCommand, fixedCommand);
             }
@@ -197,16 +199,16 @@ namespace CsBot
 
         public void UpdateUserName(string origUser, string newUser)
         {
-            if (m_users.HasUser(origUser))
+            if (Users.HasUser(origUser))
             {
-                User tempUser = m_users[origUser];
-                m_users.Remove(origUser);
-                m_users.Add(newUser, tempUser);
+                var tempUser = Users[origUser];
+                Users.Remove(origUser);
+                Users.Add(newUser, tempUser);
                 Console.WriteLine($"Updated username from {origUser} to {newUser}");
             }
-            else if (newUser != ircBot.Settings.nick)
+            else if (newUser != IrcBot.Settings.Nick)
             {
-                m_users.Add(newUser);
+                Users.Add(newUser);
             }
         }
 
@@ -219,86 +221,86 @@ namespace CsBot
             {
                 if (user == "") continue;
 
-                if (user != ircBot.Settings.nick && !m_users.HasUser(user))
+                if (user != IrcBot.Settings.Nick && !Users.HasUser(user))
                 {
                     if (user.StartsWith("@"))
                     {
-                        m_users.Add(user.Substring(1));
+                        Users.Add(user.Substring(1));
                         Console.WriteLine($"Found user {user.Substring(1)}");
                     }
                     else
                     {
-                        m_users.Add(user);
+                        Users.Add(user);
                         Console.WriteLine($"Found user {user}");
                     }
                 }
             }
 
-            m_users.PrintUsers();
+            Users.PrintUsers();
         }
 
         public void AddUser(string userName)
         {
-            if (!m_users.HasUser(userName))
-                m_users.Add(userName);
+            if (!Users.HasUser(userName))
+                Users.Add(userName);
         }
 
         public void DirectRoShamBo(string choice)
         {
-            RockPaperScissors rps = (RockPaperScissors)Games[(int)GamesList.RockPaperScissors];
+            var rps = (RockPaperScissors)Games[(int)GamesList.RockPaperScissors];
 
             switch (choice)
             {
                 case "rock":
-		            rps.RPSValue(m_addresser, (int)RoShamBo.Rock);
+		            rps.RPSValue(Addresser, (int)RoShamBo.Rock);
                     break;
                 case "paper":
-                    rps.RPSValue(m_addresser, (int)RoShamBo.Paper);
+                    rps.RPSValue(Addresser, (int)RoShamBo.Paper);
                     break;
                 case "scissors":
-                    rps.RPSValue(m_addresser, (int)RoShamBo.Scissors);
+                    rps.RPSValue(Addresser, (int)RoShamBo.Scissors);
                     break;
                 default:
-                    Say($"/me whispers something to {m_addresser}.");
-                    Say("Valid options are either rock, paper, or scissors.", m_addresser);
+                    Say($"/me whispers something to {Addresser}.");
+                    Say("Valid options are either rock, paper, or scissors.", Addresser);
                     break;
             }
 
-            HandleMessage($":{ircBot.Settings.command_start}rps", m_fromChannel, m_addresser);
+            HandleMessage($":{IrcBot.Settings.CommandStart}rps", FromChannel, Addresser);
         }
 
         public void LastMessage(string user, string inputLine, string fromChannel)
         {
-            if (m_users.HasUser(user))
+            if (Users.HasUser(user))
             {
-                string message = inputLine.Substring(inputLine.LastIndexOf($"{fromChannel} :") + fromChannel.Length + 2);
-                m_users.AddUserLastMessage(user, message);
+                var message = inputLine.Substring(inputLine.LastIndexOf($"{fromChannel} :") + fromChannel.Length + 2);
+                Users.AddUserLastMessage(user, message);
             }
         }
 
         public string GetAddresser()
         {
-            return m_addresser;
+            return Addresser;
         }
 
         public IrcBot GetIrcBot()
         {
-            return ircBot;
+            return IrcBot;
         }
 
         public Users GetUsers()
         {
-            return m_users;
+            return Users;
         }
 
         public string GetFromChannel()
         {
-            return m_fromChannel;
+            return FromChannel;
         }
 
         public string[] GetQuotes()
         {
-            return ircBot.Settings.quotes;
+            return IrcBot.Settings.Quotes;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace CsBot
         // Send PING to irc server every 15 seconds
         void SendPing(object sender, ElapsedEventArgs e)
         {
-            ircBot.Writer.WriteLine(Constants.PING + ircBot.Settings.server);
+            ircBot.Writer.WriteLine(Constants.PING + ircBot.Settings.Server);
             ircBot.Writer.Flush();
         }
 

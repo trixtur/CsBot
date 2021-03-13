@@ -47,7 +47,7 @@ namespace CsBot
 
         public bool IsPlayingFarkle()
         {
-            bool ans = false;
+            var ans = false;
 
             foreach (var user in m_users.Keys)
             {
@@ -61,8 +61,8 @@ namespace CsBot
 
         public bool SomeoneHasToken()
         {
-            bool ans = false;
-            foreach (string m in m_users.Keys)
+            var ans = false;
+            foreach (var m in m_users.Keys)
             {
                 ans = m_users[m].HasFarkleToken;
                 if (ans)

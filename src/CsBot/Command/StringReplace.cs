@@ -15,16 +15,16 @@ namespace CsBot.Command
         {
             if (verb != "s") return;
 
-            string addresser = handler.GetAddresser();
-            IrcBot ircBot = handler.GetIrcBot();
-            Users users = handler.GetUsers();
-            Random random = new Random();
-            string fromChannel = handler.GetFromChannel();
+            var addresser = handler.GetAddresser();
+            var ircBot = handler.GetIrcBot();
+            var users = handler.GetUsers();
+            var random = new Random();
+            var fromChannel = handler.GetFromChannel();
 
             Console.WriteLine("Inside replace command.");
             if (command.Length == endCommand + 1)
             {
-                handler.Say($"{addresser}: What did you want {ircBot.Settings.nick} to replace?");
+                handler.Say($"{addresser}: What did you want {ircBot.Settings.Nick} to replace?");
             }
             else if (!command.Contains("/"))
             {
@@ -32,9 +32,9 @@ namespace CsBot.Command
             }
             else
             {
-                string toReplace = command.Substring(command.IndexOf("/") + 1, command.Substring(command.IndexOf("/") + 1).IndexOf("/"));
-                string withString = command.Substring(command.IndexOf("/", command.IndexOf(toReplace))).Replace("/", "");
-                string lastSaid = users.GetUserMessage(addresser);
+                var toReplace = command.Substring(command.IndexOf("/") + 1, command.Substring(command.IndexOf("/") + 1).IndexOf("/"));
+                var withString = command.Substring(command.IndexOf("/", command.IndexOf(toReplace))).Replace("/", "");
+                var lastSaid = users.GetUserMessage(addresser);
                 lastSaid = lastSaid.Replace(toReplace, withString);
                 handler.Say($"{addresser} meant: {lastSaid}");
             }

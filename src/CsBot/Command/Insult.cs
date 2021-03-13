@@ -15,18 +15,18 @@ namespace CsBot.Command
         {
             if (verb != GetType().Name.ToLower()) return;
 
-            string addresser = handler.GetAddresser();
-            IrcBot ircBot = handler.GetIrcBot();
-            Users users = handler.GetUsers();
-            Random random = new Random();
+            var addresser = handler.GetAddresser();
+            var ircBot = handler.GetIrcBot();
+            var users = handler.GetUsers();
+            var random = new Random();
 
             if (command.Length == endCommand + 1)
             {
-                handler.Say($"{addresser}: Who do you want {ircBot.Settings.nick} to insult?");
+                handler.Say($"{addresser}: Who do you want {ircBot.Settings.Nick} to insult?");
             }
             else
             {
-                string toInsult = command.Substring(endCommand + 2).Trim();
+                var toInsult = command.Substring(endCommand + 2).Trim();
                 if (!users.HasUser(toInsult))
                 {
                     handler.Say($"{addresser}: That person doesn't exist.");
@@ -34,10 +34,10 @@ namespace CsBot.Command
                 else
                 {
                     Console.WriteLine($"{addresser} insulted {toInsult}.");
-                    if (ircBot.Settings.insults != null && ircBot.Settings.insults.Length > 0)
+                    if (ircBot.Settings.Insults != null && ircBot.Settings.Insults.Length > 0)
                     {
                         handler.Say(
-	                        $"/me {string.Format(ircBot.Settings.insults[random.Next(0, 10000) % ircBot.Settings.insults.Length], toInsult)}");
+	                        $"/me {string.Format(ircBot.Settings.Insults[random.Next(0, 10000) % ircBot.Settings.Insults.Length], toInsult)}");
                     }
                     else
                     {

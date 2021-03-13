@@ -15,18 +15,18 @@ namespace CsBot.Command
         {
             if (verb != GetType().Name.ToLower()) return;
 
-            string addresser = handler.GetAddresser();
-            IrcBot ircBot = handler.GetIrcBot();
-            Users users = handler.GetUsers();
-            Random random = new Random();
+            var addresser = handler.GetAddresser();
+            var ircBot = handler.GetIrcBot();
+            var users = handler.GetUsers();
+            var random = new Random();
 
             if (command.Length == endCommand + 1)
             {
-                handler.Say($"{addresser}: Who do you want {ircBot.Settings.nick} to praise?");
+                handler.Say($"{addresser}: Who do you want {ircBot.Settings.Nick} to praise?");
                 return;
             }
 
-            string toPraise = command.Substring(endCommand + 2).Trim();
+            var toPraise = command.Substring(endCommand + 2).Trim();
             if (!users.HasUser(toPraise))
             {
                 handler.Say($"{addresser}: That person doesn't exist.");
@@ -34,9 +34,9 @@ namespace CsBot.Command
             else
             {
                 Console.WriteLine($"{addresser} praised {toPraise}.");
-                if (ircBot.Settings.praises != null && ircBot.Settings.praises.Length > 0)
+                if (ircBot.Settings.Praises != null && ircBot.Settings.Praises.Length > 0)
                 {
-                    handler.Say($"/me {string.Format(ircBot.Settings.praises[random.Next(0, 10000) % ircBot.Settings.praises.Length], toPraise)}");
+                    handler.Say($"/me {string.Format(ircBot.Settings.Praises[random.Next(0, 10000) % ircBot.Settings.Praises.Length], toPraise)}");
                 }
                 else
                 {

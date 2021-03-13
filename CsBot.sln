@@ -1,11 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27701.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31025.218
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsBot", "src\CsBot\CsBot.csproj", "{EEF7008E-10F0-41A1-8115-FA10A3F9F276}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsBot", "src\CsBot\CsBot.csproj", "{EEF7008E-10F0-41A1-8115-FA10A3F9F276}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsBot.Tests", "CsBot.Tests\CsBot.Tests.csproj", "{468ED728-1D80-4E0E-941F-417C4452FF46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsBot.Tests", "CsBot.Tests\CsBot.Tests.csproj", "{468ED728-1D80-4E0E-941F-417C4452FF46}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1637F8D3-5793-4A71-B910-37CB5F8E7FA9}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		LICENSE = LICENSE
+		nuget.config = nuget.config
+		README = README
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

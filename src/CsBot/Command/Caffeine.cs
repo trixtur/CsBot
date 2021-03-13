@@ -15,10 +15,10 @@ namespace CsBot.Command
         {
             if (verb != GetType().Name.ToLower()) return;
 
-            string addresser = handler.GetAddresser();
-            IrcBot ircBot = handler.GetIrcBot();
-            Users users = handler.GetUsers();
-            Random random = new Random();
+            var addresser = handler.GetAddresser();
+            var ircBot = handler.GetIrcBot();
+            var users = handler.GetUsers();
+            var random = new Random();
 
             if (command.Length == endCommand + 1)
             {

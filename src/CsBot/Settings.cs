@@ -4,18 +4,18 @@ namespace CsBot
 {
     class Settings
     {
-        public string server;
-        public string password;
-        public int port;
-        public string secure;
-        public bool server_validate;
-        public string user;
-        public string nick;
-        public List<Channel> channels;
-        public string[] admins;
-        public string command_start;
-        public string[] insults;
-        public string[] quotes;
-        public string[] praises;
+        public string Server { get; set; }
+        public string Password { get; set; }
+        public int Port { get; set; }
+        public string Secure { get; set; }
+        public bool ServerValidate { get; set; }
+        public string User { get; set; }
+        public string Nick { get; set; }
+        public List<Channel> Channels { get; set; }
+        public string[] Admins { get; set; }
+        public string CommandStart { get; set; }
+        public string[] Insults { get; set; }
+        public string[] Quotes { get; set; }
+        public string[] Praises { get; set; }
     }
 }

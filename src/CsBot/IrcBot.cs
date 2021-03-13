@@ -34,25 +34,25 @@ namespace CsBot
 
         public void Start ()
         {
-            string nickname = "";
-            string addresser = "";
+            var nickname = "";
+            var addresser = "";
 
             try
             {
                 ObtainConfig();
 
-                var fromChannel = Settings.channels[0].Name;
+                var fromChannel = Settings.Channels[0].Name;
                 using (m_irc = new TcpClient())
                 {
 
-                    Console.WriteLine($"Trying to connect to server {Settings.server}.");
-                    m_irc.Connect(Settings.server, Settings.port);
+                    Console.WriteLine($"Trying to connect to server {Settings.Server}.");
+                    m_irc.Connect(Settings.Server, Settings.Port);
 
                     Stream stream;
-                    if (Settings.secure == "1")
+                    if (Settings.Secure == "1")
                     {
                         stream = new SslStream(m_irc.GetStream(), true, ValidateServerCertificate);
-                        ((SslStream) stream).AuthenticateAsClient(Settings.server);
+                        ((SslStream) stream).AuthenticateAsClient(Settings.Server);
                     }
                     else
                     {
@@ -61,19 +61,19 @@ namespace CsBot
 
                     Reader = new StreamReader(stream);
                     Writer = new StreamWriter(stream);
-                    Console.WriteLine(Settings.user);
+                    Console.WriteLine(Settings.User);
                     // Start PingSender thread
                     var ping = new PingSender(this);
                     ping.Start();
-                    Writer.WriteLine(Settings.user);
+                    Writer.WriteLine(Settings.User);
                     Writer.Flush();
-                    Writer.WriteLine($"NICK {Settings.nick}");
+                    Writer.WriteLine($"NICK {Settings.Nick}");
                     Writer.Flush();
-                    Writer.WriteLine($"PASS {Settings.password}");
+                    Writer.WriteLine($"PASS {Settings.Password}");
                     Writer.Flush();
-                    Console.WriteLine($"NICK {Settings.nick}");
+                    Console.WriteLine($"NICK {Settings.Nick}");
                     commandHandler = new CommandHandler(this);
-                    Writer.WriteLine($"PRIVMSG mattermost LOGIN {Settings.nick} {Settings.password}");
+                    Writer.WriteLine($"PRIVMSG mattermost LOGIN {Settings.Nick} {Settings.Password}");
                     Writer.Flush();
                     //Writer.WriteLine("JOIN " + settings.channels[0].Name + " " + KEY);
                     //Writer.WriteLine("JOIN " + settings.channels[0].Name);
@@ -90,7 +90,7 @@ namespace CsBot
                 Console.WriteLine($"Exception info: {e}");
                 Task.Delay(5000);
 
-                commandHandler.HandleMessage($":{Settings.command_start}say Awe, Crap!", "#bots", "self");
+                commandHandler.HandleMessage($":{Settings.CommandStart}say Awe, Crap!", "#bots", "self");
 
                 var argv = Array.Empty<string>();
                 Start();
@@ -115,30 +115,30 @@ namespace CsBot
 
         void EventLoop(string addresser, string fromChannel, PingSender ping, string nickname, object stream)
         {
-            bool joined = false;
-            bool identified = true;
+            var joined = false;
+            var identified = true;
 
             while (true)
             {
                 var inputLine = Reader.ReadLine();
                 string parsedLine = null;
 
-                foreach (var channel in Settings.channels)
+                foreach (var channel in Settings.Channels)
                 {
                     if (inputLine.Contains(channel.Name) && inputLine.IndexOf("#") > -1)
                         fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
 
-                    if (inputLine.Contains($"{Settings.nick} = {channel.Name}") || inputLine.Contains(
-		                    $"{Settings.nick} = {channel.Name}"))
+                    if (inputLine.Contains($"{Settings.Nick} = {channel.Name}") || inputLine.Contains(
+		                    $"{Settings.Nick} = {channel.Name}"))
                     //if (inputLine.Contains(settings.nick + " = " + settings.channels[0].Name))
                         commandHandler.ParseUsers(inputLine);
 
                     //if (inputLine.Contains(settings.channels[0].Name))
                     if (joined && !inputLine.EndsWith(fromChannel))
                     {
-                        //parsedLine = inputLine.Substring(inputLine.IndexOf(m_fromChannel) + m_fromChannel.Length + 1);
+                        //parsedLine = inputLine.Substring(inputLine.IndexOf(FromChannel) + FromChannel.Length + 1);
                         if (!inputLine.EndsWith(channel.Name) && (parsedLine == null || !parsedLine.StartsWith(
-	                        $":{Settings.command_start}")) && channel.Name == fromChannel)
+	                        $":{Settings.CommandStart}")) && channel.Name == fromChannel)
                             parsedLine = inputLine.Substring(inputLine.IndexOf(fromChannel) + channel.Name.Length + 1).Trim();
                     }
                 }
@@ -148,8 +148,8 @@ namespace CsBot
 
                 if (inputLine.Contains(Constants.NICK))
                 {
-                    string origUser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                    string newUser = inputLine.Substring(inputLine.IndexOf(Constants.NICK) + 6);
+                    var origUser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+                    var newUser = inputLine.Substring(inputLine.IndexOf(Constants.NICK) + 6);
                     commandHandler.UpdateUserName(origUser, newUser);
                 }
 
@@ -157,20 +157,20 @@ namespace CsBot
                 {
                     // Parse nickname of person who joined the channel
                     nickname = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                    if (nickname == Settings.nick)
+                    if (nickname == Settings.Nick)
                     {
-                        if (fromChannel == Settings.channels[0].Name)
+                        if (fromChannel == Settings.Channels[0].Name)
                             joined = true;
 
                         if (fromChannel == "#bots") {
-                            commandHandler.HandleMessage($":{Settings.command_start}say I'm back baby!", fromChannel, addresser);
+                            commandHandler.HandleMessage($":{Settings.CommandStart}say I'm back baby!", fromChannel, addresser);
                         }
                         continue;
                     }
                     // Welcome the nickname to channel by sending a notice
                     Writer.WriteLine($"NOTICE {nickname}: Hi {nickname} and welcome to {fromChannel} channel!");
                     commandHandler.HandleMessage(
-	                    $":{Settings.command_start}say {nickname}: Hi and welcome to {fromChannel} channel!", fromChannel, addresser);
+	                    $":{Settings.CommandStart}say {nickname}: Hi and welcome to {fromChannel} channel!", fromChannel, addresser);
                     commandHandler.AddUser(nickname);
                     Writer.Flush();
                     // Sleep to prevent excess flood
@@ -181,19 +181,19 @@ namespace CsBot
                     identified = true;
                     Console.WriteLine(inputLine);
                 }
-                else if (inputLine.Contains("!") && inputLine.Contains($" :{Settings.command_start}quit"))
+                else if (inputLine.Contains("!") && inputLine.Contains($" :{Settings.CommandStart}quit"))
                 {
                     addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                    bool useChannel = false;
+                    var useChannel = false;
                     if (inputLine.Contains("#"))
                     {
                         useChannel = true;
                         fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
                     }
 
-                    if (Settings.admins != null && Array.IndexOf(Settings.admins, addresser) >= 0)
+                    if (Settings.Admins != null && Array.IndexOf(Settings.Admins, addresser) >= 0)
                     {
-                        commandHandler.HandleMessage($":{Settings.command_start}say Awe, Crap!", "#bots", addresser);
+                        commandHandler.HandleMessage($":{Settings.CommandStart}say Awe, Crap!", "#bots", addresser);
 
                         ping.Stop();
                         CloseProgram();
@@ -203,17 +203,17 @@ namespace CsBot
                         commandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
                     }
                 }
-                else if (inputLine.Contains("!") && inputLine.Contains($" :{Settings.command_start}reload"))
+                else if (inputLine.Contains("!") && inputLine.Contains($" :{Settings.CommandStart}reload"))
                 {
                     addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                    bool useChannel = false;
+                    var useChannel = false;
                     if (inputLine.Contains("#"))
                     {
                         useChannel = true;
                         fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
                     }
 
-                    if (Settings.admins != null && Array.IndexOf(Settings.admins, addresser) >= 0)
+                    if (Settings.Admins != null && Array.IndexOf(Settings.Admins, addresser) >= 0)
                     {
                         ObtainConfig();
                         commandHandler.Say("Reloaded settings from web service.", useChannel ? fromChannel : addresser);
@@ -223,8 +223,8 @@ namespace CsBot
                         commandHandler.Say("You don't have permissions.", useChannel ? fromChannel : addresser);
                     }
                 }
-                else if (inputLine.Contains(Settings.command_start) && parsedLine != null && parsedLine.StartsWith(
-	                $":{Settings.command_start}"))
+                else if (inputLine.Contains(Settings.CommandStart) && parsedLine != null && parsedLine.StartsWith(
+	                $":{Settings.CommandStart}"))
                 {
                     addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
                     fromChannel = inputLine.Substring(inputLine.IndexOf("#")).Split(' ')[0];
@@ -239,15 +239,15 @@ namespace CsBot
                 {
                     if (isUnderscoreNick)
                     {
-                        Writer.WriteLine($"PRIVMSG NickServ :ghost {Settings.nick} {Settings.password}");
-                        Writer.WriteLine($"NICK {Settings.nick}");
-                        Console.WriteLine($"NICK {Settings.nick}");
-                        commandHandler.HandleMessage($":{Settings.command_start}say identify {Settings.password}", "NickServ", Settings.nick);
+                        Writer.WriteLine($"PRIVMSG NickServ :ghost {Settings.Nick} {Settings.Password}");
+                        Writer.WriteLine($"NICK {Settings.Nick}");
+                        Console.WriteLine($"NICK {Settings.Nick}");
+                        commandHandler.HandleMessage($":{Settings.CommandStart}say identify {Settings.Password}", "NickServ", Settings.Nick);
                         isUnderscoreNick = false;
                     }
                     else
                     {
-                        foreach (var channel in Settings.channels)
+                        foreach (var channel in Settings.Channels)
                         {
                             if (channel.Key != "")
                                 Writer.WriteLine($"JOIN {channel.Name} {channel.Key}");
@@ -260,12 +260,12 @@ namespace CsBot
                 }
                 else if (inputLine.Contains("PONG") && (joined) && !identified)
                 {
-                    commandHandler.HandleMessage($":{Settings.command_start}say identify {Settings.password}", "NickServ", addresser);
+                    commandHandler.HandleMessage($":{Settings.CommandStart}say identify {Settings.Password}", "NickServ", addresser);
                 }
                 else if (inputLine.Contains("LOGIN"))
                 {
-                    Console.WriteLine($"{Settings.nick} and {Settings.password}");
-                    Writer.WriteLine($"PRIVMSG mattermost LOGIN {Settings.nick} {Settings.password}");
+                    Console.WriteLine($"{Settings.Nick} and {Settings.Password}");
+                    Writer.WriteLine($"PRIVMSG mattermost LOGIN {Settings.Nick} {Settings.Password}");
                     Writer.Flush();
                 }
                 else if (inputLine.Contains(":Nickname is already in use."))
@@ -276,12 +276,12 @@ namespace CsBot
                     Reader.Close();
                     m_irc.Close();
                     m_irc = new TcpClient();
-                    m_irc.Connect(Settings.server, Settings.port);
-                    if (Settings.secure == "1")
+                    m_irc.Connect(Settings.Server, Settings.Port);
+                    if (Settings.Secure == "1")
                     {
                         stream = new SslStream(m_irc.GetStream(), true, ValidateServerCertificate);
-                        SslStream sslStream = (SslStream)stream;
-                        sslStream.AuthenticateAsClient(Settings.server);
+                        var sslStream = (SslStream)stream;
+                        sslStream.AuthenticateAsClient(Settings.Server);
                     }
                     else
                     {
@@ -290,14 +290,14 @@ namespace CsBot
 
                     Reader = new StreamReader((Stream)stream);
                     Writer = new StreamWriter((Stream)stream);
-                    Console.WriteLine(Settings.user);
+                    Console.WriteLine(Settings.User);
                     // Start PingSender thread
                     ping = new PingSender(this);
                     ping.Start();
-                    Writer.WriteLine(Settings.user);
+                    Writer.WriteLine(Settings.User);
                     Writer.Flush();
-                    Writer.WriteLine($"NICK _{Settings.nick}");
-                    Console.WriteLine($"NICK _{Settings.nick}");
+                    Writer.WriteLine($"NICK _{Settings.Nick}");
+                    Console.WriteLine($"NICK _{Settings.Nick}");
                     commandHandler = new CommandHandler(this);
                     isUnderscoreNick = true;
                 }
@@ -305,22 +305,22 @@ namespace CsBot
                 {
                     Console.WriteLine(inputLine);
                     addresser = inputLine.Substring(inputLine.IndexOf(":") + 1, inputLine.IndexOf("!") - inputLine.IndexOf(":") - 1);
-                    string choice = inputLine.Substring(inputLine.LastIndexOf(":") + 1);
+                    var choice = inputLine.Substring(inputLine.LastIndexOf(":") + 1);
                     commandHandler.DirectRoShamBo(choice);
 
                 }
-                else if (inputLine.Contains("PRIVMSG") && inputLine.Contains($":{Settings.command_start}"))
+                else if (inputLine.Contains("PRIVMSG") && inputLine.Contains($":{Settings.CommandStart}"))
                 {
                     Console.WriteLine($"PrivateMessage: {inputLine}");
                     addresser = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
-                    string command = inputLine.Substring(inputLine.LastIndexOf($":{Settings.command_start}"));
+                    var command = inputLine.Substring(inputLine.LastIndexOf($":{Settings.CommandStart}"));
                     commandHandler.HandleMessage(command, addresser, addresser);
                 }
                 else
                 {
                     if (inputLine.Contains("PRIVMSG") && inputLine.Contains("!"))
                     {
-                        string userName = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
+                        var userName = inputLine.Substring(1, inputLine.IndexOf("!") - 1);
                         commandHandler.LastMessage(userName, inputLine, fromChannel);
                     }
                 }
@@ -333,15 +333,13 @@ namespace CsBot
             ServicePointManager.ServerCertificateValidationCallback = ValidateServerCertificate;
             //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
 
-            using (var webClient = new WebClient())
-            {
-                Console.WriteLine("Pulling config.");
-                Console.WriteLine($"Settings file: {SETTINGS_FILE}");
-                var setting_file = webClient.DownloadString(SETTINGS_FILE);
-                Settings = JsonConvert.DeserializeObject<Settings>(setting_file);
-                Settings.password = ConfigurationManager.AppSettings["Password"];
-                Console.WriteLine($"Config File:{Settings}");
-            }
+            using var webClient = new WebClient();
+            Console.WriteLine("Pulling config.");
+            Console.WriteLine($"Settings file: {SETTINGS_FILE}");
+            var setting_file = webClient.DownloadString(SETTINGS_FILE);
+            Settings = JsonConvert.DeserializeObject<Settings>(setting_file);
+            Settings.Password = ConfigurationManager.AppSettings["Password"];
+            Console.WriteLine($"Config File:{Settings}");
         }
 
         bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
@@ -349,24 +347,23 @@ namespace CsBot
             if (sslPolicyErrors == SslPolicyErrors.None)
                 return true;
 
-            // TODO take this out for actual validation.
-            return true;
-            foreach (X509ChainStatus status in chain.ChainStatus)
-            {
-                if (certificate.Subject == certificate.Issuer &&
-                        status.Status == X509ChainStatusFlags.UntrustedRoot &&
-                        Settings != null && Settings.server_validate == false)
-                {
-                    continue;
+            // TODO uncomment for actual validation.
+            //foreach (X509ChainStatus status in chain.ChainStatus)
+            //{
+            //    if (certificate.Subject == certificate.Issuer &&
+            //            status.Status == X509ChainStatusFlags.UntrustedRoot &&
+            //            Settings != null && Settings.ServerValidate == false)
+            //    {
+            //        continue;
 
-                }
-                else if (status.Status != X509ChainStatusFlags.NoError &&
-                        ((Settings != null && Settings.server_validate != false) || status.Status != X509ChainStatusFlags.UntrustedRoot))
-                {
-                    Console.WriteLine("Certificate not valid: {0}, {1}", sslPolicyErrors, status.StatusInformation);
-                    return false;
-                }
-            }
+            //    }
+            //    else if (status.Status != X509ChainStatusFlags.NoError &&
+            //            ((Settings != null && Settings.ServerValidate != false) || status.Status != X509ChainStatusFlags.UntrustedRoot))
+            //    {
+            //        Console.WriteLine("Certificate not valid: {0}, {1}", sslPolicyErrors, status.StatusInformation);
+            //        return false;
+            //    }
+            //}
 
             return true;
         }

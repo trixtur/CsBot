@@ -19,7 +19,7 @@ namespace CsBot.Games
         {
             if (verb != GetType().Name.ToLower()) return;
 
-            string addresser = handler.GetAddresser();
+            var addresser = handler.GetAddresser();
 
             d1 = random.Next(1, DICE + 1);
             d2 = random.Next(1, DICE + 1);

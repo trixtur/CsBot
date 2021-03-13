@@ -18,9 +18,9 @@ namespace CsBot.Games
         int FarkleTotal;
         int TempFarkleTotal;
 
-        Users m_users => handler.m_users;
-        string m_addresser => handler.m_addresser;
-        IrcBot ircBot => handler.ircBot;
+        Users m_users => handler.Users;
+        string m_addresser => handler.Addresser;
+        IrcBot ircBot => handler.IrcBot;
 
 
         public Farkle(CommandHandler handler)
@@ -42,8 +42,8 @@ namespace CsBot.Games
                 return;
             }
 
-            /*if (!m_users.SomeoneHasToken() && m_users.isPlayingFarkle()) This shouldn't be needed
-                m_users.SetFarkleToken(FarkleMembers[FarkleUser], true);*/
+            /*if (!Users.SomeoneHasToken() && Users.isPlayingFarkle()) This shouldn't be needed
+                Users.SetFarkleToken(FarkleMembers[FarkleUser], true);*/
 
             if (!m_users.GetFarkleToken(m_addresser))
             {
@@ -53,7 +53,7 @@ namespace CsBot.Games
 
             if (FarkleMembers.Count < 2)
             {
-                handler.Say($"You need atleast 2 people to play. Use {ircBot.Settings.command_start}joinfarkle to join the game.");
+                handler.Say($"You need atleast 2 people to play. Use {ircBot.Settings.CommandStart}joinfarkle to join the game.");
                 return;
             }
             // Done with preliminary checks
@@ -69,7 +69,7 @@ namespace CsBot.Games
                 if (DiceToThrow > 0 && m_users.GetFarkleToken(m_addresser) && dice.Count != 0)
                 {
                     handler.Say($"{m_addresser} you have already rolled once, instead answer the question.", m_addresser);
-                    handler.Say($"{m_addresser} use {ircBot.Settings.command_start}farkle n # to rethrow dice.", m_addresser);
+                    handler.Say($"{m_addresser} use {ircBot.Settings.CommandStart}farkle n # to rethrow dice.", m_addresser);
                     return;
                 }
                 if (DiceToThrow == 0 && m_users.GetFarkleToken(m_addresser))
@@ -103,9 +103,9 @@ namespace CsBot.Games
                 FarkleTotal = 0;
                 TempFarkleTotal = 0;
                 DiceToThrow = 6;
-                string name = "";
-                bool found = false;
-                foreach (string user in FarkleMembers.Values)
+                var name = "";
+                var found = false;
+                foreach (var user in FarkleMembers.Values)
                 { //Get the next user in the list
                     if (found)
                     {
@@ -121,7 +121,7 @@ namespace CsBot.Games
 
                 if (name == "")
                 { //If we were at the end of the list.
-                    foreach (string user in FarkleMembers.Values)
+                    foreach (var user in FarkleMembers.Values)
                     {
                         name = user;
                         return;
@@ -153,22 +153,22 @@ namespace CsBot.Games
                     return;
                 }
                 string infoOutput = null;
-                int highestScoring = 0;
-                int diceToRemove = 1;
-                int tempPartDice = 0;
-                bool possible = true;
-                int whileItterations = 1;
-                command = command.Replace($":{ircBot.Settings.command_start}farkle n ", "");
+                var highestScoring = 0;
+                var diceToRemove = 1;
+                var tempPartDice = 0;
+                var possible = true;
+                var whileItterations = 1;
+                command = command.Replace($":{ircBot.Settings.CommandStart}farkle n ", "");
                 
                 if (FarkleDiceAllScoring())
                 {
                     //FarkleTotal += TempFarkleTotal;
-                    handler.Say($"{m_addresser} all dice scoring, so added {FarkleTotal} to your score {ircBot.Settings.command_start}farkle to continue.");
+                    handler.Say($"{m_addresser} all dice scoring, so added {FarkleTotal} to your score {ircBot.Settings.CommandStart}farkle to continue.");
                     DiceToThrow = 0;
                     return;
                 }
 
-                foreach (int die in dice.Keys)
+                foreach (var die in dice.Keys)
                 {
 	                if (int.TryParse(command, out var number) && FarkleValueCheck(die, DiceToThrow - number) > 0)
                     {
@@ -188,7 +188,7 @@ namespace CsBot.Games
                 while (diceToRemove > 0 && whileItterations < 10)
                 {
                     diceToRemove = DiceToThrow - int.Parse(command);
-                    foreach (int die in dice.Keys)
+                    foreach (var die in dice.Keys)
                     {
                         if (highestScoring < FarkleValueCheck(die, diceToRemove))
                         {
@@ -209,7 +209,7 @@ namespace CsBot.Games
                             if (dice[tempPartDice] > 3 && dice[tempPartDice] < 6)
                             {
                                 diceToRemove -= 3;
-                                for (int i = 0; i < 3; i++)
+                                for (var i = 0; i < 3; i++)
                                     infoOutput += $"{tempPartDice}, ";
                                 FarkleTotal += FarkleValueCheck(tempPartDice, dice[tempPartDice]);
                                 dice[tempPartDice] -= 3;
@@ -217,7 +217,7 @@ namespace CsBot.Games
                             else
                             {
                                 diceToRemove -= dice[tempPartDice];
-                                for (int i = 0; i < dice[tempPartDice]; i++)
+                                for (var i = 0; i < dice[tempPartDice]; i++)
                                     infoOutput += $"{tempPartDice}, ";
                                 FarkleTotal += FarkleValueCheck(tempPartDice, dice[tempPartDice]);
                                 dice.Remove(tempPartDice);
@@ -227,7 +227,7 @@ namespace CsBot.Games
                         {
                             if (dice[tempPartDice] > 3 && dice[tempPartDice] < 6)
                             {
-                                for (int i = 0; i < 3; i++)
+                                for (var i = 0; i < 3; i++)
                                     infoOutput += $"{tempPartDice}, ";
                                 FarkleTotal += FarkleValueCheck(tempPartDice, diceToRemove);
                                 dice[tempPartDice] -= 3;
@@ -235,7 +235,7 @@ namespace CsBot.Games
                             }
                             else
                             {
-                                for (int i = 0; i < diceToRemove; i++)
+                                for (var i = 0; i < diceToRemove; i++)
                                     infoOutput += $"{tempPartDice}, ";
                                 FarkleTotal += FarkleValueCheck(tempPartDice, diceToRemove);
                                 dice[tempPartDice] -= diceToRemove;
@@ -247,7 +247,7 @@ namespace CsBot.Games
                             if (dice[tempPartDice] > 3 && dice[tempPartDice] < 6)
                             {
                                 diceToRemove -= 3;
-                                for (int i = 0; i < 3; i++)
+                                for (var i = 0; i < 3; i++)
                                     infoOutput += $"{tempPartDice}, ";
                                 FarkleTotal += FarkleValueCheck(tempPartDice, dice[tempPartDice]);
                                 dice[tempPartDice] -= 3;
@@ -255,7 +255,7 @@ namespace CsBot.Games
                             else
                             {
                                 diceToRemove -= dice[tempPartDice];
-                                for (int i = 0; i < dice[tempPartDice]; i++)
+                                for (var i = 0; i < dice[tempPartDice]; i++)
                                     infoOutput += $"{tempPartDice}, ";
                                 FarkleTotal += FarkleValueCheck(tempPartDice, dice[tempPartDice]);
                                 dice.Remove(tempPartDice);
@@ -274,7 +274,7 @@ namespace CsBot.Games
                 handler.Say($"{m_addresser} kept {infoOutput}.");
                 TempFarkleTotal = 0;
                 DiceToThrow = 0;
-                foreach (int die in dice.Keys)
+                foreach (var die in dice.Keys)
                 {
                     DiceToThrow += dice[die];
                 }
@@ -288,7 +288,7 @@ namespace CsBot.Games
             {
                 if (!m_users.GetFarkleToken(m_addresser) || TempFarkleTotal != 0 || FarkleTotal != 0)
                 {
-                    handler.Say($"{m_addresser} use {ircBot.Settings.command_start}farkle y/{ircBot.Settings.command_start}farkle n #.", m_addresser);
+                    handler.Say($"{m_addresser} use {ircBot.Settings.CommandStart}farkle y/{ircBot.Settings.CommandStart}farkle n #.", m_addresser);
                     return;
                 }
 
@@ -300,8 +300,8 @@ namespace CsBot.Games
                 FarkleTotal = 0;
                 TempFarkleTotal = 0;
                 DiceToThrow = 6;
-                string name = "";
-                bool found = false;
+                var name = "";
+                var found = false;
                 foreach (var user in FarkleMembers.Values)
                 { //Get the next user in the list
                     if (found)
@@ -345,7 +345,7 @@ namespace CsBot.Games
                 if (!m_users.IsPlayingFarkle())
                 {
                     handler.Say(
-	                    $"{m_addresser} has started a game of farkle, to join type {ircBot.Settings.command_start}joinfarkle");
+	                    $"{m_addresser} has started a game of farkle, to join type {ircBot.Settings.CommandStart}joinfarkle");
                     m_users.SetFarkleToken(m_addresser, true);
                 }
             }
@@ -363,14 +363,14 @@ namespace CsBot.Games
         public void Help()
         {
             handler.Say("To play farkle you have the following commands:", m_addresser);
-            handler.Say($"{ircBot.Settings.command_start}farkle Rolls at the start of game play", m_addresser);
+            handler.Say($"{ircBot.Settings.CommandStart}farkle Rolls at the start of game play", m_addresser);
             handler.Say("and is used when all rolled dice are scoring.", m_addresser);
-            handler.Say($"{ircBot.Settings.command_start}farkle n #  Re-rolls # of dice, and keeps the highest of the rest.", m_addresser);
-            handler.Say($"{ircBot.Settings.command_start}farkle y Keeps all dice and ends your turn.", m_addresser);
-            handler.Say($"{ircBot.Settings.command_start}farklescore <player> Returns your score or players if provided.", m_addresser);
-            handler.Say($"{ircBot.Settings.command_start}joinfarkle Join a new game of farkle.", m_addresser);
-            handler.Say($"{ircBot.Settings.command_start}farklehelp This help information.", m_addresser);
-            handler.Say($"{ircBot.Settings.command_start}farkelforfeit To stop in the middle of a game.", m_addresser);
+            handler.Say($"{ircBot.Settings.CommandStart}farkle n #  Re-rolls # of dice, and keeps the highest of the rest.", m_addresser);
+            handler.Say($"{ircBot.Settings.CommandStart}farkle y Keeps all dice and ends your turn.", m_addresser);
+            handler.Say($"{ircBot.Settings.CommandStart}farklescore <player> Returns your score or players if provided.", m_addresser);
+            handler.Say($"{ircBot.Settings.CommandStart}joinfarkle Join a new game of farkle.", m_addresser);
+            handler.Say($"{ircBot.Settings.CommandStart}farklehelp This help information.", m_addresser);
+            handler.Say($"{ircBot.Settings.CommandStart}farkelforfeit To stop in the middle of a game.", m_addresser);
         }
 
         public void Score(string command, int endCommand)
@@ -379,7 +379,7 @@ namespace CsBot.Games
                 handler.Say($"{m_addresser} your score is {m_users.FarkleValue(m_addresser)}.");
             else
             {
-                string name = command.Substring(endCommand + 2).Trim();
+                var name = command.Substring(endCommand + 2).Trim();
                 if (m_users.HasUser(name))
                     handler.Say($"{name}'s score is {m_users.FarkleValue(name)}.");
                 else
@@ -393,14 +393,14 @@ namespace CsBot.Games
         {
 	        if (!m_users.IsPlayingFarkle(m_addresser)) return;
 
-	        bool hasToken = m_users.GetFarkleToken(m_addresser);
+	        var hasToken = m_users.GetFarkleToken(m_addresser);
 	        handler.Say($"{m_addresser} forfeit.");
 
-	        bool found = false;
-	        string name = "";
+	        var found = false;
+	        var name = "";
 	        if (hasToken)
 	        {
-		        foreach (string user in FarkleMembers.Values)
+		        foreach (var user in FarkleMembers.Values)
 		        { //Get the next user in the list
 			        if (found)
 			        {
@@ -414,7 +414,7 @@ namespace CsBot.Games
 		        }
 		        if (name == "")
 		        { //If we were at the end of the list.
-			        foreach (string user in FarkleMembers.Values)
+			        foreach (var user in FarkleMembers.Values)
 			        {
 				        name = user;
 				        return;
@@ -426,7 +426,7 @@ namespace CsBot.Games
 
 	        m_users.SetFarkleFlag(m_addresser, false);
 	        m_users.SetFarkleToken(m_addresser, false);
-	        foreach (int member in FarkleMembers.Keys)
+	        foreach (var member in FarkleMembers.Keys)
 	        {
 		        if (FarkleMembers[member] == m_addresser)
 		        {
@@ -438,7 +438,7 @@ namespace CsBot.Games
 
         bool FarkleDiceAllScoring()
         {
-            foreach (int die in dice.Keys)
+            foreach (var die in dice.Keys)
             {
                 if (FarkleValueCheck(die, dice[die]) == 0)
                     return false;
@@ -464,7 +464,7 @@ namespace CsBot.Games
                 return;
             }
 
-            for (int i = 0; i < DiceToThrow; i++)
+            for (var i = 0; i < DiceToThrow; i++)
             {
 	            var temp = (random.Next(1, 100) % 6) + 1;
                 if (dice.ContainsKey(temp))
@@ -480,11 +480,11 @@ namespace CsBot.Games
                 Task.Delay(temp * 50);
             }
 
-            foreach (int outputdice in dice.Keys)
+            foreach (var outputdice in dice.Keys)
             {
                 if (dice[outputdice] > 1)
                 {
-                    for (int i = 0; i < dice[outputdice]; i++)
+                    for (var i = 0; i < dice[outputdice]; i++)
                         infoOutput += $"{outputdice}, ";
                 }
                 else
@@ -513,9 +513,9 @@ namespace CsBot.Games
                     handler.Say(
 	                    $"{m_addresser} you rolled {infoOutput} for a total of {(FarkleTotal + TempFarkleTotal)}.");
                     handler.Say("You bust.");
-                    bool found = false;
-                    string name = "";
-                    foreach (string user in FarkleMembers.Values)
+                    var found = false;
+                    var name = "";
+                    foreach (var user in FarkleMembers.Values)
                     { //Get the next user in the list
                         if (found)
                         {
@@ -529,7 +529,7 @@ namespace CsBot.Games
                     }
                     if (name == "")
                     { //If we were at the end of the list.
-                        foreach (string user in FarkleMembers.Values)
+                        foreach (var user in FarkleMembers.Values)
                         {
                             name = user;
                             return;
@@ -551,7 +551,7 @@ namespace CsBot.Games
         {
             if (dice.Count == 3)
             {
-                foreach (int die in dice.Keys)
+                foreach (var die in dice.Keys)
                 {
                     if (dice[die] != 2)
                         return false;
@@ -564,8 +564,8 @@ namespace CsBot.Games
 
         static int FarkleValueCheck(Dictionary<int, int> dice)
         {
-            int returnValue = 0;
-            foreach (int die in dice.Keys)
+            var returnValue = 0;
+            foreach (var die in dice.Keys)
             {
                 if (die == 1)
                 {
@@ -631,8 +631,8 @@ namespace CsBot.Games
         }
         int FarkleValueCheck(int dieKey, int numToKeep)
         {
-            int returnValue = 0;
-            int numDiceToCheck = 0;
+            var returnValue = 0;
+            var numDiceToCheck = 0;
             if (dice[dieKey] > numToKeep)
                 numDiceToCheck = numToKeep;
             else
@@ -701,9 +701,9 @@ namespace CsBot.Games
 
         void DeclareWinner()
         {
-            bool tie = false;
-            string winner = m_addresser;
-            foreach (string user in FarkleMembers.Values)
+            var tie = false;
+            var winner = m_addresser;
+            foreach (var user in FarkleMembers.Values)
             {
                 if (m_users.FarkleValue(user) >= 5000 && m_users.FarkleValue(user) > m_users.FarkleValue(winner))
                 {
@@ -724,7 +724,7 @@ namespace CsBot.Games
             {
                 handler.Say($"{winner} won with {m_users.FarkleValue(winner)} points!!!");
             }
-            foreach (int member in FarkleMembers.Keys)
+            foreach (var member in FarkleMembers.Keys)
             {
                 m_users.SetFarkleFlag(FarkleMembers[member], false);
                 m_users.SetFarkleToken(FarkleMembers[member], false);
