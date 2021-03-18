@@ -1,5 +1,6 @@
+using CsBot.Games.WavingHands;
+
 using NUnit.Framework;
-using CsBot.Games.WHands;
 
 namespace CsBot.Tests
 {
@@ -9,17 +10,17 @@ namespace CsBot.Tests
 		[Test]
 		public void TestHandAdd ()
 		{
-			Hand h = new Hand (Hand.Side.left);
+			var hand = new Hand (Hand.Side.Left);
 
-			Hand.Side s = h.GetSide ();
-			Assert.AreEqual (s, Hand.Side.left);
+			Hand.Side s = hand.GetSide ();
+			Assert.AreEqual (s, Hand.Side.Left);
 
-			h.Add ('t');
-			h.Add ('e');
-			h.Add ('s');
-			h.Add ('t');
+			hand.Add ('t');
+			hand.Add ('e');
+			hand.Add ('s');
+			hand.Add ('t');
 
-			char[] last4 = h.GetLast (4);
+			char[] last4 = hand.GetLast (4);
 			Assert.AreEqual ('t', last4[0]);
 			Assert.AreEqual ('e', last4[1]);
 			Assert.AreEqual ('s', last4[2]);
@@ -29,10 +30,10 @@ namespace CsBot.Tests
 		[Test]
 		public void TestGetAt ()
 		{
-			Hand h = new Hand (Hand.Side.left);
+			Hand h = new Hand (Hand.Side.Left);
 
 			Hand.Side s = h.GetSide ();
-			Assert.AreEqual (s, Hand.Side.left);
+			Assert.AreEqual (s, Hand.Side.Left);
 
 			h.Add ('t');
 			h.Add ('e');

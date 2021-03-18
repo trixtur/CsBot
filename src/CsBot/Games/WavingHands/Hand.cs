@@ -1,17 +1,18 @@
-namespace CsBot.Games.WHands
+
+namespace CsBot.Games.WavingHands
 {
 	public class Hand
 	{
-		public enum Side { right, left };
+		public enum Side { Right, Left };
 
-		private Side _side;
-		private char[] _gestures;
+		Side _side;
+		char[] _gestures;
 
-		private const int MaxGestures = 10;
+		const int MaxGestures = 10;
 
-		public Hand (Side s)
+		public Hand (Side side)
 		{
-			_side = s;
+			_side = side;
 			_gestures = new char[MaxGestures];
 		}
 
