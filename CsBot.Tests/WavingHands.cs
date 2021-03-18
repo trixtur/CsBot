@@ -25,5 +25,23 @@ namespace CsBot.Tests
 			Assert.AreEqual ('s', last4[2]);
 			Assert.AreEqual ('t', last4[3]);
 		}
+
+		[Test]
+		public void TestGetAt ()
+		{
+			Hand h = new Hand (Hand.Side.left);
+
+			Hand.Side s = h.GetSide ();
+			Assert.AreEqual (s, Hand.Side.left);
+
+			h.Add ('t');
+			h.Add ('e');
+			h.Add ('s');
+			h.Add ('t');
+
+			char result = h.GetAt (7);
+
+			Assert.AreEqual (result, 'e');
+		}
 	}
 }
