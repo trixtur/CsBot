@@ -1,15 +1,15 @@
 {
-    "server": "127.0.0.1",
-    "password": "password",
+    "server": "example.com",
+    "password": "somebot",
     "port": 6667,
     "secure": false,
     "server_validate": false,
     "user": "USER be|\\|der 198.91.54.142 kr0w :Be|\\|der",
-    "nick": "bot",
+    "nick": "Be|\\|der",
     "channels": [
       {
         "id": 0,
-        "name": "pyrous",
+        "name": "channel1",
         "key": ""
       },
       {
