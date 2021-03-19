@@ -93,7 +93,7 @@ namespace CsBot
 				//Writer.WriteLine("JOIN " + ircServerOptions.channels[0].name2);
 				//Writer.Flush();
 
-				EventLoop (addresser, fromChannel, ping, nickname, stream);
+				await EventLoop (addresser, fromChannel, ping, nickname, stream);
 			} catch (Exception e) {
 				// Show the exception, sleep for a while and try to establish a new connection to irc server
 				_log.LogError ($"Exception info: {e}");
@@ -208,8 +208,8 @@ namespace CsBot
 					} else {
 						commandHandler.Say ("You don't have permissions.", useChannel ? fromChannel : addresser);
 					}
-				} else if (inputLine.Contains (Settings.CommandStart) && parsedLine != null && parsedLine.StartsWith (
-					  $":{Settings.CommandStart}")) {
+				} else if (inputLine != null && inputLine.Contains (Settings.CommandStart) && parsedLine != null &&
+				           parsedLine.StartsWith ( $":{Settings.CommandStart}")) {
 					addresser = inputLine.Substring (1, inputLine.IndexOf ("!") - 1);
 					fromChannel = inputLine.Substring (inputLine.IndexOf ("#")).Split (' ')[0];
 					commandHandler.HandleMessage (parsedLine, fromChannel, addresser);

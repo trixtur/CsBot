@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace CsBot
 {
@@ -13,6 +14,8 @@ namespace CsBot
         public string Nick { get; set; }
         public List<Channel> Channels { get; set; }
         public List<string> Admins { get; set; }
+
+        [JsonProperty(PropertyName = "command_start")]
         public string CommandStart { get; set; }
         public List<string> Insults { get; set; }
         public List<string> Quotes { get; set; }
