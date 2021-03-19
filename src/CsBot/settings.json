@@ -1,0 +1,43 @@
+{
+    "server": "example.com",
+    "password": "somebot",
+    "port": 6667,
+    "secure": false,
+    "server_validate": false,
+    "user": "USER be|\\|der 198.91.54.142 kr0w :Be|\\|der",
+    "nick": "Be|\\|der",
+    "channels": [
+      {
+        "id": 0,
+        "name": "channel1",
+        "key": ""
+      },
+      {
+        "id": 1,
+        "name": "#CsBot"
+      }
+    ],
+    "admins": [
+      "user1",
+      "user2"
+    ],
+    "command_start": "~",
+    "insults": [
+      "{0}, You know what's funny? Your weiner!",
+      "{0}, Bite my shiny metal ass!",
+      "Shut up {0} I know it!",
+      "I think {0} is screwier than my aunt Rita... And she's a screw!",
+      "You degenerate hussy! I'm disappointed in you too, {0}.",
+      "Hey look {0}! It's that idiotic windbag you slept with!"
+    ],
+    "quotes": [
+      "I don't tell you how to tell Be|\\|der what to do, so don't tell Be|\\|der how to do what you tell Be|\\|der to do.",
+      "I am Bender. Please insert girder."
+    ],
+    "praises": [
+      "{0} is the sharpest screw in the box.",
+      "{0}, I guess you can be lovable too.",
+      "{0} just might be famous enough to get away with running people over",
+      "Only {0} can tell Be|\\|der what to do!"
+    ]
+}
