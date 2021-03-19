@@ -9,6 +9,8 @@ namespace CsBot
         public string Password { get; set; }
         public int Port { get; set; }
         public bool Secure { get; set; }
+
+        [JsonProperty (PropertyName = "server_validate")]
         public bool ServerValidate { get; set; }
         public string User { get; set; }
         public string Nick { get; set; }
