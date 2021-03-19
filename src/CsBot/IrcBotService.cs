@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
@@ -52,9 +53,9 @@ namespace CsBot
 
 			try {
 				await ObtainIrcConfig ();
-				if (String.IsNullOrEmpty (Settings.Password)) {
+				if (string.IsNullOrEmpty (Settings.Password)) {
 					Console.Write ("Password: ");
-					Settings.Password = ReadPasswordLine ();
+					Settings.Password = ReadPasswordLine ().ToString ();
 				}
 
 				var fromChannel = Settings.Channels[0].Name;
@@ -354,30 +355,32 @@ namespace CsBot
 			return true;
 		}
 
-		static string ReadPasswordLine()
+		static SecureString ReadPasswordLine()
 		{
-			string pass = "";
+			var password = new SecureString ();
+
 			ConsoleKeyInfo key;
 			do
 			{
 				key = Console.ReadKey(true);
-				if (key.Key != ConsoleKey.Enter)
+				if (key.Key == ConsoleKey.Enter)
+					continue;
+
+				if (!(key.KeyChar < ' '))
 				{
-					if (!(key.KeyChar < ' '))
-					{
-						pass += key.KeyChar;
-						Console.Write("*");
-					}
-					else if (key.Key == ConsoleKey.Backspace && pass.Length > 0)
-					{
-						Console.Write(Convert.ToChar(ConsoleKey.Backspace));
-						pass = pass.Remove(pass.Length - 1);
-						Console.Write(" ");
-						Console.Write(Convert.ToChar(ConsoleKey.Backspace));
-					}
+					password.AppendChar (key.KeyChar);
+					Console.Write("*");
+				}
+				else if (key.Key == ConsoleKey.Backspace && password.Length > 0)
+				{
+					Console.Write(Convert.ToChar(ConsoleKey.Backspace));
+					password.RemoveAt (password.Length - 1);
+					Console.Write(" ");
+					Console.Write(Convert.ToChar(ConsoleKey.Backspace));
 				}
 			} while (key.Key != ConsoleKey.Enter);
-			return pass;
+
+			return password;
 		}
 
 	}
