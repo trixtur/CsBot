@@ -87,8 +87,6 @@ namespace CsBot
 				Writer.Flush ();
 				Console.WriteLine ($"NICK {Settings.Nick}");
 				commandHandler = new CommandHandler (this);
-                Console.WriteLine($"Username: {Settings.Nick}");
-                Console.WriteLine($"Password: {Settings.Password}");
 				Writer.WriteLine ($"PRIVMSG mattermost LOGIN {Settings.Nick} {Settings.Password}");
 				Writer.Flush ();
 				//Writer.WriteLine("JOIN " + ircServerOptions.channels[0].Name + " " + KEY);
