@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 using CsBot.Interfaces;
 
@@ -55,7 +56,7 @@ namespace CsBot
 				await ObtainIrcConfig ();
 				if (string.IsNullOrEmpty (Settings.Password)) {
 					Console.Write ("Password: ");
-					Settings.Password = ReadPasswordLine ().ToString ();
+					Settings.Password = SecureStringToString(ReadPasswordLine ());
 				}
 
 				var fromChannel = Settings.Channels[0].Name;
@@ -86,6 +87,8 @@ namespace CsBot
 				Writer.Flush ();
 				Console.WriteLine ($"NICK {Settings.Nick}");
 				commandHandler = new CommandHandler (this);
+                Console.WriteLine($"Username: {Settings.Nick}");
+                Console.WriteLine($"Password: {Settings.Password}");
 				Writer.WriteLine ($"PRIVMSG mattermost LOGIN {Settings.Nick} {Settings.Password}");
 				Writer.Flush ();
 				//Writer.WriteLine("JOIN " + ircServerOptions.channels[0].Name + " " + KEY);
@@ -383,5 +386,14 @@ namespace CsBot
 			return password;
 		}
 
+        String SecureStringToString(SecureString value) {
+            IntPtr valuePtr = IntPtr.Zero;
+            try {
+                valuePtr = Marshal.SecureStringToGlobalAllocUnicode(value);
+                return Marshal.PtrToStringUni(valuePtr);
+            } finally {
+                Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
+            }
+        }
 	}
 }
