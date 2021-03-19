@@ -8,7 +8,7 @@ namespace CsBot
     /// </summary>
     class PingSender
     {
-        readonly Timer timer;
+        readonly Timer _timer;
         readonly IrcBotService _ircBotService;
 
         // Empty constructor makes instance of Thread
@@ -16,7 +16,7 @@ namespace CsBot
         {
             _ircBotService = ircBotService;
 
-            timer = new Timer {
+            _timer = new Timer {
                 Interval = 15000
             };
         }
@@ -31,15 +31,15 @@ namespace CsBot
         // Starts the thread
         public void Start()
         {
-            timer.Enabled = true;
-            timer.Elapsed += SendPing;
+            _timer.Enabled = true;
+            _timer.Elapsed += SendPing;
         }
 
         // Kills the thead
         public void Stop()
         {
-            timer.Elapsed -= SendPing;
-            timer.Enabled = false;
+            _timer.Elapsed -= SendPing;
+            _timer.Enabled = false;
         }
     }
 }
