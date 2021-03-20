@@ -4,9 +4,9 @@ namespace CsBot.Games.WavingHands
 	{
 		ProfferedPalm	= 'P',
 		WigglingFingers = 'F',
-		Snap			= 'S',
-		Wave			= 'W',
-		DigitPoint		= 'D',
-		Clap			= 'C', // Requires both hands
+		Snap		= 'S',
+		Wave		= 'W',
+		DigitPoint	= 'D',
+		Clap		= 'C', // Requires both hands
 	}
 }
