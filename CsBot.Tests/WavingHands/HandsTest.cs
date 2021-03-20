@@ -2,7 +2,7 @@ using CsBot.Games.WavingHands;
 
 using NUnit.Framework;
 
-namespace CsBot.Tests
+namespace CsBot.Tests.WavingHands
 {
 	[TestFixture]
 	public class WavingHands
