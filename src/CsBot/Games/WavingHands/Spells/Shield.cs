@@ -13,7 +13,7 @@ namespace CsBot.Games.WavingHands.Spells
 			Description += "will block any number of such attacks but lasts for only one round. ";
 			Description += "The shield protects the subject on the turn in which it was cast.";
 
-			Usage = "Shield can be case with Gestures: Proffered Palm (P)";
+			Usage = "Shield can be cast with Gestures: Proffered Palm (P)";
 		}
 	}
 }
