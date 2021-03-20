@@ -15,34 +15,34 @@ namespace CsBot.Tests.WavingHands
 			Hand.Side s = hand.GetSide ();
 			Assert.AreEqual (s, Hand.Side.Left);
 
-			hand.Add ('t');
-			hand.Add ('e');
-			hand.Add ('s');
-			hand.Add ('t');
+			hand.Add (Gesture.Clap);
+			hand.Add (Gesture.Snap);
+			hand.Add (Gesture.Wave);
+			hand.Add (Gesture.DigitPoint);
 
-			char[] last4 = hand.GetLast (4);
-			Assert.AreEqual ('t', last4[0]);
-			Assert.AreEqual ('e', last4[1]);
-			Assert.AreEqual ('s', last4[2]);
-			Assert.AreEqual ('t', last4[3]);
+			Gesture[] last4 = hand.GetLast (4);
+			Assert.AreEqual (Gesture.Clap, last4[0]);
+			Assert.AreEqual (Gesture.Snap, last4[1]);
+			Assert.AreEqual (Gesture.Wave, last4[2]);
+			Assert.AreEqual (Gesture.DigitPoint, last4[3]);
 		}
 
 		[Test]
 		public void TestGetAt ()
 		{
-			Hand h = new Hand (Hand.Side.Left);
+			Hand hand = new Hand (Hand.Side.Left);
 
-			Hand.Side s = h.GetSide ();
+			Hand.Side s = hand.GetSide ();
 			Assert.AreEqual (s, Hand.Side.Left);
 
-			h.Add ('t');
-			h.Add ('e');
-			h.Add ('s');
-			h.Add ('t');
+			hand.Add (Gesture.Clap);
+			hand.Add (Gesture.Snap);
+			hand.Add (Gesture.Wave);
+			hand.Add (Gesture.DigitPoint);
 
-			char result = h.GetAt (7);
+			Gesture result = hand.GetAt (7);
 
-			Assert.AreEqual (result, 'e');
+			Assert.AreEqual (result, Gesture.Snap);
 		}
 	}
 }
