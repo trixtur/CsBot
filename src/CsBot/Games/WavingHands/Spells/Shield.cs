@@ -4,14 +4,16 @@ namespace CsBot.Games.WavingHands.Spells
 	{
 		public Shield (Living.Living target)
 		{
-			Target = target;
-			Sequence = new Gesture[1];
-			Sequence[0] = Gesture.DigitPoint;
-		}
+			Sequence = new Gesture[]{Gesture.ProfferedPalm};
 
-		public override bool IsMatch (Hand left, Hand right)
-		{
-			return (left.GetLast (1) ==  Sequence || right.GetLast (1) == Sequence);
+			Target = target;
+
+			Description =  "This spell protects the subject from monsters (that is, creatures created by a ";
+			Description += "summoning spell), from missile spells and from stabs by wizards. The shield ";
+			Description += "will block any number of such attacks but lasts for only one round. ";
+			Description += "The shield protects the subject on the turn in which it was cast.";
+
+			Usage = "Shield can be case with Gestures: Proffered Palm (P)";
 		}
 	}
 }
