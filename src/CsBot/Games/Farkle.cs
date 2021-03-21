@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CsBot.Games
 {
+	// FIXME, why doesn't this implement IGame?
     class Farkle
     {
         static readonly Random random = new Random();
@@ -112,7 +113,7 @@ namespace CsBot.Games
                         name = user;
                         return;
                     }
-                    
+
                     if (user.Equals(m_addresser))
                     {
                         found = true;
@@ -159,7 +160,7 @@ namespace CsBot.Games
                 var possible = true;
                 var whileItterations = 1;
                 command = command.Replace($":{IrcBotService.Settings.CommandStart}farkle n ", "");
-                
+
                 if (FarkleDiceAllScoring())
                 {
                     //FarkleTotal += TempFarkleTotal;
@@ -203,7 +204,7 @@ namespace CsBot.Games
                             handler.Say($"{m_addresser} you cannot remove that many dice.", m_addresser);
                             return;
                         }
-                        
+
                         if (dice[tempPartDice] == diceToRemove)
                         {
                             if (dice[tempPartDice] > 3 && dice[tempPartDice] < 6)
@@ -309,7 +310,7 @@ namespace CsBot.Games
                         name = user;
                         return;
                     }
-                    
+
                     if (user.Equals(m_addresser))
                     {
                         found = true;

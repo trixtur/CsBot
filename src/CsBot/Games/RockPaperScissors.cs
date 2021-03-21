@@ -1,38 +1,42 @@
-﻿using System;
+using System;
+
+using CsBot.Interfaces;
 
 namespace CsBot.Games
 {
     public enum RoShamBo { Rock, Paper, Scissors };
 
-    class RockPaperScissors : IGame
-    {
-	    readonly CommandHandler handler;
-        const string GameName = "rps";
 
-        Users m_users => handler.Users;
-        string m_addresser => handler.Addresser;
-        IrcBotService IrcBotService => handler.IrcBotService;
+	class RockPaperScissors : IGame
+    {
+	    readonly CommandHandler _handler;
+
+        public string Name { get; } = "rps";
+
+        Users m_users => _handler.Users;
+        string m_addresser => _handler.Addresser;
+        IrcBotService IrcBotService => _handler.IrcBotService;
 
         public RockPaperScissors(CommandHandler handler)
         {
-            this.handler = handler;
+            _handler = handler;
         }
 
         public void Play(string command, int endCommand, string verb)
         {
-            if (verb != GameName) return;
+            if (verb != Name) return;
 
             if (command.Length == endCommand + 1 && RPSValue(m_addresser) == -2)
             {
-                handler.Say($"/me whispers something to {m_addresser}.");
-                handler.Say("Would you like to throw rock, paper, or scissors?", m_addresser);
+                _handler.Say($"/me whispers something to {m_addresser}.");
+                _handler.Say("Would you like to throw rock, paper, or scissors?", m_addresser);
             }
             else if (RPSValue(m_addresser) == -2)
             {
-                handler.Say($"Please just use {IrcBotService.Settings.CommandStart}rps as a single command. Thanks!");
+                _handler.Say($"Please just use {IrcBotService.Settings.CommandStart}rps as a single command. Thanks!");
             }
 
-            var isPlaying = IsOpponentPlayingRPS(m_addresser, out var opponent); 
+            var isPlaying = IsOpponentPlayingRPS(m_addresser, out var opponent);
             Console.WriteLine($"isPlaying: {isPlaying} opponent: {opponent}");
             if (isPlaying && (!opponent.Equals(m_addresser)) && RPSValue(m_addresser) != -2 && RPSValue(opponent) != -2)
             {
@@ -41,28 +45,28 @@ namespace CsBot.Games
                 StopRPS(opponent);
                 StopRPS(m_addresser);
                 if (opponentThrow == myThrow)
-                    handler.Say($"The Rock, Paper, Scissors game between {opponent} and {m_addresser} ended in a tie.");
+                    _handler.Say($"The Rock, Paper, Scissors game between {opponent} and {m_addresser} ended in a tie.");
                 else if (opponentThrow == (int)RoShamBo.Rock && myThrow == (int)RoShamBo.Scissors)
-                    handler.Say($"{opponent} has beaten {m_addresser} at a game of Rock, Paper, Scissors.");
+                    _handler.Say($"{opponent} has beaten {m_addresser} at a game of Rock, Paper, Scissors.");
                 else if (opponentThrow == (int)RoShamBo.Scissors && myThrow == (int)RoShamBo.Rock)
-                    handler.Say($"{m_addresser} has beaten {opponent} at a game of Rock, Paper, Scissors.");
+                    _handler.Say($"{m_addresser} has beaten {opponent} at a game of Rock, Paper, Scissors.");
                 else if (opponentThrow == (int)RoShamBo.Paper && myThrow == (int)RoShamBo.Scissors)
-                    handler.Say($"{m_addresser} has beaten {opponent} at a game of Rock, Paper, Scissors.");
+                    _handler.Say($"{m_addresser} has beaten {opponent} at a game of Rock, Paper, Scissors.");
                 else if (opponentThrow == (int)RoShamBo.Scissors && myThrow == (int)RoShamBo.Paper)
-                    handler.Say($"{opponent} has beaten {m_addresser} at a game of Rock, Paper, Scissors.");
+                    _handler.Say($"{opponent} has beaten {m_addresser} at a game of Rock, Paper, Scissors.");
                 else if (opponentThrow == (int)RoShamBo.Paper && myThrow == (int)RoShamBo.Rock)
-                    handler.Say($"{opponent} has beaten {m_addresser} at a game of Rock, Paper, Scissors.");
+                    _handler.Say($"{opponent} has beaten {m_addresser} at a game of Rock, Paper, Scissors.");
                 else if (opponentThrow == (int)RoShamBo.Rock && myThrow == (int)RoShamBo.Paper)
-                    handler.Say($"{m_addresser} has beaten {opponent} at a game of Rock, Paper, Scissors.");
+                    _handler.Say($"{m_addresser} has beaten {opponent} at a game of Rock, Paper, Scissors.");
             }
             else if (opponent.Equals(string.Empty) && !IsPlayingRPS(m_addresser))
             {
-                handler.Say($"{m_addresser} is looking for an opponent in Rock, Paper, Scissors.");
+                _handler.Say($"{m_addresser} is looking for an opponent in Rock, Paper, Scissors.");
             }
         }
 
         public void RPSValue(string player, int value)
-        { 
+        {
             if (m_users.ContainsKey(player))
             {
                 m_users.GetUserByKey(player).RPSFlag = true;
