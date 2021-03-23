@@ -1,33 +1,39 @@
 using System;
 
+using CsBot.Interfaces;
+
 namespace CsBot.Games
 {
-    class Roll : IGame
-    {
-	    readonly CommandHandler handler;
-        int d1, d2, total;
-        readonly int DICE = 6;
-        readonly Random random;
+	class Roll : IGame
+	{
+		readonly CommandHandler _handler;
+		int d1, d2, total;
+		readonly int DICE = 6;
+		readonly Random random;
 
-        public Roll(CommandHandler handler)
-        {
-            this.handler = handler;
-            random = new Random();
-        }
+		public string Name { get; }
 
-        public void Play(string command, int endCommand, string verb)
-        {
-            if (verb != GetType().Name.ToLower()) return;
+		public Roll (CommandHandler handler)
+		{
+			_handler = handler;
+			random = new Random ();
 
-            var addresser = handler.GetAddresser();
+			Name = GetType ().Name;
+		}
 
-            d1 = random.Next(1, DICE + 1);
-            d2 = random.Next(1, DICE + 1);
+		public void Play (string command, int endCommand, string verb)
+		{
+			if (verb != Name.ToLower ()) return;
 
-            total = d1 + d2;
+			var addresser = _handler.GetAddresser ();
 
-            handler.Say($"{addresser} rolled a {d1} and a {d2} for a total of {total}"
-            );
-        }
-    }
+			d1 = random.Next (1, DICE + 1);
+			d2 = random.Next (1, DICE + 1);
+
+			total = d1 + d2;
+
+			_handler.Say ($"{addresser} rolled a {d1} and a {d2} for a total of {total}"
+			);
+		}
+	}
 }

@@ -1,34 +1,40 @@
 using System;
 
+using CsBot.Interfaces;
+
 namespace CsBot.Command
 {
     class StringReplace : ICommand
     {
-	    readonly CommandHandler handler;
+	    readonly CommandHandler _handler;
 
-        public StringReplace(CommandHandler handler)
+	    public string Name { get; }
+
+	    public StringReplace (CommandHandler handler)
         {
-            this.handler = handler;
+            _handler = handler;
+
+            Name = GetType ().Name;
         }
 
         public void Handle(string command, int endCommand, string verb)
         {
             if (verb != "s") return;
 
-            var addresser = handler.GetAddresser();
-            var ircBot = handler.GetIrcBot();
-            var users = handler.GetUsers();
+            var addresser = _handler.GetAddresser();
+            var ircBot = _handler.GetIrcBot();
+            var users = _handler.GetUsers();
             var random = new Random();
-            var fromChannel = handler.GetFromChannel();
+            var fromChannel = _handler.GetFromChannel();
 
             Console.WriteLine("Inside replace command.");
             if (command.Length == endCommand + 1)
             {
-                handler.Say($"{addresser}: What did you want {ircBot.Settings.Nick} to replace?");
+                _handler.Say($"{addresser}: What did you want {ircBot.Settings.Nick} to replace?");
             }
             else if (!command.Contains("/"))
             {
-                handler.Say($"{addresser}: Usage is ~s/<wrong phrase>/<corrected phrase>/");
+                _handler.Say($"{addresser}: Usage is ~s/<wrong phrase>/<corrected phrase>/");
             }
             else
             {
@@ -36,7 +42,7 @@ namespace CsBot.Command
                 var withString = command.Substring(command.IndexOf("/", command.IndexOf(toReplace))).Replace("/", "");
                 var lastSaid = users.GetUserMessage(addresser);
                 lastSaid = lastSaid.Replace(toReplace, withString);
-                handler.Say($"{addresser} meant: {lastSaid}");
+                _handler.Say($"{addresser} meant: {lastSaid}");
             }
         }
     }

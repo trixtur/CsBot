@@ -1,31 +1,36 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using CsBot.Command;
 using CsBot.Games;
+using CsBot.Interfaces;
 
 namespace CsBot
 {
 	class CommandHandler
     {
         public IrcBotService IrcBotService { get; }
-        public static readonly Random random = new ();
+
         /*private static string IrcBotService.Settings.nick = "Be|\\|der";
         private const string IrcBotService.Settings.command_start = "~";
         private static string IrcBotService.Settings.channels[0].Name = "#pyrous";
         private static string IrcBotService.Settings.channels[0].name2 = "#CsBot";
         private static string FromChannel = IrcBotService.Settings.channels[0].Name;
         */
-        
+
         public string FromChannel { get; set; }
         public string Addresser { get; set; } = "";
         public Users Users { get; }
 
         Farkle farkle;
         readonly RssFeedCommand rssFeed;
-        readonly List<ICommand> Commands;
-        readonly List<IGame> Games;
+        //readonly List<ICommand> Commands;
+        //readonly List<IGame> Games;
+
+        readonly Dictionary<string, ICommand> Commands2;
+        readonly Dictionary<string, IGame> Games2;
         enum GamesList { Roll, RockPaperScissors };
 
         public CommandHandler(IrcBotService ircBotService)
@@ -34,28 +39,51 @@ namespace CsBot
             Users = new Users();
             rssFeed = new RssFeedCommand(this);
 
-            Commands = new List<ICommand>();
-            Games = new List<IGame>();
+            //Commands = new List<ICommand>();
+            //Games = new List<IGame>();
 
-            Commands.Add(new Insult(this));
-            Commands.Add(new Quote(this));
-            Commands.Add(new Praise(this));
-            Commands.Add(new APB(this));
-            Commands.Add(new Caffeine(this));
-            Commands.Add(new Say(this));
-            Commands.Add(new Emote(this));
-            Commands.Add(new StringReplace(this));
+            Commands2 = RegisterAllCommands ();
+            Games2 = RegisterAllGames ();
 
-            Games.Add(new Roll(this));
-            Games.Add(new RockPaperScissors(this));
+            //Commands.Add(new Insult(this));
+            //Commands.Add(new Quote(this));
+            //Commands.Add(new Praise(this));
+            //Commands.Add(new APB(this));
+            //Commands.Add(new Caffeine(this));
+            //Commands.Add(new Say(this));
+            //Commands.Add(new Emote(this));
+            //Commands.Add(new StringReplace(this));
+
+            //Games.Add(new Roll(this));
+            //Games.Add(new RockPaperScissors(this));
         }
 
-        /// <summary>
-        /// Make the Bot say something in a specific channel.
-        /// </summary>
-        /// <param Name="s">String to Say.</param>
-        /// <param Name="c">Channel to talk in</param>
-        public void Say(string s, string c)
+		Dictionary<string, ICommand> RegisterAllCommands ()
+        {
+	        var commands = Assembly.GetExecutingAssembly ()
+		        .GetTypes ()
+		        .Where (t => t.GetInterfaces ().Contains (typeof(ICommand)))
+		        .Select (c => Activator.CreateInstance (c, this) as ICommand);
+
+	        return commands.ToDictionary (command => command.Name);
+        }
+
+		Dictionary<string, IGame> RegisterAllGames ()
+		{
+			var games = Assembly.GetExecutingAssembly ()
+				.GetTypes ()
+				.Where (t => t.GetInterfaces ().Contains (typeof(IGame)))
+				.Select (c => Activator.CreateInstance (c, this) as IGame);
+
+			return games.ToDictionary (game => game.Name);
+		}
+
+		/// <summary>
+		/// Make the Bot say something in a specific channel.
+		/// </summary>
+		/// <param Name="s">String to Say.</param>
+		/// <param Name="c">Channel to talk in</param>
+		public void Say(string s, string c)
         {
             if (s.StartsWith("/me"))
                 s = $"{s.Replace("/me", "ACTION")}";
@@ -141,12 +169,12 @@ namespace CsBot
                 endCommand = fixedCommand.Length;
             }
 
-            foreach (var c in Commands)
+            foreach (var c in Commands2.Values)
             {
                 c.Handle(command, endCommand, fixedCommand);
             }
 
-            foreach (var g in Games)
+            foreach (var g in Games2.Values)
             {
                 g.Play(command, endCommand, fixedCommand);
             }
@@ -247,7 +275,7 @@ namespace CsBot
 
         public void DirectRoShamBo(string choice)
         {
-            var rps = (RockPaperScissors)Games[(int)GamesList.RockPaperScissors];
+	        var rps = (RockPaperScissors) Games2[nameof(RockPaperScissors)];
 
             switch (choice)
             {
