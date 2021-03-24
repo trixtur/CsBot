@@ -5,15 +5,14 @@ using NUnit.Framework;
 namespace CsBot.Tests.WavingHands
 {
 	[TestFixture]
-	public class WavingHands
+	public class WavingHands : TestSpell
 	{
 		[Test]
 		public void TestHandAdd ()
 		{
-			var hand = new Hand (Hand.Side.Left);
+			MakeTestObjects ();
 
-			Hand.Side s = hand.GetSide ();
-			Assert.AreEqual (s, Hand.Side.Left);
+			TestHands ();
 
 			hand.Add (Gesture.Clap);
 			hand.Add (Gesture.Snap);
@@ -30,10 +29,9 @@ namespace CsBot.Tests.WavingHands
 		[Test]
 		public void TestGetAt ()
 		{
-			Hand hand = new Hand (Hand.Side.Left);
+			MakeTestObjects ();
 
-			Hand.Side s = hand.GetSide ();
-			Assert.AreEqual (s, Hand.Side.Left);
+			TestHands ();
 
 			hand.Add (Gesture.Clap);
 			hand.Add (Gesture.Snap);

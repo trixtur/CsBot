@@ -6,19 +6,14 @@ using NUnit.Framework;
 namespace CsBot.Tests.WavingHands
 {
 	[TestFixture]
-	public class MissileTest
+	public class MissileTest : TestSpell
 	{
 		[Test]
 		public void TestMissileLeft ()
 		{
-			var hand = new Hand (Hand.Side.Left);
-			var hand2 = new Hand (Hand.Side.Right);
-			var wizard = new Wizard ();
+			MakeTestObjects ();
 
-			Hand.Side s = hand.GetSide ();
-			Assert.AreEqual (s, Hand.Side.Left);
-			Hand.Side s2 = hand2.GetSide ();
-			Assert.AreEqual (s2, Hand.Side.Right);
+			TestHands ();
 
 			hand.Add (Gesture.Snap);
 			hand.Add (Gesture.DigitPoint);
@@ -31,14 +26,9 @@ namespace CsBot.Tests.WavingHands
 		[Test]
 		public void TestMissileRight ()
 		{
-			var hand = new Hand (Hand.Side.Left);
-			var hand2 = new Hand (Hand.Side.Right);
-			var wizard = new Wizard ();
+			MakeTestObjects ();
 
-			Hand.Side s = hand.GetSide ();
-			Assert.AreEqual (s, Hand.Side.Left);
-			Hand.Side s2 = hand2.GetSide ();
-			Assert.AreEqual (s2, Hand.Side.Right);
+			TestHands ();
 
 			hand2.Add (Gesture.Snap);
 			hand2.Add (Gesture.DigitPoint);

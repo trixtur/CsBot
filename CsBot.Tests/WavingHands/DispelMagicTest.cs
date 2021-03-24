@@ -6,19 +6,14 @@ using NUnit.Framework;
 namespace CsBot.Tests.WavingHands
 {
 	[TestFixture]
-	public class DispelMagicTest
+	public class DispelMagicTest : TestSpell
 	{
 		[Test]
 		public void TestDispelMagic ()
 		{
-			var hand = new Hand (Hand.Side.Left);
-			var hand2 = new Hand (Hand.Side.Right);
-			var wizard = new Wizard ();
+			MakeTestObjects ();
 
-			Hand.Side s = hand.GetSide ();
-			Assert.AreEqual (s, Hand.Side.Left);
-			Hand.Side s2 = hand2.GetSide ();
-			Assert.AreEqual (s2, Hand.Side.Right);
+			TestHands ();
 
 			hand.Add (Gesture.Clap);
 			hand.Add (Gesture.DigitPoint);
