@@ -6,10 +6,10 @@ using NUnit.Framework;
 namespace CsBot.Tests.WavingHands
 {
 	[TestFixture]
-	public class DispelMagicTest
+	public class RaiseDeadTest
 	{
 		[Test]
-		public void TestDispelMagic ()
+		public void TestRaiseDead ()
 		{
 			var hand = new Hand (Hand.Side.Left);
 			var hand2 = new Hand (Hand.Side.Right);
@@ -20,20 +20,18 @@ namespace CsBot.Tests.WavingHands
 			Hand.Side s2 = hand2.GetSide ();
 			Assert.AreEqual (s2, Hand.Side.Right);
 
-			hand.Add (Gesture.Clap);
 			hand.Add (Gesture.DigitPoint);
-			hand.Add (Gesture.ProfferedPalm);
 			hand.Add (Gesture.Wave);
+			hand.Add (Gesture.Wave);
+			hand.Add (Gesture.WigglingFingers);
+			hand.Add (Gesture.Wave);
+			hand.Add (Gesture.Clap);
 
 			hand2.Add (Gesture.Clap);
-			hand2.Add (Gesture.Null);
-			hand2.Add (Gesture.Null);
-			hand2.Add (Gesture.Null);
 
-			Spell dispelMagic = new DispelMagic (wizard);
+			Spell raiseDead = new RaiseDead (wizard);
 
-			Assert.True (dispelMagic.IsMatch (hand, hand2));
+			Assert.True (raiseDead.IsMatch (hand, hand2));
 		}
-
 	}
 }

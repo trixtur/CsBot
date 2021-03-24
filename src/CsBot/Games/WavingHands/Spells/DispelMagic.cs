@@ -5,6 +5,7 @@ namespace CsBot.Games.WavingHands.Spells
 		public DispelMagic (Living.Living target)
 		{
 			Sequence = new Gesture[] {Gesture.Clap, Gesture.DigitPoint, Gesture.ProfferedPalm, Gesture.Wave};
+			SecondHandSequence = new Gesture[] {Gesture.Clap, Gesture.Null, Gesture.Null, Gesture.Null};
 
 			Target = target;
 

@@ -82,7 +82,7 @@ namespace CsBot.Games.WavingHands.Spells
 				Gesture g1 = first[i];
 				Gesture g2 = second[i];
 
-				if (g1 != g2 && g2 != Gesture.Null && g1 != Gesture.Null) {
+				if (g1 != g2 && g2 != Gesture.Null) {
 					return false;
 				}
 			}
