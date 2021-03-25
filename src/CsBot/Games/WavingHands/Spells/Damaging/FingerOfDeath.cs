@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace CsBot.Games.WavingHands.Spells
+namespace CsBot.Games.WavingHands.Spells.Damaging
 {
 	public class FingerOfDeath : Spell
 	{

@@ -20,7 +20,7 @@ namespace CsBot.Tests.WavingHands
 			hand.Add (Gesture.Wave);
 			hand.Add (Gesture.ProfferedPalm);
 
-			Spell removeEnchantment = new Games.WavingHands.Spells.RemoveEnchantment (wizard);
+			Spell removeEnchantment = new Games.WavingHands.Spells.Protections.RemoveEnchantment (wizard);
 
 			Assert.True (removeEnchantment.IsMatch (hand, hand2));
 		}

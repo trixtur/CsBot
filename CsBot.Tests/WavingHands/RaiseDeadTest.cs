@@ -1,6 +1,7 @@
 using CsBot.Games.WavingHands;
 using CsBot.Games.WavingHands.Living;
 using CsBot.Games.WavingHands.Spells;
+using CsBot.Games.WavingHands.Spells.Protections;
 using NUnit.Framework;
 
 namespace CsBot.Tests.WavingHands

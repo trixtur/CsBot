@@ -1,4 +1,4 @@
-using CsBot.Games.WavingHands.Enchantments;
+using CsBot.Games.WavingHands.Spells.Enchantments;
 
 namespace CsBot.Games.WavingHands.Living
 {

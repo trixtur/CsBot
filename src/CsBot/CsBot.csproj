@@ -23,4 +23,9 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Games\WavingHands\Spells\Non-Spells" />
+    <Folder Include="Games\WavingHands\Spells\Summoning" />
+  </ItemGroup>
+
 </Project>

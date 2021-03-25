@@ -1,4 +1,4 @@
-namespace CsBot.Games.WavingHands.Spells
+namespace CsBot.Games.WavingHands.Spells.Damaging
 {
 	public class Missile : Spell
 	{

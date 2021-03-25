@@ -1,6 +1,4 @@
-using System;
-
-namespace CsBot.Games.WavingHands.Spells
+namespace CsBot.Games.WavingHands.Spells.Protections
 {
 	public class MagicMirror : Spell
 	{

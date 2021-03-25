@@ -1,4 +1,4 @@
-namespace CsBot.Games.WavingHands.Spells
+namespace CsBot.Games.WavingHands.Spells.Protections
 {
 	public class RemoveEnchantment : Spell
 	{

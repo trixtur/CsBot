@@ -1,4 +1,4 @@
-namespace CsBot.Games.WavingHands.Enchantments
+namespace CsBot.Games.WavingHands.Spells.Enchantments
 {
 	public class Amnesia : Enchantment
 	{
