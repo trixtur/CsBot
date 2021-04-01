@@ -6,6 +6,7 @@ namespace CsBot.Games.WavingHands.Spells
 		protected Gesture[] Sequence;
 		protected Gesture[] SecondHandSequence; // Not always Used
 		protected Gesture[] OtherSequence; // Not always Used
+		protected Gesture[] SecondHandOtherSequence; // Not always Used
 		protected string Description;
 		protected string Usage;
 		protected int OtherSequenceLimit = 0, UsedOtherSequence = 0;
@@ -14,8 +15,9 @@ namespace CsBot.Games.WavingHands.Spells
 			bool isMatch = false;
 			bool leftMatch = (IsEqual(left.GetLast (Sequence.Length),Sequence));
 			bool rightMatch = (IsEqual(right.GetLast (Sequence.Length),Sequence));
+			bool leftMatchOther = false, rightMatchOther = false;
 
-			if (!IsNullOrEmpty (SecondHandSequence)) {
+			if ((leftMatch || rightMatch) && !IsNullOrEmpty (SecondHandSequence)) {
 				bool secondLeftMatch = (EqualEnough(left.GetLast (SecondHandSequence.Length),SecondHandSequence));
 				bool secondRightMatch = (EqualEnough(right.GetLast (SecondHandSequence.Length),SecondHandSequence));
 
@@ -26,14 +28,28 @@ namespace CsBot.Games.WavingHands.Spells
 			}
 
 			if (!isMatch && !IsNullOrEmpty (OtherSequence) &&
-				OtherSequenceLimit < 1 || UsedOtherSequence < OtherSequenceLimit) {
+				(OtherSequenceLimit < 1 || UsedOtherSequence < OtherSequenceLimit)) {
 
 				UsedOtherSequence++;
 
-				bool leftMatchOther = (IsEqual(left.GetLast (OtherSequence.Length),OtherSequence));
-				bool rightMatchOther = (IsEqual(right.GetLast (OtherSequence.Length),OtherSequence));
+				leftMatchOther = (IsEqual(left.GetLast (OtherSequence.Length),OtherSequence));
+				rightMatchOther = (IsEqual(right.GetLast (OtherSequence.Length),OtherSequence));
 
 				isMatch = leftMatchOther || rightMatchOther;
+			}
+
+			if ((leftMatchOther || rightMatchOther) && !IsNullOrEmpty (SecondHandOtherSequence)) {
+				bool secondLeftMatch = (EqualEnough(left.GetLast (SecondHandOtherSequence.Length),SecondHandOtherSequence));
+				bool secondRightMatch = (EqualEnough(right.GetLast (SecondHandOtherSequence.Length),SecondHandOtherSequence));
+
+				isMatch = (leftMatchOther && secondRightMatch) ||
+				          (rightMatchOther && secondLeftMatch);
+			} else {
+				isMatch = leftMatch || rightMatch;
+
+				if (!isMatch) { // Last Chance
+					isMatch = leftMatchOther || rightMatchOther;
+				}
 			}
 
 			return isMatch;
