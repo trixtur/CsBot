@@ -15,18 +15,18 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Clap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Clap);
 
-			hand2.Add (Gesture.Snap); // Garbage gesture
-			hand2.Add (Gesture.Snap); // Garbage gesture
-			hand2.Add (Gesture.Snap); // Garbage gesture
-			hand2.Add (Gesture.Clap);
+			Hand2.Add (Gesture.Snap); // Garbage gesture
+			Hand2.Add (Gesture.Snap); // Garbage gesture
+			Hand2.Add (Gesture.Snap); // Garbage gesture
+			Hand2.Add (Gesture.Clap);
 
-			Spell firestorm = new FireStorm (wizard);
-			Assert.True (firestorm.IsMatch (hand, hand2));
+			Spell firestorm = new FireStorm (Wizard);
+			Assert.True (firestorm.IsMatch (Hand, Hand2));
 		}
 
 		[Test]
@@ -36,13 +36,13 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Clap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Clap);
 
-			Spell firestorm = new FireStorm (wizard);
-			Assert.False (firestorm.IsMatch (hand, hand2));
+			Spell firestorm = new FireStorm (Wizard);
+			Assert.False (firestorm.IsMatch (Hand, Hand2));
 		}
 
 		[Test]
@@ -52,18 +52,18 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Clap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Clap);
 
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Snap);
 
-			Spell firestorm = new FireStorm (wizard);
-			Assert.False (firestorm.IsMatch (hand, hand2));
+			Spell firestorm = new FireStorm (Wizard);
+			Assert.False (firestorm.IsMatch (Hand, Hand2));
 		}
 	}
 }

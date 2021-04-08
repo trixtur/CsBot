@@ -15,18 +15,18 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Clap);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Clap);
 
-			hand2.Add (Gesture.Wave);
-			hand2.Add (Gesture.Snap);
-			hand2.Add (Gesture.Snap);
-			hand2.Add (Gesture.Clap);
+			Hand2.Add (Gesture.Wave);
+			Hand2.Add (Gesture.Snap);
+			Hand2.Add (Gesture.Snap);
+			Hand2.Add (Gesture.Clap);
 
-			Spell iceStorm = new IceStorm (wizard);
-			Assert.True (iceStorm.IsMatch (hand, hand2), "Could not match spell.");
+			Spell iceStorm = new IceStorm (Wizard);
+			Assert.True (iceStorm.IsMatch (Hand, Hand2), "Could not match spell.");
 		}
 	}
 }

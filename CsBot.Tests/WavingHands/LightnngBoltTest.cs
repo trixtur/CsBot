@@ -15,15 +15,15 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.DigitPoint);
-			hand.Add (Gesture.WigglingFingers);
-			hand.Add (Gesture.WigglingFingers);
-			hand.Add (Gesture.DigitPoint);
-			hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.WigglingFingers);
+			Hand.Add (Gesture.WigglingFingers);
+			Hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.DigitPoint);
 
-			Spell lightningBolt = new LightningBolt (wizard);
+			Spell lightningBolt = new LightningBolt (Wizard);
 
-			Assert.True (lightningBolt.IsMatch(hand, hand2));
+			Assert.True (lightningBolt.IsMatch(Hand, Hand2));
 		}
 
 		[Test]
@@ -33,19 +33,19 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.DigitPoint);
-			hand.Add (Gesture.DigitPoint);
-			hand.Add (Gesture.Clap);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.Clap);
 
-			hand2.Add (Gesture.Null);
-			hand2.Add (Gesture.Null);
-			hand2.Add (Gesture.Null);
-			hand2.Add (Gesture.Clap);
+			Hand2.Add (Gesture.Null);
+			Hand2.Add (Gesture.Null);
+			Hand2.Add (Gesture.Null);
+			Hand2.Add (Gesture.Clap);
 
-			Spell lightningBolt = new LightningBolt (wizard);
+			Spell lightningBolt = new LightningBolt (Wizard);
 
-			Assert.True (lightningBolt.IsMatch(hand, hand2));
+			Assert.True (lightningBolt.IsMatch(Hand, Hand2));
 
 		}
 	}

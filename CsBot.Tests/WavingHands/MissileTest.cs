@@ -16,12 +16,12 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.DigitPoint);
 
-			Spell missile = new Missile (wizard);
+			Spell missile = new Missile (Wizard);
 
-			Assert.True (missile.IsMatch (hand, hand2));
+			Assert.True (missile.IsMatch (Hand, Hand2));
 		}
 
 		[Test]
@@ -31,12 +31,12 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand2.Add (Gesture.Snap);
-			hand2.Add (Gesture.DigitPoint);
+			Hand2.Add (Gesture.Snap);
+			Hand2.Add (Gesture.DigitPoint);
 
-			Spell missile = new Missile (wizard);
+			Spell missile = new Missile (Wizard);
 
-			Assert.True (missile.IsMatch (hand, hand2));
+			Assert.True (missile.IsMatch (Hand, Hand2));
 		}
 	}
 }

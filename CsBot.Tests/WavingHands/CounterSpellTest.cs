@@ -16,13 +16,13 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.ProfferedPalm);
-			hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.ProfferedPalm);
 
-			Spell counterSpell = new CounterSpell (wizard);
+			Spell counterSpell = new CounterSpell (Wizard);
 
-			Assert.True (counterSpell.IsMatch (hand, hand2));
+			Assert.True (counterSpell.IsMatch (Hand, Hand2));
 		}
 		[Test]
 		public void TestCounterSpellS2 ()
@@ -31,13 +31,13 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Snap);
 
-			Spell counterSpell = new CounterSpell (wizard);
+			Spell counterSpell = new CounterSpell (Wizard);
 
-			Assert.True (counterSpell.IsMatch (hand, hand2));
+			Assert.True (counterSpell.IsMatch (Hand, Hand2));
 		}
 	}
 }

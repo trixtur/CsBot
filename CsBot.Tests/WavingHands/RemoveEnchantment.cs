@@ -15,14 +15,14 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.ProfferedPalm);
-			hand.Add (Gesture.DigitPoint);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.ProfferedPalm);
 
-			Spell removeEnchantment = new Games.WavingHands.Spells.Protections.RemoveEnchantment (wizard);
+			Spell removeEnchantment = new Games.WavingHands.Spells.Protections.RemoveEnchantment (Wizard);
 
-			Assert.True (removeEnchantment.IsMatch (hand, hand2));
+			Assert.True (removeEnchantment.IsMatch (Hand, Hand2));
 		}
 	}
 }

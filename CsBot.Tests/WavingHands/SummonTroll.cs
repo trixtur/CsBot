@@ -15,14 +15,14 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.WigglingFingers);
-			hand.Add (Gesture.ProfferedPalm);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.WigglingFingers);
-			hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.WigglingFingers);
+			Hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.WigglingFingers);
+			Hand.Add (Gesture.Wave);
 
-			Spell summonTroll = new Troll (wizard);
-			Assert.True (summonTroll.IsMatch (hand, hand2));
+			Spell summonTroll = new Troll (Wizard);
+			Assert.True (summonTroll.IsMatch (Hand, Hand2));
 		}
 
 	}

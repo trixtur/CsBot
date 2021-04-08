@@ -16,14 +16,14 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Clap);
-			hand.Add (Gesture.Wave);
-			hand2.Add (Gesture.Clap);
-			hand2.Add (Gesture.Wave);
+			Hand.Add (Gesture.Clap);
+			Hand.Add (Gesture.Wave);
+			Hand2.Add (Gesture.Clap);
+			Hand2.Add (Gesture.Wave);
 
-			Spell magicMirror = new MagicMirror (wizard);
+			Spell magicMirror = new MagicMirror (Wizard);
 
-			Assert.True (magicMirror.IsMatch (hand, hand2));
+			Assert.True (magicMirror.IsMatch (Hand, Hand2));
 		}
 	}
 }

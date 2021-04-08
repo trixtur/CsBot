@@ -14,12 +14,12 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Clap);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.Clap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.DigitPoint);
 
-			Gesture[] last4 = hand.GetLast (4);
+			Gesture[] last4 = Hand.GetLast (4);
 			Assert.AreEqual (Gesture.Clap, last4[0]);
 			Assert.AreEqual (Gesture.Snap, last4[1]);
 			Assert.AreEqual (Gesture.Wave, last4[2]);
@@ -33,12 +33,12 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Clap);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.Clap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.DigitPoint);
 
-			Gesture result = hand.GetAt (7);
+			Gesture result = Hand.GetAt (7);
 
 			Assert.AreEqual (result, Gesture.Snap);
 		}

@@ -15,23 +15,23 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Clap);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Clap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Snap);
 
-			hand2.Add (Gesture.Clap);
+			Hand2.Add (Gesture.Clap);
 
 			// The rest of hand 2 can be any Gestures,
 			// We don't care.
-			hand2.Add (Gesture.Snap);
-			hand2.Add (Gesture.Wave);
-			hand2.Add (Gesture.Wave);
-			hand2.Add (Gesture.Snap);
+			Hand2.Add (Gesture.Snap);
+			Hand2.Add (Gesture.Wave);
+			Hand2.Add (Gesture.Wave);
+			Hand2.Add (Gesture.Snap);
 
-			Spell summonElemental = new Elemental (wizard);
-			Assert.True (summonElemental.IsMatch(hand, hand2));
+			Spell summonElemental = new Elemental (Wizard);
+			Assert.True (summonElemental.IsMatch(Hand, Hand2));
 		}
 	}
 }

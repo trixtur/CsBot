@@ -16,18 +16,18 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.DigitPoint);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.WigglingFingers);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.Clap);
+			Hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.WigglingFingers);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Clap);
 
-			hand2.Add (Gesture.Clap);
+			Hand2.Add (Gesture.Clap);
 
-			Spell raiseDead = new RaiseDead (wizard);
+			Spell raiseDead = new RaiseDead (Wizard);
 
-			Assert.True (raiseDead.IsMatch (hand, hand2));
+			Assert.True (raiseDead.IsMatch (Hand, Hand2));
 		}
 	}
 }

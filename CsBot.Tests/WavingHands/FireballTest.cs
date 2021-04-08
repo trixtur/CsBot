@@ -15,14 +15,14 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.WigglingFingers);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.DigitPoint);
-			hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.WigglingFingers);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.DigitPoint);
 
-			Spell fireball = new Fireball (wizard);
-			Assert.True (fireball.IsMatch (hand, hand2));
+			Spell fireball = new Fireball (Wizard);
+			Assert.True (fireball.IsMatch (Hand, Hand2));
 		}
 	}
 }

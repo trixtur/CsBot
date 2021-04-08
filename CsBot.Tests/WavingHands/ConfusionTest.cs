@@ -1,5 +1,4 @@
 using CsBot.Games.WavingHands;
-using CsBot.Games.WavingHands.Living;
 using CsBot.Games.WavingHands.Spells;
 using CsBot.Games.WavingHands.Spells.Enchantments;
 using NUnit.Framework;
@@ -7,22 +6,21 @@ using NUnit.Framework;
 namespace CsBot.Tests.WavingHands
 {
 	[TestFixture]
-	public class AmnesiaTest : TestSpell
+	public class ConfusionTest : ShieldTest
 	{
 		[Test]
-		public void TestAmnesia ()
+		public void TestConfusion ()
 		{
 			MakeTestObjects ();
 
 			TestHands ();
 
 			Hand.Add (Gesture.DigitPoint);
-			Hand.Add (Gesture.ProfferedPalm);
-			Hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.WigglingFingers);
 
-			Spell amnesia = new Amnesia (Wizard);
-
-			Assert.True (amnesia.IsMatch (Hand, Hand2));
+			Spell confusion = new Confusion (Wizard);
+			Assert.True (confusion.IsMatch (Hand, Hand2),"Couldn't match Confusion Spell.");
 		}
 	}
 }

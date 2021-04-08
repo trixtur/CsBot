@@ -15,12 +15,12 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.WigglingFingers);
-			hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.WigglingFingers);
+			Hand.Add (Gesture.ProfferedPalm);
 
-			Spell causeLightWounds = new CauseLightWounds (wizard);
-			Assert.True (causeLightWounds.IsMatch (hand, hand2));
+			Spell causeLightWounds = new CauseLightWounds (Wizard);
+			Assert.True (causeLightWounds.IsMatch (Hand, Hand2));
 		}
 	}
 }

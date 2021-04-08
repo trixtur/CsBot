@@ -15,13 +15,13 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.ProfferedPalm);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.WigglingFingers);
-			hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.WigglingFingers);
+			Hand.Add (Gesture.Wave);
 
-			Spell summonOgre = new Ogre (wizard);
-			Assert.True (summonOgre.IsMatch (hand, hand2));
+			Spell summonOgre = new Ogre (Wizard);
+			Assert.True (summonOgre.IsMatch (Hand, Hand2));
 		}
 	}
 }

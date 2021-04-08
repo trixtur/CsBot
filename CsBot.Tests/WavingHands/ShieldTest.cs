@@ -16,11 +16,11 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.ProfferedPalm);
 
-			Spell shield = new Shield (wizard);
+			Spell shield = new Shield (Wizard);
 
-			Assert.True (shield.IsMatch (hand, hand2));
+			Assert.True (shield.IsMatch (Hand, Hand2));
 		}
 
 		[Test]
@@ -30,11 +30,11 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand2.Add (Gesture.ProfferedPalm);
+			Hand2.Add (Gesture.ProfferedPalm);
 
-			Spell shield = new Shield (wizard);
+			Spell shield = new Shield (Wizard);
 
-			Assert.True (shield.IsMatch (hand, hand2));
+			Assert.True (shield.IsMatch (Hand, Hand2));
 		}
 	}
 }

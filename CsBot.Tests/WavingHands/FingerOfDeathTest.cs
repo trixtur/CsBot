@@ -16,18 +16,18 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.ProfferedPalm);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.ProfferedPalm);
-			hand.Add (Gesture.WigglingFingers);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.WigglingFingers);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.DigitPoint);
 
-			Spell fingerOfDeath = new FingerOfDeath (wizard);
+			Spell fingerOfDeath = new FingerOfDeath (Wizard);
 
-			Assert.True (fingerOfDeath.IsMatch (hand, hand2));
+			Assert.True (fingerOfDeath.IsMatch (Hand, Hand2));
 		}
 		[Test]
 		public void TestNoMatchFingerOfDeathLeft ()
@@ -36,17 +36,17 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.ProfferedPalm);
-			hand.Add (Gesture.Wave);
-			hand.Add (Gesture.ProfferedPalm);
-			hand.Add (Gesture.WigglingFingers);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.WigglingFingers);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.Snap);
 
-			Spell fingerOfDeath = new FingerOfDeath (wizard);
+			Spell fingerOfDeath = new FingerOfDeath (Wizard);
 
-			Assert.False (fingerOfDeath.IsMatch (hand, hand2));
+			Assert.False (fingerOfDeath.IsMatch (Hand, Hand2));
 		}
 	}
 }

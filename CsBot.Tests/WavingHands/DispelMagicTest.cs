@@ -16,19 +16,19 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Clap);
-			hand.Add (Gesture.DigitPoint);
-			hand.Add (Gesture.ProfferedPalm);
-			hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Clap);
+			Hand.Add (Gesture.DigitPoint);
+			Hand.Add (Gesture.ProfferedPalm);
+			Hand.Add (Gesture.Wave);
 
-			hand2.Add (Gesture.Clap);
-			hand2.Add (Gesture.Null);
-			hand2.Add (Gesture.Null);
-			hand2.Add (Gesture.Null);
+			Hand2.Add (Gesture.Clap);
+			Hand2.Add (Gesture.Null);
+			Hand2.Add (Gesture.Null);
+			Hand2.Add (Gesture.Null);
 
-			Spell dispelMagic = new DispelMagic (wizard);
+			Spell dispelMagic = new DispelMagic (Wizard);
 
-			Assert.True (dispelMagic.IsMatch (hand, hand2));
+			Assert.True (dispelMagic.IsMatch (Hand, Hand2));
 		}
 
 	}

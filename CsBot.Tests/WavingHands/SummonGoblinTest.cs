@@ -15,12 +15,12 @@ namespace CsBot.Tests.WavingHands
 
 			TestHands ();
 
-			hand.Add (Gesture.Snap);
-			hand.Add (Gesture.WigglingFingers);
-			hand.Add (Gesture.Wave);
+			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.WigglingFingers);
+			Hand.Add (Gesture.Wave);
 
-			Spell summonGoblin = new Goblin (wizard);
-			Assert.True (summonGoblin.IsMatch (hand, hand2));
+			Spell summonGoblin = new Goblin (Wizard);
+			Assert.True (summonGoblin.IsMatch (Hand, Hand2));
 		}
 	}
 }

@@ -1,29 +1,27 @@
 using CsBot.Games.WavingHands;
 using CsBot.Games.WavingHands.Spells;
-using CsBot.Games.WavingHands.Spells.Summoning;
+using CsBot.Games.WavingHands.Spells.Enchantments;
 using NUnit.Framework;
 
 namespace CsBot.Tests.WavingHands
 {
 	[TestFixture]
-	public class SummonGiantTest : TestSpell
+	public class CharmPersonTest : TestSpell
 	{
 		[Test]
-		public void TestSummonGiant ()
+		public void TestCharmPerson ()
 		{
 			MakeTestObjects ();
 
 			TestHands ();
 
-			Hand.Add (Gesture.Wave);
-			Hand.Add (Gesture.WigglingFingers);
 			Hand.Add (Gesture.ProfferedPalm);
 			Hand.Add (Gesture.Snap);
+			Hand.Add (Gesture.DigitPoint);
 			Hand.Add (Gesture.WigglingFingers);
-			Hand.Add (Gesture.Wave);
 
-			Spell summonGiant = new Giant (Wizard);
-			Assert.True (summonGiant.IsMatch (Hand, Hand2));
+			Spell charmPerson = new CharmPerson (Wizard);
+			Assert.True (charmPerson.IsMatch (Hand, Hand2), "Unable to match Charm Person Enchantment Sequence.");
 		}
 	}
 }
