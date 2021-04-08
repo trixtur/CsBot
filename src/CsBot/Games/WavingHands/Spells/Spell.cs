@@ -44,12 +44,6 @@ namespace CsBot.Games.WavingHands.Spells
 
 				isMatch = (leftMatchOther && secondRightMatch) ||
 				          (rightMatchOther && secondLeftMatch);
-			} else {
-				isMatch = leftMatch || rightMatch;
-
-				if (!isMatch) { // Last Chance
-					isMatch = leftMatchOther || rightMatchOther;
-				}
 			}
 
 			return isMatch;
