@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace CsBot.Games.WavingHands
 {
-	public static class Extensions
+	public static class GestureAdapter
 	{
 		public static Gesture current = Gesture.Null;
 		public static Gesture GetGesture(this char c)
