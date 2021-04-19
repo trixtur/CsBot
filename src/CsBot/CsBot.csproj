@@ -23,8 +23,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Games\WavingHands\Spells\Non-Spells" />
-  </ItemGroup>
-
 </Project>
