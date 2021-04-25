@@ -1,3 +1,4 @@
+using System;
 using CsBot.Games.WavingHands;
 using NUnit.Framework;
 
@@ -65,6 +66,24 @@ namespace CsBot.Tests.WavingHands
 		{
 			char current = 'z';
 			Gesture gesture = GestureAdapter.GetGesture (current);
+
+			Assert.AreEqual (Gesture.Null, gesture);
+		}
+
+		[Test]
+		public void TestStab ()
+		{
+			String s = "Stab";
+			Gesture gesture = GestureAdapter.GetGesture (s);
+
+			Assert.AreEqual (Gesture.Stab, gesture);
+		}
+
+		[Test]
+		public void TestBadString ()
+		{
+			String s = "Bad";
+			Gesture gesture = GestureAdapter.GetGesture (s);
 
 			Assert.AreEqual (Gesture.Null, gesture);
 		}

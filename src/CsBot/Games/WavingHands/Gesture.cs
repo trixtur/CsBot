@@ -6,6 +6,19 @@ namespace CsBot.Games.WavingHands
 	public static class GestureAdapter
 	{
 		public static Gesture current = Gesture.Null;
+
+		public static Gesture GetGesture (this String s)
+		{
+			Gesture gesture = current;
+			switch (s.ToLower ()) {
+				case "stab":
+					gesture = Gesture.Stab;
+					break;
+			}
+
+			return gesture;
+		}
+
 		public static Gesture GetGesture(this char c)
 		{
 			Gesture gesture = current;
@@ -56,5 +69,7 @@ namespace CsBot.Games.WavingHands
 		DigitPoint	= 'D',
 		/// <summary>Clap (C)</summary>
 		Clap		= 'C', // Requires both hands
+		/// <summary>Stab (^)</summary>
+		Stab		= '^'
 	}
 }
