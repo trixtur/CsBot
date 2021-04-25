@@ -1,11 +1,9 @@
 
-namespace CsBot.Games.WavingHands
+namespace CsBot.Games.WavingHands.Living
 {
-	public class Wizard
+	public class Wizard : Living
 	{
 		Hand[] _hands;
-		int HP;
-
 		public Wizard ()
 		{
 			_hands = new Hand[2];

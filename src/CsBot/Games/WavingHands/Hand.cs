@@ -6,17 +6,17 @@ namespace CsBot.Games.WavingHands
 		public enum Side { Right, Left };
 
 		Side _side;
-		char[] _gestures;
+		Gesture[] _gestures;
 
 		const int MaxGestures = 10;
 
 		public Hand (Side side)
 		{
 			_side = side;
-			_gestures = new char[MaxGestures];
+			_gestures = new Gesture[MaxGestures];
 		}
 
-		public Hand Add (char toAdd)
+		public Hand Add (Gesture toAdd)
 		{
 			for (int i = 0; i < (MaxGestures-1); i++) {
 				_gestures[i] = _gestures[i + 1];
@@ -27,9 +27,9 @@ namespace CsBot.Games.WavingHands
 			return this;
 		}
 
-		public char[] GetLast (int n)
+		public Gesture[] GetLast (int n)
 		{
-			char[] retVal = new char[n];
+			Gesture[] retVal = new Gesture[n];
 
 			for (int i = 0; i < n; i++) {
 				retVal[n - i - 1] = _gestures[MaxGestures - i - 1];
@@ -38,7 +38,7 @@ namespace CsBot.Games.WavingHands
 			return retVal;
 		}
 
-		public char GetAt (int i)
+		public Gesture GetAt (int i)
 		{
 			return _gestures[i];
 		}
